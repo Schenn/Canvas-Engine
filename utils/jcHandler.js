@@ -1,151 +1,213 @@
-//Javascript Canvas Handler
+// Javascript Canvas Handler
 // Author: Steven Chennault
-// Official creation start date: 02/15/12 10AM Pacific
+// Project began: 02/15/12 10AM Pacific
 // Dependencies:
 //        jQuery
-//        jCanvas (a jQuery plugin by Caleb Evans which simplifies the drawing process)
-//
-//
+//        jCanvas v5.1 (a jQuery plugin by Caleb Evans which simplifies the drawing process)
+
+/**
+ * Create a requestAnimationFrame function to standin for the browsers prefix method.
+ */
 window.requestAnimationFrame = function () {
   return (
 
-  window.requestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  window.oRequestAnimationFrame ||
-  window.msRequestAnimationFrame ||
-  function (/* function */ callback) {
-    window.setTimeout(callback, 1000 / 60);
-  }
-
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function (callback) {
+      window.setTimeout(callback, 1000 / 60);
+    }
   );
 }();
 
+/**
+ * The Engine for manipulating a stack of canvases for a game
+ *
+ * @class jcHandler
+ * @param init Object { myCanvas: root canvas, imagePath: path to game images }
+ */
 function jcHandler(init) {
-
-  // No-Default variables
+  // jCanvas wrapped canvases
   this.jcArray = [];
   this.jcArray[0] = $(init.myCanvas);
+  // array of z-indexes to exclude from click events
   this.excludes = [];
-  // Default variables
+
+  // Set the path to the game's images
   this.imagePath = init.imagePath;
-  // Empty Variables
-  this.positions = {}; // Position objects (positions.positionname)
-  this.z_index = []; // The order objects should be drawn
+
+  // Position objects - Represents a game objects place in the world
+  this.positions = {};
+
+  // The order objects should be drawn
+  this.z_index = [];
+
+  // The spritesheets from the game
   this.spritesheets = {};
-  this.gradients = {};  // Stored Gradients
-  this.filters = {}; // Pixel filters -- Adds an effect to the canvas screen
-  //user-generated functions
+
+  // Stored Canvas Gradients
+  this.gradients = {};
+
+  // Pixel filters -- Adds an effect to the canvas screen
+  this.filters = {};
+
+  // user-generated functions
   this.onCall = {};
+
+  // Is the game loop running
   this.paused = false;
-  //this.timer = new TIMER();
-  //Canvas Display Default Classes
+
+  /**
+   * These are the classes that represent the different game object types a game entity can be
+   * @module Game Object Types
+   */
+
+  /**
+   * A Label Class for the canvas
+   *
+   * @class cLabel
+   */
   function cLabel() {
 
-    //Private Properties
+    // Default rendering properties.
     this.fillStyle = "#fff";
     this.align = "left";
     this.baseline = "middle";
     this.font = "normal 1em Georgia, 'Times New Roman', Times, serif";
-    //Public Properties
+
+    // The text to render
     this.text = "";
   }
 
+  /**
+   * fontWeight Sets or Gets the font weight on the label
+   *
+   * @method
+   * @type {Function}
+   * @return bool|string the font weight
+   */
   cLabel.prototype.fontWeight = (function (newWeight) {
-    var newFont = "";
-    if (typeof(newWeight) !== "undefined") // if the new font weight is set
-    {
-      var index = this.font.indexOf("normal"); //is fontweight normal?
-      var boldIndex = this.font.indexOf("bold"); // is fontweight bold?
-      if (index > -1) // if normal
+    // if the new font weight is set
+    if (typeof(newWeight) !== "undefined"){
+      var normalIndex = this.font.indexOf("normal");
+      var boldIndex = this.font.indexOf("bold");
+
+      if (normalIndex > -1)
       {
-        newFont = this.font.slice(0, index); //cut the font string up to the location of normal
-        newFont += newFontWeight + this.font.slice((index + 6)); //Add in new font and append rest of string after normal
-      }
-      if (boldIndex > -1); // if bold
+        // Remove "normal" from the current font and add in the new weight
+        this.font = this.font.slice(0, normalIndex) +  newWeight + this.font.slice((normalIndex + 6));
+      } else if (boldIndex > -1)
       {
-        newFont = this.font.slice(0, boldIndex); // cut font string up bold
-        newFont += newFontWeight + this.font.slice((boldIndex + 4)); // adds in new font and appends rest of string after bold
+        // Remove "bold" from the current font and add in the new weight
+        this.font = this.font.slice(0, boldIndex) + newWeight + this.font.slice((boldIndex + 4));
       }
-      this.font = newFont; // reassign the labels font
-      return (true); // returns true to verify function was success
+
+      // returns true to verify function was success
+      return (true);
     }
-    else //return the current font weight
-    {
-      if (this.font.indexOf("normal")) // if fontwieght == normal
+    //return the current font weight
+    else {
+      // if fontwieght normal
+      if (this.font.indexOf("normal"))
       {
         return ("normal");
       }
-      if (this.font.indexOf("bold")) // if fontweight == bold
+      // if fontweight bold
+      else if (this.font.indexOf("bold"))
       {
         return ("bold");
       }
     }
-    return (false); // invalid or missing fontweight
   });
 
+  /**
+   * Sets or Gets the labels font size
+   *
+   * @method
+   * @type {Function}
+   * @return bool|int the font size
+   */
   cLabel.prototype.fontSize = (function (newSize) {
-    var index = this.font.search(/\d{2}/, this.font); // search the font for a 2 digit number
-    if (typeof(newSize) != "undefined")  //if newsize is set
-    {
-      if (index >= 0) //if fontSize found
-      {
-        var newFontString = this.font.slice(0, index); // cut beginning of font up to location of font size
-        newFontString += newSize + this.font.slice((index + 2)); // appends rest of the string with new font size
-        this.font = newFontString; // updates the labels font
+    // search the font for a 2 digit number
+    var index = this.font.search(/\d{2}/, this.font);
+
+    //if newSize is set
+    if (typeof(newSize) != "undefined"){
+      //if fontSize found
+      if (index >= 0){
+        // Remove the current font size from the font and add in the new size
+        this.font = this.font.slice(0, index) + newSize + this.font.slice((index + 2));
         return (true); // returns success
       }
     }
     else {
-      var oldSize = parseInt(this.font.slice(index, index + 2)); //cuts out the current font size
-      return (oldSize) // returns the current Size
+      // returns the current Size
+      return (parseInt(this.font.slice(index, index + 2)));
     }
-    return (false); // returns failure
   });
 
+  /**
+   * Sets or Gets the font family from the label
+   * @type {Function}
+   * @method
+   * @return bool|string the Font family
+   *
+   * @todo Test this
+   */
   cLabel.prototype.fontFamily = (function (newFamily) {
-    var index = this.font.indexOf("px"); // get string up to the font family
-    index += 3; // moves pointer to beginning of font name
-    if (typeof(newFamily) !== "undefined") // if new Font Family is set
-    {
-      var resetfont = this.font.slice(0, index); //cut out the old font family
-      resetfont += newFamily + (this.font.slice((index + newFamily.length))); // put in the new font family
-      this.font = resetfont; // reset font
+
+    // get string up to the font family
+    var index = this.font.indexOf("px") + 3;
+
+    // if new Font Family is set
+    if (typeof(newFamily) !== "undefined"){
+      // reset font
+      this.font = this.font.slice(0, index) + newFamily + (this.font.slice((index + newFamily.length)));
       return (true);
     }
     else {
-      var oldFont = this.font.slice(index); // cut out the string up the expected font family
+      // Retrieve the current font from the canvas font string
+      var oldFont = this.font.slice(index);
       var trimFont = "";
-      index = oldFont.indexOf("px"); //if the current string still has a font size spec - cut it out
+      //if the current string still has a font size spec - cut it out
+      index = oldFont.indexOf("px");
       if (index) {
-        trimfont = oldFont.slice(0, index - 1);
-        trimFont += oldFont.slice(index + 2);
+        trimFont = oldFont.slice(0, index - 1) + oldFont.slice(index + 2);
       }
-      var numindex = oldFont.search(/\d{2}/, oldFont); //if the current string still has a font size - cut it out
-      if (numindex) {
-        trimfont = oldFont.slice(0, index - 1);
-        trimfont += oldFont.slice(index + 2);
+
+      //if the current string still has a font size - cut it out
+      var numIndex = oldFont.search(/\d{2}/, oldFont);
+      if (numIndex) {
+        trimFont = oldFont.slice(0, index - 1) + oldFont.slice(index + 2);
       }
-      var weightIndex = oldFont.indexOf("normal"); // cut out font weight
+
+      // cut out font weight
+      var weightIndex = oldFont.indexOf("normal");
       if (!(weightIndex)) {
         weightIndex = oldFont.indexOf("bold");
         if (weightIndex) {
-          trimfont = oldFont.slice(0, weightIndex);
-          trimfont += oldFont.slice(index + 4);
+          trimFont = oldFont.slice(0, weightIndex)+ oldFont.slice(index + 4);
         }
       }
       else {
-        trimfont = oldFont.slice(0, weightIndex);
-        trimfont += oldFont.slice(index + 6);
+        trimFont = oldFont.slice(0, weightIndex) + oldFont.slice(index + 6);
       }
       return (oldFont); // return current font name
     }
-    return (false); // return failed
   });
 
+  /**
+   * Return the clear box for a label
+   *
+   * @method
+   * @type {Function}
+   * @return object
+   */
   cLabel.prototype.clearInfo = (function (canvas) {
-    var size = this.fontSize(),
-      c = canvas.loadCanvas();
+    // Measure the current text on a hidden canvas and use those values to determine the end point of the clear box
+    var c = canvas.loadCanvas();
     c.font = this.font;
     var s1 = c.measureText(this.text);
     var s2 = c.measureText("M");
@@ -163,6 +225,12 @@ function jcHandler(init) {
     });
   });
 
+  /**
+   * Render the label on a canvas
+   *
+   * @method
+   * @type {Function}
+   */
   cLabel.prototype.render = (function (canvas) {
     if (typeof(this.text) !== "undefined") {
       canvas.drawText({
@@ -179,6 +247,11 @@ function jcHandler(init) {
     }
   });
 
+  /**
+   * A Rectangle canvas object
+   *
+   * @class cRect
+   */
   function cRect() {
     this.fromCenter = false;
     this.height = 100;
@@ -186,6 +259,13 @@ function jcHandler(init) {
     this.fillStyle = "#000000";
   }
 
+  /**
+   * Get the clear box for the rect
+   *
+   * @method
+   * @type {Function}
+   * @return object
+   */
   cRect.prototype.clearInfo = (function () {
     return ({
       x: Math.ceil(this.x - 1),
@@ -196,6 +276,12 @@ function jcHandler(init) {
     });
   });
 
+  /**
+   * Draw the rectangle on a canvas
+   *
+   * @method
+   * @type {Function}
+   */
   cRect.prototype.render = (function (canvas) {
     canvas.drawRect({
       fillStyle: this.fillStyle,
@@ -208,15 +294,26 @@ function jcHandler(init) {
     });
   });
 
+  /**
+   * A Line Canvas Object
+   *
+   * @class cLine
+   */
   function cLine() {
     this.strokeStyle = "#000000";
     this.strokeCap = "round";
     this.strokeJoin = "miter";
     this.strokeWidth = 10;
     this.rounded = false;
-    this.normalPlot;
+    this.normalPlot = [];
   }
 
+  /**
+   * Plot a line
+   *
+   * @method
+   * @type {Function}
+   */
   cLine.prototype.plot = (function (xyArray) {
     this.normalPlot = xyArray;
     for (var i = 1; i <= xyArray.length; i++) {
@@ -225,46 +322,67 @@ function jcHandler(init) {
     }
   });
 
+  /**
+   * Get the Clear Box for a line
+   *
+   * @method
+   * @type {Function}
+   */
   cLine.prototype.clearInfo = (function () {
-    var smallx = 0;
-    var smally = 0;
-    var bigx = 0;
-    var bigy = 0;
+    var smallX = 0;
+    var smallY = 0;
+    var bigX = 0;
+    var bigY = 0;
     for (var i = 0; i < this.normalPlot.length; i++) {
-      if (this.normalPlot[i].x <= smallx) {
-        smallx = this.normalPlot[i].x;
+      if (this.normalPlot[i].x <= smallX) {
+        smallX = this.normalPlot[i].x;
       }
-      if (this.normalPlot[i].y <= smallx) {
-        smallx = this.normalPlot[i].y;
+      if (this.normalPlot[i].y <= smallX) {
+        smallX = this.normalPlot[i].y;
       }
-      if (this.normalPlot[i].x >= bigx) {
-        bigx = this.normalPlot[i].x;
+      if (this.normalPlot[i].x >= bigX) {
+        bigX = this.normalPlot[i].x;
       }
-      if (this.normalPlot[i].y >= bigy) {
-        bigy = this.normalPlot[i].y;
+      if (this.normalPlot[i].y >= bigY) {
+        bigY = this.normalPlot[i].y;
       }
     }
-    var cwidth = bigx - smallx;
-    var cheight = bigy - smally;
+
     return ({
-      x: smallx, y: smally,
-      width: cwidth, width: cheight, fromCenter: false
+      x: smallX, y: smallY,
+      width:  bigX - smallX, height: bigY - smallY, fromCenter: false
     });
   });
 
+  /**
+   * Render a line on a canvas
+   *
+   * @method
+   * @type {Function}
+   */
   cLine.prototype.render = (function (canvas) {
-    var l = $.extend({}, this);
-    canvas.drawLine(l);
+    canvas.drawLine($.extend({}, this));
   });
 
+  /**
+   * An Image Canvas Object
+   *
+   * @class cImage
+   */
   function cImage() {
     this.height = 0;
     this.width = 0;
     this.fromCenter = false;
     this.source = "";
-    this.load;
+    this.load = function(){};
   }
 
+  /**
+   * Get the Clear Box for the image
+   *
+   * @method
+   * @type {Function}
+   */
   cImage.prototype.clearInfo = (function () {
     return ({
       x: Math.ceil(this.x - 1),
@@ -275,6 +393,11 @@ function jcHandler(init) {
     });
   });
 
+  /**
+   * Render the image on a canvas
+   * @type {Function}
+   * @method
+   */
   cImage.prototype.render = (function (canvas) {
     canvas.drawImage({
       source: this.source,
@@ -286,40 +409,78 @@ function jcHandler(init) {
     delete this.load;
   });
 
+  /**
+   * Create a Timer class
+   *
+   * This class keeps track of the time between animation requests and should be used to modulate the speed of simulations
+   * @constructor
+   * @class TIMER
+   */
   function TIMER() {
     this.date = new Date();
     this.delta = new Date();
   }
 
+  /**
+   * Update the times on the timer
+   *
+   * @method
+   * @type {Function}
+   */
   TIMER.prototype.update = (function () {
     this.delta = this.date;
-    var d = new Date();
-    this.date = d;
+    this.date = new Date();
   });
 
+  /**
+   * Get the current last updated time in milliseconds
+   * @type {Function}
+   * @method
+   *
+   */
   TIMER.prototype.getMS = (function () {
     return (this.date.getTime());
   });
 
+  /**
+   * Get the current last updated time in seconds
+   * @type {Function}
+   * @method
+   */
   TIMER.prototype.getS = (function () {
     return (Math.round(this.date.getTime / 1000));
   });
 
+  /**
+   * Get the time since the last update request
+   * @type {Function}
+   * @method
+   */
   TIMER.prototype.deltaTime = (function () {
     return ((this.date.getTime() - this.delta.getTime()) / 1000);
   });
 
+  /**
+   *
+   * The Sprite Canvas Object
+   *
+   * @class cSprite
+   * @param source The spritesheet the sprite comes from
+   * @param positionInfo - the breakdown of how the sprites are rendered
+   */
   function cSprite(source, positionInfo) {
     this.timer = new TIMER();
     this.fTime = 0;
     this.collides = true;
+    this.frames = [];
+    this.sprite = null;
+    this.duration = 0;
+
     if (typeof(positionInfo.sprite) !== "undefined") {
       this.sprite = source[positionInfo.sprite];
       this.spriteName = positionInfo.sprite;
-      this.duration = 0;
     }
     if (typeof(positionInfo.frames) !== "undefined") {
-      this.frames = [];
       for (var i = 0; i < positionInfo.frames.length; i++) {
         this.frames[i] = $.extend({frameName: positionInfo.frames[i]}, source[positionInfo.frames[i]]);
       }
@@ -341,6 +502,12 @@ function jcHandler(init) {
     }
   }
 
+  /**
+   * Reset the sprites time and frame time
+   *
+   * @type {Function}
+   * @method
+   */
   cSprite.prototype.init = (function () {
     var d = new Date();
     if (this.frames.length > 0) {
@@ -348,6 +515,12 @@ function jcHandler(init) {
     }
   });
 
+  /**
+   * If the frame time has expired and this is an animated sprite, move to the next frame
+   *
+   * @type {Function}
+   * @method
+   */
   cSprite.prototype.animateFrame = (function () {
     if (this.duration > 0) {
       var d = new Date();
@@ -367,6 +540,25 @@ function jcHandler(init) {
     }
   });
 
+  /**
+   * Get the sprite's clear box
+   *
+   * @type {Function}
+   * @method
+   * @return Object
+   */
+  cSprite.prototype.clearInfo = (function () {
+    return ({
+      x: Math.floor(this.x - 1), y: Math.floor(this.y),
+      height: Math.ceil(this.sprite.height), width: Math.ceil(this.sprite.width),
+      fromCenter: this.fromCenter
+    });
+  });
+
+  /**
+   * Render the sprite on a canvas
+   * @type {Function}
+   */
   cSprite.prototype.render = (function (canvas) {
     this.timer.update();
     if (this.duration > 0) {
@@ -393,14 +585,14 @@ function jcHandler(init) {
     delete this.sprite.load;
   });
 
-  cSprite.prototype.clearInfo = (function () {
-    return ({
-      x: Math.floor(this.x - 1), y: Math.floor(this.y),
-      height: Math.ceil(this.sprite.height), width: Math.ceil(this.sprite.width),
-      fromCenter: this.fromCenter
-    });
-  });
-
+  /**
+   * Boundry Box acts a collection of pixels for a given collidable object
+   *
+   * @class BOUNDRYBOX
+   * @param height
+   * @param width
+   * @constructor
+   */
   function BOUNDRYBOX(height, width) {
     this.V = []; //top and bottom y
     this.V[0] = []; //West
@@ -423,17 +615,24 @@ function jcHandler(init) {
     }
   }
 
+  /**
+   * Get the pixels that make up the edge of a mob
+   *
+   * @method
+   * @type {Function}
+   * @return Array
+   */
   BOUNDRYBOX.prototype.getEdgePixels = (function (edge, coords) { //top-left coords of mob
     var pixels = [];
     if ((edge === "N") || (edge === "S")) {
+      var y;
       if (edge === "N") {
-        var y = coords.y;
+        y = coords.y;
       }
       else {
-        var y = this.maxY + coords.y;
+        y = this.maxY + coords.y;
       }
       for (var xc = 0; xc < this.H[0].length; xc++) {
-        pixels[(xc + coords.x)];
         pixels[(xc + coords.x)] = y;
       }
     }
@@ -451,6 +650,18 @@ function jcHandler(init) {
     return (pixels);
   });
 
+  /**
+   * Create a Mob Canvas class
+   *
+   * Mobs are Movable Objects. Sprites with animations based on their movement direction and with the capability to move
+   *  built in
+   *
+   * @param spritesheet - The Spritesheet the mob sprites come from
+   * @param directions - A map of the directions and which sprites on the spritesheet match those directions
+   * @class
+   * @constructor
+   * @todo Sanity check
+   */
   function cMob(spritesheet, directions) {
     this.directionAnimations = {};
     this.spritesheet = spritesheet;
@@ -463,29 +674,55 @@ function jcHandler(init) {
     this.width = 50;
     this.animationSpeed = 500;
     this.currentFrame = 0;
+    // Animation Timer
     this.atimer = new TIMER();
+    // Movement Timer
     this.mtimer = new TIMER();
     this.fTime = 0;
     this.hasGravity = false;
     this.collides = true;
+
     for (var direction in directions) {
       this.directionAnimations[direction] = [];
       for (var i = 0; i < directions[direction].length; i++) {
         this.directionAnimations[direction][i] = directions[direction][i];
       }
     }
-    ;
   }
 
+  /**
+   * Add a compass direction to the mob
+   *
+   * @type {Function}
+   * @method
+   * @param direction string - Which compass direction
+   * @param spriteNames Array - The names of sprites on the spritesheet to animate through
+   */
   cMob.prototype.addDirection = (function (direction, spriteNames) {
     this.directionAnimations[direction] = [];
     for (var i = 0; i < spriteNames.length; i++) {
       this.directionAnimations[direction][i] = this.spritesheet[spriteNames[i]];
     }
   });
+
+  /**
+   * Set the mob as collidable
+   * @type {Function}
+   */
   cMob.prototype.setCollidable = (function () {
     this.boundryBox = new BOUNDRYBOX(this.height, this.width);
   });
+
+  /**
+   * Set the mob's movement direction.
+   * This changes the mob's animation sprites to match those for the provided direction
+   *
+   * @type {Function}
+   * @param direction string - The direction to move in
+   * @param xSpeed int - The movement speed in X
+   * @param ySpeed int - The movement speed in Y
+   * @method
+   */
   cMob.prototype.setDirection = (function (direction, xSpeed, ySpeed) {
     var d = new Date();
     this.fTime = d.getTime() + (this.animationSpeed / this.directionAnimations[direction].length);
@@ -493,6 +730,12 @@ function jcHandler(init) {
     this.xSpeed = xSpeed;
     this.ySpeed = ySpeed;
   });
+
+  /**
+   * Update the Mob's rendering sprite
+   * @type {Function}
+   * @method
+   */
   cMob.prototype.animateDirection = (function () {
     var d = new Date();
     if (this.directionAnimations[this.direction].length > 0) {
@@ -508,6 +751,14 @@ function jcHandler(init) {
       this.currentFrame++;
     }
   });
+
+  /**
+   * Get the Mob's clear box
+   *
+   * @type {Function}
+   * @method
+   * @return Object
+   */
   cMob.prototype.clearInfo = (function () {
     return ({
       x: Math.ceil(this.x - 1), y: Math.ceil(this.y),
@@ -515,6 +766,14 @@ function jcHandler(init) {
       fromCenter: this.fromCenter
     });
   });
+
+  /**
+   * Render the mob on a canvas
+   *
+   * @type {Function}
+   * @method
+   * @param canvas jCanvas - A jCanvas wrapped canvas
+   */
   cMob.prototype.render = (function (canvas) {
     this.atimer.update();
     this.mtimer.update();
@@ -541,7 +800,13 @@ function jcHandler(init) {
     delete this.load;
   });
 
-  cMob.prototype.move = (function (canvas) {
+  /**
+   * Move the mob by it's speed
+   *
+   * @type {Function}
+   * @method
+   */
+  cMob.prototype.move = (function () {
     this.clearLast = this.clearInfo();
     this.lastX = this.x;
     this.lastY = this.y;
@@ -553,14 +818,31 @@ function jcHandler(init) {
     }
   });
 
+  /**
+   * Move in the Y axis
+   *
+   * @method
+   * @type {Function}
+   */
   cMob.prototype.moveY = (function () {
     this.y += this.ySpeed * this.mtimer.deltaTime();
   });
 
+  /**
+   * Move in the X axis
+   *
+   * @method
+   * @type {Function}
+   */
   cMob.prototype.moveX = (function () {
     this.x += this.xSpeed * this.mtimer.deltaTime();
   });
 
+  /**
+   * Get the pixels along the mobs boundry edge
+   *
+   * @type {Function}
+   */
   cMob.prototype.boundryEdgePixels = (function () {
     var pixels = [];
     if ((this.x + this.xSpeed) > this.x) {
@@ -581,6 +863,12 @@ function jcHandler(init) {
     return (pixels);
   });
 
+  /**
+   * A Tilemap Canvas Object
+   *
+   * @param tilesheet The string pointing to the spritesheet with it's tile images.
+   * @class cTilemap
+   */
   function cTilemap(tilesheet) {
     this.tilesheet = typeof(tilesheet) !== "undefined" ? tilesheet : "rect";
     this.tile = {height: 32, width: 32};
@@ -590,10 +878,17 @@ function jcHandler(init) {
     this.stopsMovement = true;
     this.scroll = {
       x: 0, y: 0
-    }
+    };
     this.isDrawn = false;
   }
 
+  /**
+   * Render the tiles on a canvas
+   *
+   * @type {Function}
+   * @method
+   * @param canvas jCanvas a jCanvas wrapped canvas
+   */
   cTilemap.prototype.render = (function (canvas) {
     var startRow = Math.floor(scroll.x / tile.width);
     var startCol = Math.floor(scroll.y / tile.height);
@@ -638,16 +933,38 @@ function jcHandler(init) {
     }
   });
 
+  /**
+   * Scroll a tilemap along a vector then re-render it
+   *
+   * @method
+   * @type {Function}
+   * @param vector Object the x and y direction
+   * @param canvas jCanvas jCanvas wrapped canvas
+   */
   cTilemap.prototype.scroll = (function (vector, canvas) {
     this.scroll.x += vector.x;
     this.scroll.y += vector.y;
     this.render(canvas);
   });
 
+  /**
+   * Clear the tilemap from the canvas
+   *
+   * @type {Function}
+   * @method
+   */
   cTilemap.prototype.clear = (function (canvas) {
     canvas.clearCanvas();
   });
 
+  /**
+   * Convert a pixel position to a tile
+   *
+   * @type {Function}
+   * @method
+   * @param coord Object the x and y position of the click
+   * @return Object the tile position
+   */
   cTilemap.prototype.pixelToTile = (function (coord) {
     var row = Math.floor(coord.x / tile.width);
     var col = Math.floor(coord.y / tile.height);
@@ -659,21 +976,29 @@ function jcHandler(init) {
     return (false);
   });
 
+  /**
+   * Placeholder for doing something on a click
+   *
+   * @type {Function}
+   * @method
+   * @param coord Object the x and y position
+   */
   cTilemap.prototype.onClick = (function (coord) {
 
     //get col and row from pixel
     //call this.tileClick(col,row)
   });
-  //Prototyped Functions
+
+
   //////////////////////////
   // CANVAS FUNCTIONS BEGIN
   //////////////////////////
-  /*
-   * Name: maximize
-   * Params: modifier = 100
-   * Description: When run on a canvas element, it changes the canvas size to
-   * the size of the parent element modified by the modifier which defaults at 100%
-   *
+
+  /**
+   * Maximizes the game canvases to their parent container
+   * @type {Function}
+   * @param modifier int The percentage of the parent container to maximize to
+   * @method
    */
   this.maximize = (function (modifier) {
     modifier = typeof(modifier) != 'undefined' ? modifier / 100 : 1; // if modifier is not set, set it to 100%
@@ -685,12 +1010,14 @@ function jcHandler(init) {
       this.jcArray[i].attr("height", fHeight).attr("width", fWidth);
     }
   });
-  /*
-   * Name: addMap
-   * Params: screenMap - array of json/objects
-   * Description: Applies an array of objects to the canvas, creating manipulatable positional
-   * information.  Controls the display and animation of canvas objects.
-   * Applies default settings to missing settings
+
+  /**
+   * Adds a Map of game objects to the game engine
+   *
+   * @type {Function}
+   * @method
+   * @param screenMap Object The map of game objects
+   * @param doLoop bool Start the game after adding the game objects
    */
   this.addMap = (function (screenMap, doLoop) {
 
@@ -698,28 +1025,32 @@ function jcHandler(init) {
     var defaultPositionInfo = {
       z_index: this.z_index.length
     };
+
     var ziIndex = [];
-    for (var i = 0; i < screenMap.length; i++) // for each object in the screenMap
-    {
-      var newPositionInfo = screenMap[i]; // extract the position info from screenMap which is translated from a string to an object
+    for (var i = 0; i < screenMap.length; i++){
+      // extract the position info from screenMap which is translated from a string to an object
+      var newPositionInfo = screenMap[i];
       var positionHead = {  // Create a header for the position
         "name": (typeof(newPositionInfo.name) !== "undefined" ? newPositionInfo.name : $.fn.randjcHName()),
         "type": newPositionInfo.type
-      }
+      };
       // Remove header from the info
-      // Place the object header in the this.z_index at either a specified position
+      // Place the object header in the this.z_index at a specified position
       // Defaults at the current top level of the z_index
       // jcHandler position management tags are appended to the object
       var positionInfo = $.extend(true, {}, defaultPositionInfo, newPositionInfo);
-      delete newPositionInfo;
+
+      // If the z_index for the given position doesn't exist, create it
       if (typeof(this.z_index[positionInfo.z_index]) === "undefined") {
         this.z_index[positionInfo.z_index] = [];
         if (typeof(this.jcArray[positionInfo.z_index]) === "undefined") this.addZLayer(positionInfo.z_index);
       }
+
       if (typeof(ziIndex[positionInfo.z_index]) === "undefined") {
         ziIndex[positionInfo.z_index] = this.z_index[positionInfo.z_index].length;
       }
-      //according to jsPerf, switch is terribly inefficient (88% slower).  Use if-elseif instead
+      // according to jsPerf, switch is terribly inefficient (88% slower).  Use if-elseif instead
+      // Create the canvas object from the given entity type
       if (positionHead.type === "label") {
         var label = $.extend(true, {}, new cLabel, positionInfo);
         positionHead.clearInfo = label.clearInfo(this.jcArray[positionInfo.z_index]);
@@ -774,9 +1105,11 @@ function jcHandler(init) {
     }
   });
 
-  /*
-   * Name: addZLayer
-   * Description: adds a zLayer Canvas to the jcH for drawing zlayers on, delegates the onclick event
+  /**
+   * Adds a zLayer Canvas to the jcH for drawing zlayers on, delegates the onclick event
+   *
+   * @method
+   * @param z int The z index
    */
   this.addZLayer = (function (z) {
     var tag = "zLayer" + z;
@@ -789,9 +1122,10 @@ function jcHandler(init) {
     this.jcArray[z] = $(tag);
   });
 
-  /*
-   * Name: drawCanvas
-   * Description: Iterates through the z_index, drawing the stored objects
+  /**
+   * Iterates through the z_index, drawing the stored objects
+   *
+   * @method
    */
   this.drawCanvas = (function () {
     for (var z = 0; z < this.z_index.length; z++) // for each spot in the z_index, starting at the beginning
@@ -803,9 +1137,13 @@ function jcHandler(init) {
       }
     }
   });
-  /*
-   * Name: drawPosition
-   * Description: Takes an object and draws it to the appropriate canvas
+
+  /**
+   * Takes an object and draws it to the appropriate canvas
+   *
+   * @method
+   * @param Z int the z index being rendered
+   * @param zPositions array The objects on that z-index
    */
   this.drawZ = (function (Z, zPositions) {
     for (var i = 0; i < zPositions.length; i++) // for each position in the z_index
@@ -845,10 +1183,12 @@ function jcHandler(init) {
     }
   });
 
-  /*
-   * Name: position
-   * Params: positionName
-   * Description: Returns a specific position from the canvas
+  /**
+   * Returns a specific position from the canvas
+   *
+   * @param positionNames array the names of positions to get
+   * @method
+   * @return Array|bool bool if no positions found for each name
    *
    */
   this.getPositions = (function (positionNames) {
@@ -867,12 +1207,13 @@ function jcHandler(init) {
     else {
       return (found);
     }
-    return (false);
   });
 
-  /* makePositionsCollidable
-   * params: positionNames Array
-   * description: sets sprites and mobs to be collidable
+  /**
+   * Sets positions to be collidable
+   *
+   * @param: positionNames Array The names of positions to make collidable
+   * @method
    */
   this.makePositionsCollidable = (function (positionNames) {
     for (var i = 0; i < positionNames.length; i++) {
@@ -882,11 +1223,15 @@ function jcHandler(init) {
     }
   });
 
-  /*
-   * Name: collideOrPass
-   * Params: positionName, {x, y}, bothCollisions
-   * Description: triggers collision and returns false if colliding object stops movement or returns true if can move through.
-   * if bothCollisions is true, will fire collision on both objects.
+  /**
+   * triggers collision and returns false if colliding object stops movement or returns true if can move through.
+   *  if bothCollisions is true, will fire collision on both objects.
+   *
+   * @type {Function}
+   * @method
+   * @param collider Object the object doing the colliding
+   * @param trigger bool whether or not to trigger the collision method
+   * @param bothCollisions bool whether or not to fire the collision method on both colliding objects
    */
   this.collideOrPass = (function (collider, trigger, bothCollisions) {
 
@@ -909,8 +1254,8 @@ function jcHandler(init) {
       }
     }
     var coords = {};
-    for (var i = 0; i < cPositionsFound.length; i++) {
-      var bang = this.positions[cPositionsFound[i]];
+    for (var z = 0; z < cPositionsFound.length; z++) {
+      var bang = this.positions[cPositionsFound[z]];
       if (typeof(trigger) === "undefined") {
         trigger = true;
       }
@@ -920,7 +1265,7 @@ function jcHandler(init) {
             collider.onCollide(bang, coords);
           }
           if ((bothCollisions) && (typeof(bang.onCollide) === "function")) {
-            bang.onCollide(this.positions[cPositionsFound[i]], coords);
+            bang.onCollide(this.positions[cPositionsFound[z]], coords);
           }
         }
         if (bang.stopsMovement) {
@@ -937,10 +1282,11 @@ function jcHandler(init) {
     return (true);
   });
 
-  /*
-   * Name: collides
-   * Describes: Checks if a position is collidable
-   * Params: coords
+  /**
+   * Checks if a position is collidable
+   *
+   * @param coords Object the X Y Coordinate of a position
+   * @method
    */
   this.collides = (function (coords) {
     var posArray = this.positionsAtPixel(positionEdge[i].x, positionEdge[i].y);
@@ -950,8 +1296,9 @@ function jcHandler(init) {
     return (false);
   });
 
-  /* Name: excludeZIndex
-   * Description: Sets a z_index to be excluded from position checks.  (For example, score values, background layers)
+  /**
+   * Sets a z_index to be excluded from position checks.  (For example, score values, background layers)
+   * @method
    */
   this.excludeZIndex = (function (zArray, undo) {
     for (var i = 0; i < zArray.length; i++) {
@@ -964,9 +1311,16 @@ function jcHandler(init) {
     }
   });
 
-  /* Name: positionAtPixel
-   * Description: returns an array of position headers at a particular pixel across the z_indexes
+  /**
+   * Returns an array of position headers at a particular pixel across the z_indexes
    *
+   * ignores excluded z indexes
+   *
+   * @method
+   * @param coords Object the X Y coordinate of the position
+   * @param w int the width of the square to check against
+   * @param h int the height of the square to check against
+   * @return Array|bool the Objects at that position or false if no positions found
    */
   this.positionsAtPixel = (function (coords, w, h) {
     var positions = [];
@@ -980,22 +1334,22 @@ function jcHandler(init) {
             var y = Math.ceil(box.y);
             var width = Math.ceil(box.width);
             var height = Math.ceil(box.height);
-            var leftboundry = x;
-            var rightboundry = x;
-            var topboundry = y;
-            var bottomboundry = y;
+            var leftBoundry = x;
+            var rightBoundry = x;
+            var topBoundry = y;
+            var bottomBoundry = y;
             if (box.fromCenter) {
-              leftboundry -= (0.5 * width);
-              rightboundry += (0.5 * width);
-              topboundry -= (0.5 * height);
-              bottomboundry += (0.5 * height);
+              leftBoundry -= (0.5 * width);
+              rightBoundry += (0.5 * width);
+              topBoundry -= (0.5 * height);
+              bottomBoundry += (0.5 * height);
             }
             else {
-              rightboundry += width;
-              bottomboundry += height;
+              rightBoundry += width;
+              bottomBoundry += height;
             }
-            if ((coords.x >= leftboundry) && (coords.x <= rightboundry)
-              && ((coords.y >= topboundry) && (coords.y <= bottomboundry))) {
+            if ((coords.x >= leftBoundry) && (coords.x <= rightBoundry)
+              && ((coords.y >= topBoundry) && (coords.y <= bottomBoundry))) {
               positions.push(positionName)
               break;
             }
@@ -1011,10 +1365,11 @@ function jcHandler(init) {
     }
   });
 
-  /*
-   * Name: removePosition
-   * Params: positionName
-   * Description: Removes a specific position from the canvas
+  /**
+   * Removes a specific position from the canvas
+   *
+   * @method
+   * @param positionName string the position name to remove
    */
   this.removePosition = (function (positionName) {
     if ((positionName != "") && (typeof(positionName) != "undefined")) // if positionName
@@ -1045,9 +1400,11 @@ function jcHandler(init) {
     }
   });
 
-  /*
-   * Name: removeZLayer
-   * Description: removes a zLayer Canvas
+  /**
+   * Removes a zLayer Canvas
+   *
+   * @method
+   * @param z int the z-index to remove
    */
   this.removeZLayer = (function (z) {
     var tag = "#zLayer" + z;
@@ -1056,10 +1413,11 @@ function jcHandler(init) {
     this.jcArray.splice(z, 1);
   });
 
-  /*
-   * Name: clearPositions
-   * Params: labelName
-   * Description: Removes a specific label from the canvas
+  /**
+   * Removes all positions from the game
+   *
+   * @param f A callback function to run when removal is complete
+   * @method
    */
   this.clearPositions = (function (f) {
     for (z = this.z_index.length - 1; z >= 0; z--) {
@@ -1072,9 +1430,11 @@ function jcHandler(init) {
     }
   });
 
-  /* Name: checkClickMap
-   * Params: Click Event
-   * Description: Checks the position map for a 'hit' from a click event
+  /**
+   * A click event has occurred, check the click map for a hit
+   *
+   * @param e ClickEvent The click event
+   * @method
    */
   this.checkClickMap = (function (e) {
     var offset = $(this).offset();
@@ -1095,9 +1455,14 @@ function jcHandler(init) {
     }
   });
 
-  /* Name: addGradient
-   * Params: gradientName, colorObject1, colorObject2
-   * Description: Adds a gradient to list of gradients
+  /**
+   * Adds a gradient to list of gradients
+   *
+   * @type {Function}
+   * @param gradientName string The name of the gradient for later lookup
+   * @param color1 Object the x y and color of the start position
+   * @param color2 Object the x y and color of the stop position
+   * @method
    */
   this.addGradient = (function (gradientName, color1, color2) {
     var grad = {
@@ -1105,21 +1470,26 @@ function jcHandler(init) {
       x2: color2.x, y2: color2.y,
       c1: color1.color, s1: color1.s,
       c2: color2.color, s2: color2.s
-    }
+    };
     this.gradients[gradientName] = this.jcArray[0].gradient(grad);
   });
 
-  /* Name: removeGradient
-   * Params: gradientName
-   * Description: Adds a gradient to list of gradients
+  /**
+   * Adds a gradient to list of gradients
+   *
+   * @param gradientName string the name of the gradient to remove
+   * @method
    */
   this.removeGradient = (function (gradientName) {
     delete this.gradients.gradientName;
   });
 
-  /* Name: scrollTileMap
-   * Params: tileMapName, vector {x: y:}
-   * Description: scrolls a tilemap by a given amount
+  /**
+   * Scrolls a tilemap by a given vector amount
+   *
+   * @param positionName string the name of the tilemap to scroll
+   * @param vector Object {x: y:}
+   * @method
    */
   this.scrollTileMap = (function (positionName, vector) {
     this.positions[positionName].scroll(vector);
@@ -1134,16 +1504,23 @@ function jcHandler(init) {
     this.positions[positionName].render(this.jcArray[this.positions[positionName].z_index]);
   });
 
-  /* Name: applyGradient
-   * Params: positionName, gradientName
-   * Description: applies an active gradient to a position
+  /**
+   * Applies a stored gradient against a position
+   *
+   * @param positionName string The name of the position to gradient
+   * @param gradientName string the name of the gradient to apply
+   * @method
    */
   this.applyGradient = (function (positionName, gradientName) {
     this.positions[positionName].fillStyle = this.gradients[gradientName];
   });
 
-  /* Name: updatePosition
-   * Description: updates a position with new information
+  /**
+   * Updates a position with new information
+   *
+   * @param positionName string the name of the position to update
+   * @param newInfo Object the new data to apply to the position
+   * @method
    */
   this.updatePosition = (function (positionName, newInfo) {
     var type = "", _z, _i;
@@ -1163,15 +1540,27 @@ function jcHandler(init) {
     $.extend(true, this.positions[positionName], newInfo);
   });
 
-  /*Name: addSpritesheet
-   *Params: object {spritesheet url, array of sprite positions}
+  /**
+   * Adds a spritesheet to the game engine
+   *
+   * @param sprtieSheet string the image name of the spriteSheet relative to the imagePath property
+   * @param subSprites Array Collection of sprite location and names on the sheet
+   * @method
    */
   this.addSpritesheet = (function (spriteSheet, subSprites) {
-    var imgpath = this.imagePath;
-    var sheet = this.processSpritesheet(this.imagePath, spriteSheet, subSprites);
-    this.spritesheets[spriteSheet.name] = sheet;
+    this.spritesheets[spriteSheet.name] = this.processSpritesheet(this.imagePath, spriteSheet, subSprites);
   });
 
+  /**
+   * Converts the spritesheet into images and data for later use
+   *
+   * @type {Function}
+   * @method
+   * @param imagePath string the path to the image from root
+   * @param spritesheet Array the array of sprites on a sheet
+   * @param subsprites Array the array of sprite details on a sheet
+   * @return Object The spritesheet with sprites attached as an object
+   */
   this.processSpritesheet = (function (imagePath, spritesheet, subsprites) {
     $.each(subsprites, function (spriteName, subSpriteInfo) {
       if (typeof(spritesheet.height) !== "undefined") {
@@ -1185,14 +1574,15 @@ function jcHandler(init) {
       subSpriteInfo.cropFromCenter = subSpriteInfo.cropFromCenter || false;
       subSpriteInfo.height = subSpriteInfo.height || 50;
       subSpriteInfo.width = subSpriteInfo.width || 50;
-      var sprite = $.extend(true, {}, {source: imagePath + spritesheet.source}, subSpriteInfo);
-      spritesheet[spriteName] = sprite;
+      spritesheet[spriteName] = $.extend(true, {}, {source: imagePath + spritesheet.source}, subSpriteInfo);
     });
     return (spritesheet);
   });
 
-  /* Name: LOOP
-   * Description: A default drawing function which draws the objects on the canvas at the currently set fps
+  /**
+   *  A default drawing function which draws the objects on the canvas at the currently set fps
+   *
+   *  @method
    */
   this.LOOP = (function () {
     var self = this;
@@ -1204,8 +1594,10 @@ function jcHandler(init) {
     }
   });
 
-  /* Name: PAUSE
-   * Description: A default drawing function which draws the objects on the canvas at the currently set fps
+  /**
+   * A default drawing function which draws the objects on the canvas at the currently set fps
+   *
+   * @method
    */
   this.PAUSE = (function () {
     if (this.paused === false) {
@@ -1220,12 +1612,15 @@ function jcHandler(init) {
 ///////////////////////
 //   jQuery Plugins  //
 ///////////////////////
-/* Name: attachjcHandler
 
- * Params: init (object)
+/**
+ * @module jQuery Plugins
+ */
 
- * Description: creates a new jcHandler and attaches it to a canvas.
-
+/**
+ * creates a new jcHandler and attaches it to a canvas.
+ *
+ * @param init object the constructor needs for jcHandler
  */
 (function ($) {
   $.fn.attachjcHandler = (function (init) {
@@ -1240,10 +1635,15 @@ function jcHandler(init) {
   });
 })(jQuery);
 
-/*Name: atPixel
- *Params: canvas, x, y, t
- *Description: Returns pixel information for a canvas at a specified location
+/**
+ * If there's something at a given pixel for a canvas at a specified location
  * if t is true, returns true the pixel is transparent or false if it is not
+ *
+ * @param canvas jCanvas the canvas to check
+ * @param x int the X coordinate to check
+ * @param y int the Y coordinate to check
+ * @param t
+ *
  */
 (function ($) {
   $.fn.atPixel = (function (x, y, w, h, t) {
@@ -1266,6 +1666,12 @@ function jcHandler(init) {
   });
 })(jQuery);
 
+/**
+ * Copies the contents of a canvas to another canvas
+ *
+ * @param destination jCanvas The destination canvas
+ * @param destOptions Object the options for copying
+ */
 (function ($) {
   $.fn.copyCanvas = (function (destination, destOptions) {
     var c = $(this).loadCanvas();
@@ -1283,9 +1689,10 @@ function jcHandler(init) {
   });
 })(jQuery);
 
-/* Name: cleanArray
- * Params: array
- * Description: removes undefined indexes from an array
+/**
+ * Removes undefined indexes from an array
+ *
+ * @param cleanMe Array the array to cleanup
  */
 (function ($) {
   $.fn.cleanArray = (function (cleanMe) {
@@ -1299,8 +1706,8 @@ function jcHandler(init) {
   });
 })(jQuery);
 
-/* Name: randName
- * Description: Generates a random name for a canvas object
+/**
+ * Generates a random name for a canvas object
  */
 (function ($) {
   $.fn.randjcHName = (function () {
@@ -1324,8 +1731,9 @@ function jcHandler(init) {
   });
 })(jQuery);
 
-//Name: jsonToMap
-//Description: translates an array of json objects into a an array of objects
+/**
+ * Converts a json encoded screen map to a screen map appropriate for the game
+ */
 (function ($) {
   $.fn.parsejArray = (function (screenMap) {
     if (typeof(screenMap) === "string") {
