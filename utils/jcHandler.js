@@ -1696,7 +1696,7 @@ function jcHandler(init) {
  */
 (function ($) {
   $.fn.cleanArray = (function (cleanMe) {
-    var cleaner = new Array();
+    var cleaner = [];
     for (var i = 0; i < cleanMe.length; i++) {
       if (typeof(cleanMe[i]) !== "undefined") {
         cleaner.push(cleanMe[i]);
