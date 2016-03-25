@@ -16,7 +16,8 @@
     "grunt-bower-concat": "^1.0.0",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^1.0.1",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-shell": "^1.2.1"
   },
   "author": "steven.chennault@pcc.edu",
   "private": true

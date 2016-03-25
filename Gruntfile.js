@@ -5,6 +5,18 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     app: "app",
     plugins: "plugins",
+    shell: {
+      installLibrary: {
+        command: function(lib){
+          return "bower install " + lib + ' -S';
+        }
+      },
+      updateLibrary: {
+        command: function(lib){
+          return "bower update " + lib;
+        }
+      }
+    },
     bower_concat: {
       all:{
         dest: 'js/lib.js'
@@ -40,11 +52,22 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-bower-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-shell');
 
   // Default task(s).
   grunt.registerTask('default', ['watch']);
 
   grunt.registerTask('buildlib', ['bower_concat','uglify:libraries']);
+
+  grunt.registerTask('installLibrary', function(lib){
+    grunt.task.run('shell:installLibrary:'+lib);
+    grunt.task.run('buildlib');
+  });
+
+  grunt.registerTask('updateLibrary', function(lib){
+    grunt.task.run('shell:updateLibrary:'+lib);
+    grunt.task.run('buildlib');
+  });
 
   //grunt.registerTask('compile', ['jshint', 'uglify']);
 
