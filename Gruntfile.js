@@ -4,7 +4,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     app: "app",
-    plugins: "plugins",
+    cengine: 'app/cengine',
+    plugins: "app/jqueryPlugins",
     shell: {
       installLibrary: {
         command: function(lib){
@@ -31,17 +32,44 @@ module.exports = function(grunt) {
         files: {
           'js/lib.min.js':'js/lib.js'
         }
+      },
+      cengine: {
+        options: {
+          mangle: true,
+          compress: true,
+          screwIE8: true,
+          sourceMap: true,
+          quoteStyle: 3
+        },
+        files: {
+          'js/cengine.min.js': ['<%= cengine %>/**/*.js']
+        }
+      },
+      jqPlugins: {
+        options: {
+          mangle: true,
+          compress: true,
+          screwIE8: true,
+          sourceMap: true
+        },
+        files: {
+          'js/plugins.min.js': ['<%= plugins %>/**/*.js']
+        }
       }
+    },
+    jshint: {
+      cengine: ['<%= cengine %>'],
+      plugins: ['<%= plugins %>']
     },
     watch: {
       options: {
         livereload:{
           options: {livereload: true},
-          files: ["<%= app %>", 'index.html', 'app/**/*.html']
+          files: ["<%= app %>/**/*", 'index.html']
         }
       },
       lintAndCompile: {
-        files: ['<%= app %>/**/*','<%= plugins %>/**/*'],
+        files: ['<%= cengine %>/**/*','<%= plugins %>/**/*'],
         tasks: ['jshint', 'uglify']
       }
     }
