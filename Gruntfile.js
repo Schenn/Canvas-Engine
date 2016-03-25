@@ -42,7 +42,7 @@ module.exports = function(grunt) {
           quoteStyle: 3
         },
         files: {
-          'js/cengine.min.js': ['<%= cengine %>/**/*.js']
+          'js/cengine.min.js': ['<%= cengine %>/entities/*.js','<%= cengine %>/*.js' ]
         }
       },
       jqPlugins: {
@@ -73,7 +73,6 @@ module.exports = function(grunt) {
         tasks: ['jshint', 'uglify']
       }
     }
-
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -97,7 +96,7 @@ module.exports = function(grunt) {
     grunt.task.run('buildlib');
   });
 
-  //grunt.registerTask('compile', ['jshint', 'uglify']);
+  grunt.registerTask('compile', ['jshint', 'uglify:jqPlugins', 'uglify:cengine']);
 
   grunt.event.on('lintAndCompile', function(action, filepath) {
     grunt.config('jshint.compiledJS.src', filepath);
