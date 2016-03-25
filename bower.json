@@ -1,0 +1,27 @@
+{
+  "name": "Canvas-Engine",
+  "homepage": "https://github.com/Schenn/Canvas-Engine",
+  "authors": [
+    "Steven Chennault <schenn@gmail.com>"
+  ],
+  "description": "A system for managing objects in a canvas screen",
+  "main": "",
+  "moduleType": [],
+  "keywords": [
+    "Game",
+    "Development",
+    "Canvas",
+    "Animation",
+    "Web",
+    "Games"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
