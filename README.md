@@ -11,7 +11,7 @@ run bower install to install the dependencies.
 run grunt compile to compile out the dependencies and primary files.
 
 To run the project, 
-you will need to include plugins.min.js and cengine.min.js to use the cengine.
+include a src link to cengine.min.js, then plugins.min.js
 
 To add a bower library, run grunt installLibrary libraryName. This will 
 recompile the dependencies file after installing the new library.
