@@ -42,7 +42,7 @@ module.exports = function(grunt) {
           quoteStyle: 3
         },
         files: {
-          'js/cengine.min.js': ['<%= cengine %>/entities/*.js','<%= cengine %>/*.js' ]
+          'js/cengine.min.js': ['<%= cengine %>/jqueryPlugins/**/*.js','<%= cengine %>/utilities/*.js','<%= cengine %>/components/*.js','<%= cengine %>/entities/*.js','<%= cengine %>/*.js' ]
         }
       },
       jqPlugins: {
@@ -65,11 +65,11 @@ module.exports = function(grunt) {
       options: {
         livereload:{
           options: {livereload: true},
-          files: ["<%= app %>/**/*", 'index.html']
+          files: ["<%= app %>/**/*", 'index.html', 'js/*', 'Gruntfile.js']
         }
       },
       lintAndCompile: {
-        files: ['<%= cengine %>/**/*','<%= plugins %>/**/*'],
+        files: ['<%= app %>/**/*'],
         tasks: ['jshint', 'uglify']
       }
     }
