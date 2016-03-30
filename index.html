@@ -12,17 +12,22 @@ canvas {
 	left:0;
 }
 </style>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="utils/jcanvas.js"></script>
-<script src="utils/jcHandler.js"></script>
+<script src="js/lib.min.js"></script>
+<script src="js/cengine.min.js"></script>
+  <!-- <script src="utils/jcanvas.js"></script> -->
+  <!-- <script src="utils/jcHandler.js"></script> -->
 <script src="js/tictactoe.js"></script>
-<script>
-$('document').ready(function(){ tictactoe.start()});
-</script>
+  <script>
+    $(function(){
+      window.tictactoe.start();
+    });
+
+  </script>
 </head>
 <body>
 <div id="wrap">
 <canvas id="game"></canvas>
 </div>
+<script src="//localhost:35729/livereload.js"></script>
 </body>
 </html>
