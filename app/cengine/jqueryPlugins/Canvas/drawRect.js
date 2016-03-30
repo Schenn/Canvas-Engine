@@ -11,6 +11,7 @@ $.fn.drawRect = function(args) {
   for (e=0; e<this.length; e+=1) {
     if (!this[e].getContext) {continue;}
     ctx = this[e].getContext('2d');
+    $(this).setCanvasDefaults(params);
     window.utilities.positionShape(ctx, params, params.width, params.height);
     ctx.beginPath();
 

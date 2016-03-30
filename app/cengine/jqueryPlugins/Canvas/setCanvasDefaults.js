@@ -3,7 +3,7 @@
  */
 (function($){
   $.fn.setCanvasDefaults = function(params){
-    var ctx = this.getContext('2d');
+    var ctx = this[0].getContext('2d');
     ctx.fillStyle = params.fillStyle;
     ctx.strokeStyle = params.strokeStyle;
     ctx.lineWidth = params.strokeWidth;

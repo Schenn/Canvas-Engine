@@ -8,6 +8,7 @@ $.fn.drawLine = function(args) {
 
   for (e=0; e<this.length; e+=1) {
     if (!this[e].getContext) {continue;}
+    $(this).setCanvasDefaults(params);
     ctx = this[e].getContext('2d');
 
     // Draw each point

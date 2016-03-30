@@ -5,7 +5,7 @@
 $.fn.createGradient = function(args) {
   if (!this[0].getContext) {return null;}
   var ctx = this[0].getContext('2d'),
-    params = merge(new Prefs(), args),
+    params = $.extend({}, args),
     gradient, percent,
     stops = 0,
     i = 1;

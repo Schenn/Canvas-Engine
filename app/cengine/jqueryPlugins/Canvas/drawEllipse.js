@@ -8,6 +8,7 @@ $.fn.drawEllipse = function(args) {
 
   for (e=0; e<this.length; e+=1) {
     if (!this[e].getContext) {continue;}
+    $(this).setCanvasDefaults(params);
     ctx = this[e].getContext('2d');
     window.utilities.positionShape(ctx, params, params.width, params.height);
 

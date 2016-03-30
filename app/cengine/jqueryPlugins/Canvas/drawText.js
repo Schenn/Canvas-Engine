@@ -4,12 +4,11 @@
 (function($) {
   // Draw text
   $.fn.drawText = function (args) {
-    var ctx, e, params = merge(new Prefs(), args);
+    var ctx, e, params = $.extend({}, args);
 
     for (e = 0; e < this.length; e += 1) {
-      if (!this[e].getContext) {
-        continue;
-      }
+      if (!this[e].getContext) { continue; }
+      $(this).setCanvasDefaults(params);
       ctx = this[e].getContext('2d');
 
       // Set text-specific properties
