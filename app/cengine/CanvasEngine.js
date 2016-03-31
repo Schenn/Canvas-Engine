@@ -38,6 +38,7 @@ var CanvasEngine = function(init){
   this.filters = {};
   this.pattens = {};
 
+
 };
 
 /**
@@ -62,56 +63,8 @@ CanvasEngine.prototype.maximize = function(modifier){
  */
 CanvasEngine.prototype.addMap = function(sceneMap, start){
 
-  var self = this;
-
   // If no z index is provided, add to the top
   var defaultPositionInfo = {
-    align: 'center',
-    angle: 0,
-    baseline: 'middle',
-    ccw: false,
-    closed: false,
-    compositing: 'source-over',
-    cornerRadius: 0,
-    cropFromCenter: true,
-    end: 360,
-    fromCenter: false,
-    height: 0,
-    inDegrees: true,
-    load: null,
-    mask: false,
-    opacity: 1,
-    projection: 0,
-    r1: null,
-    r2: null,
-    radius: 0,
-    repeat: 'repeat',
-    rounded: false,
-    scaleX: 1,
-    scaleY: 1,
-    shadowBlur: 3,
-    shadowColor: 'transparent',
-    shadowX: 0,
-    shadowY: 0,
-    sHeight: 0,
-    sides: 3,
-    source: '',
-    start: 0,
-    strokeCap: 'butt',
-    strokeJoin: 'miter',
-    strokeStyle: 'transparent',
-    strokeWidth: 1,
-    sWidth: 0,
-    sx: null,
-    sy: null,
-    text: '',
-    width: 0,
-    x: 0,
-    x1: 0,
-    x2: 0,
-    y: 0,
-    y1: 0,
-    y2: 0,
     z_index: this.z_index.length
   };
 
@@ -163,6 +116,7 @@ CanvasEngine.prototype.addMap = function(sceneMap, start){
     // The user can override the default methods for these objects.
     //  When writing the docs, this detail needs to be mentioned.
     var entity = {};
+    var MainEntity = null;
     var entities = {
       "label": Label,
       "rect": Rect,
@@ -176,32 +130,29 @@ CanvasEngine.prototype.addMap = function(sceneMap, start){
     var type = positionMeta.type.toLowerCase();
     if(entities.hasOwnProperty(type)){
       if(complex.indexOf(type) === -1){
-        entity = $.extend(true, entity, new entities[type](), positionData);
+        MainEntity = new Entity($.extend(true, entity, new entities[type](), positionData));
       }
       switch(type){
-        case "label":
-          $.extend(true, entity, new Label(positionData));
-          break;
         case "image":
-          entity.source = this.imagePath + entity.source;
+          MainEntity.source = this.imagePath + entity.source;
           break;
         case "line":
-          entity.plot(positionData.xyArray);
-          delete entity.xyArray;
+          MainEntity.plot(positionData.xyArray);
+          delete MainEntity.xyArray;
           break;
         case "sprite":
           var sprite = new Sprite(this.spritesheets[positionData.spritesheet].sheet, positionData);
           delete positionData.sprite;
           delete positionData.frames;
-          $.extend(true, entity, sprite, positionData);
+          MainEntity = new Entity($.extend(true, entity, sprite, positionData));
           break;
         case "mob":
           var mob = new Mob(this.spritesheets[positionData.spritesheet].sheet,[positionData.directions]);
           delete positionData.spritesheet;
           delete positionData.directions;
-          $.extend(true, entity, mob, positionData);
-          if(entity.collides){
-            entity.setCollidable();
+          MainEntity = new Entity($.extend(true, entity, mob, positionData));
+          if(MainEntity.collides){
+            MainEntity.setCollidable();
           }
           break;
         case "tilemap":
@@ -215,8 +166,8 @@ CanvasEngine.prototype.addMap = function(sceneMap, start){
       // Invalid object provided. Throw
     }
 
-    positionMeta.clearInfo = entity.clearInfo(this.canvasArray[positionData.z_index]);
-    this.positions[positionMeta.name] = entity;
+    positionMeta.clearInfo = MainEntity.clearInfo(this.canvasArray[positionData.z_index]);
+    this.positions[positionMeta.name] = MainEntity;
     this.z_index[positionData.z_index][entity_index[positionData.z_index]] = positionMeta;
     entity_index[positionData.z_index]++;
 
@@ -242,6 +193,10 @@ CanvasEngine.prototype.addZLayer = function(z){
 
   newZ.on("click", this.checkClickMap);
   this.canvasArray[z] = newZ;
+};
+
+CanvasEngine.prototype.markForDrawing=function(name){
+
 };
 
 /**
@@ -291,9 +246,11 @@ CanvasEngine.prototype.drawZ = function(z, positions){
         delete entity.clearLast;
       }
 
+      console.log(meta.name);
       // Draw the entity
       entity.render(this.canvasArray[z]);
       meta.isDrawn = true;
+
       // Clear the old clear data
       if(!window.utilities.exists(entity.duration) || entity.duration === 0){
         delete meta.clearInfo;

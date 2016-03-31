@@ -107,7 +107,7 @@ $.fn.drawImage = function(args) {
   }
   // Run callback function
   function callback() {
-    if (params.load) {
+    if (typeof(params.load) === "function") {
       params.load.call(elem);
     }
   }
