@@ -174,12 +174,6 @@ function Entity(params){
       self[key] = params[key].bind(self);
     } else {
       self[key] = params[key];
-      if(params.name == "winStar"){
-        console.log("Debugging winStar");
-        console.log(key, params[key]);
-        console.log(self[key]);
-        console.log(self);
-      }
     }
   });
 }
