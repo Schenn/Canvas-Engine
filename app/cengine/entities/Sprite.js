@@ -56,7 +56,8 @@ var Sprite = function(source, positionInfo){
   this.clearInfo = (function () {
     return ({
       x: Math.floor(this.x - 1), y: Math.floor(this.y),
-      height: Math.ceil(this.sprite.height), width: Math.ceil(this.sprite.width),
+      height: this.sprite !== null ? Math.ceil(this.sprite.height): 0,
+      width: this.sprite !== null ? Math.ceil(this.sprite.width) : 0,
       fromCenter: this.fromCenter
     });
   });
