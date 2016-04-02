@@ -5,9 +5,9 @@ var Spritesheet = function(imagePath, sheet, spriteDetails){
 
   for(var name in spriteDetails){
     if(spriteDetails.hasOwnProperty(name)) {
-      if (!window.utilities.exists(sheet.height)) {
-        spriteDetails.height = sheet.height;
-        spriteDetails.width = sheet.width;
+      if (!window.utilities.exists(spriteDetails.height) && window.utilities.exists(sheet.height)) {
+        spriteDetails[name].height = sheet.height;
+        spriteDetails[name].width = sheet.width;
       }
 
       var defaults = {
