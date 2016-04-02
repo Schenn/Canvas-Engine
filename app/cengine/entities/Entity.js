@@ -30,17 +30,12 @@ function Entity(params){
 
 // These properties are used but can only be set once
   function lockedProperty(val){
-    var d = lockedProperty.d ||
-      (
-        lockedProperty.d = {
-          enumerable: true,
-          writable: false,
-          configurable: false,
-          value: null
-        }
-      );
-    d.value = val;
-    return d;
+    return {
+      enumerable: true,
+      writable: false,
+      configurable: false,
+      value: val
+    };
   }
 
   // Private Properties
@@ -53,6 +48,7 @@ function Entity(params){
     cornerRadius= 0,
     cropFromCenter= true,
     end= 360,
+    fillStyle = "#000",
     fontWeight = "normal",
     fontSize = "12pt",
     fontFamily = "sans-serif",
@@ -94,7 +90,7 @@ function Entity(params){
     y2= 0;
 
   // Public Properties
-  Object.defineProperties(this, {
+  Object.defineProperties(self, {
     "align":defaultProperty(align),
     "angle":defaultProperty(angle),
     "baseline":defaultProperty(baseline),
@@ -104,6 +100,7 @@ function Entity(params){
     "cornerRadius":defaultProperty(cornerRadius),
     "cropFromCenter":defaultProperty(cropFromCenter),
     "end":defaultProperty(end),
+    "fillStyle":defaultProperty(fillStyle),
     "fromCenter":defaultProperty(fromCenter),
     "height":defaultProperty(height),
     "inDegrees":defaultProperty(inDegrees),
@@ -139,30 +136,28 @@ function Entity(params){
     "x2":defaultProperty(x2),
     "y":defaultProperty(y),
     "y1":defaultProperty(y1),
-    "y2":defaultProperty(y2)
-  });
+    "y2":defaultProperty(y2),
 
-  // Fixed Public Properties
-  Object.defineProperties(this, {
+    // Fixed Public Properties
     "source": lockedProperty(params.source || null),
     "z_index": lockedProperty(params.z_index || 0),
-    "name": lockedProperty(params.name)
-  });
+    "name": lockedProperty(params.name),
 
-  // Font is special
-  Object.defineProperty(this, "font", {
-    enumerable: true,
-    configurable: false,
-    get: function(){return fontWeight + " " + fontSize + " " + fontFamily;},
-    set: function(newFont){
-      // Find a font weight in the new font if one was provided, if not keep the original value
-      var weightMatches = newFont.match(/(\d00|bold\D*|lighter|normal)/);
-      fontWeight = (weightMatches !== null) ? weightMatches[0] : fontWeight;
+    // Font is special
+    "font": {
+      enumerable: true,
+      configurable: false,
+      get: function(){return fontWeight + " " + fontSize + " " + fontFamily;},
+      set: function(newFont){
+        // Find a font weight in the new font if one was provided, if not keep the original value
+        var weightMatches = newFont.match(/(\d00|bold\D*|lighter|normal)/);
+        fontWeight = (weightMatches !== null) ? weightMatches[0] : fontWeight;
 
-      var sizeMatches = newFont.match(/(\d+(px)|\d+(em)|\d+(pt))/);
-      fontSize = (sizeMatches !== null) ? sizeMatches[0] : fontSize;
+        var sizeMatches = newFont.match(/(\d+(px)|\d+(em)|\d+(pt))/);
+        fontSize = (sizeMatches !== null) ? sizeMatches[0] : fontSize;
 
-      fontFamily = newFont.replace(fontWeight, "").replace(fontSize, "").trim();
+        fontFamily = newFont.replace(fontWeight, "").replace(fontSize, "").trim();
+      }
     }
   });
 
@@ -179,6 +174,12 @@ function Entity(params){
       self[key] = params[key].bind(self);
     } else {
       self[key] = params[key];
+      if(params.name == "winStar"){
+        console.log("Debugging winStar");
+        console.log(key, params[key]);
+        console.log(self[key]);
+        console.log(self);
+      }
     }
   });
 }
