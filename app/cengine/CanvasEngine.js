@@ -228,6 +228,11 @@ CanvasEngine.prototype.drawZ = function(z, positions){
 
     if(window.utilities.isFunction(entity.preDraw)){
       entity.preDraw(this.canvasArray[z]);
+      meta.isDrawn = false;
+    }
+
+    if(window.utilities.exists(entity.animates) && entity.animates()){
+      meta.isDrawn = false;
     }
 
     // clear and render any positions that have changed

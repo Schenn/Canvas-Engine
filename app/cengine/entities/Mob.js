@@ -75,6 +75,10 @@ var Mob = function(spritesheet, directions) {
     this.ySpeed = ySpeed;
   };
 
+  this.animates = function(){
+    return this.atimer.getMS() > this.fTime || (this.ySpeed > 0 || this.xSpeed > 0);
+  };
+
   /**
    * Update the Mob's rendering sprite
    * @type {Function}
@@ -120,11 +124,9 @@ var Mob = function(spritesheet, directions) {
    * @param canvas jCanvas - A jCanvas wrapped canvas
    */
   this.render = (function (canvas) {
-    this.atimer.update();
     this.mtimer.update();
-    if (this.atimer.getMS() > this.fTime) {
-      this.animateDirection();
-    }
+    this.atimer.update();
+    if(this.animates()) this.animateDirection();
     var spriteInfo = this.spritesheet[this.directionAnimations[this.direction][this.currentFrame]];
     canvas.drawImage({
       source: spriteInfo.source,

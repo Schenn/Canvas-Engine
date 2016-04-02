@@ -62,21 +62,21 @@ var Sprite = function(source, positionInfo){
     });
   });
 
+  this.animates = function(){
+    this.timer.update();
+    return this.duration > 0 && this.timer.getMS() > this.fTime;
+  };
+
 
   /**
    * Render the sprite on a canvas
    * @type {Function}
    */
   this.render = (function (canvas) {
-    this.timer.update();
-    if (this.duration > 0) {
-      if (this.timer.getMS() > this.fTime) {
-        this.animateFrame();
-      }
-    }
+    if(this.animates()) this.animateFrame();
     //strips out partial pixels.
-    var myx = (this.x + 0.5) | 0;
-    var myy = (this.y + 0.5) | 0;
+    var myx = parseInt(this.x);
+    var myy = parseInt(this.y);
     canvas.drawImage({
       source: this.sprite.source,
       x: myx,
