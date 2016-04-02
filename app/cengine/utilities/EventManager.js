@@ -6,7 +6,6 @@ var EventManager = function(){
 
   window.addEventListener("EntityPropertyChanged", function(e){
     if(e.detail.name) {
-      console.log(e.detail.name);
       window.CanvasEngine.getMetadata([e.detail.name]).isDrawn = false;
     }
 
