@@ -246,7 +246,6 @@ CanvasEngine.prototype.drawZ = function(z, positions){
         delete entity.clearLast;
       }
 
-      console.log(meta.name);
       // Draw the entity
       entity.render(this.canvasArray[z]);
       meta.isDrawn = true;
