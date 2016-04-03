@@ -15,7 +15,7 @@ recompile the dependencies file after installing the new library.
 
 To connect the cengine script to the project, 
 
-script src='path/to/js/lib.min.js'
+script src='path/to/js/lib.min.js';
 script src='path/to/js/cengine.min.js'
 
 
