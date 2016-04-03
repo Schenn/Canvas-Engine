@@ -156,7 +156,7 @@ CanvasEngine.prototype.addMap = function(sceneMap, start){
           }
           break;
         case "tilemap":
-          tmap = new Tilemap(this.spritesheets[positionData.tilesheet].sheet);
+          var tmap = new Tilemap(this.spritesheets[positionData.tilesheet].sheet);
           break;
         default:
           // Entity only needed initial extending
@@ -536,7 +536,7 @@ CanvasEngine.prototype.removeZLayer = (function (z) {
   var tag = "#zLayer" + z;
   $(tag).remove();
   this.z_index.splice(z, 1);
-  this.jcArray.splice(z, 1);
+  this.canvasArray.splice(z, 1);
 });
 
 /**
@@ -548,7 +548,7 @@ CanvasEngine.prototype.removeZLayer = (function (z) {
 CanvasEngine.prototype.clearPositions = (function (f) {
   for (var z = this.z_index.length - 1; z >= 0; z--) {
     for (var i = this.z_index[z].length - 1; i >= 0; i--) {
-      this.removePosition(this.z_index[z][i].name);
+      this.removeEntity(this.z_index[z][i].name);
     }
   }
   if (window.utilities.isFunction(f)) {

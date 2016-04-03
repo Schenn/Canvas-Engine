@@ -58,7 +58,7 @@ utilities.prototype.closePath = function(ctx, params){
   }
 };
 
-utilities.prototype.clearArray = function(cleanMe){
+utilities.prototype.cleanArray = function(cleanMe){
   var cleaner = [];
   for (var i = 0; i < cleanMe.length; i++) {
     if (this.exists(cleanMe[i])) {
