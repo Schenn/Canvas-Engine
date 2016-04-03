@@ -20,6 +20,6 @@ To Use:
 
 1. Put a canvas in the document.
 2. Create your init object (See Below)
-3. Attach the cengine to it with $(myCanvasSelector).attachCEngine(init);
+3. Attach the Canvas Engine to it with $(myCanvasSelector).attachCanvasEngine(init);
 4. Magic!
  
