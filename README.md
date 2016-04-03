@@ -10,11 +10,14 @@ To get started,
 run bower install to install the dependencies.
 run grunt compile to compile out the dependencies and primary files.
 
-To run the project, 
-include a src link to cengine.min.js, then plugins.min.js
-
 To add a bower library, run grunt installLibrary libraryName. This will 
 recompile the dependencies file after installing the new library.
+
+To connect the cengine script to the project, 
+
+script src='path/to/js/lib.min.js'
+script src='path/to/js/cengine.min.js'
+
 
 To Use:
 
@@ -22,4 +25,3 @@ To Use:
 2. Create your init object (See Below)
 3. Attach the Canvas Engine to it with $(myCanvasSelector).attachCanvasEngine(init);
 4. Magic!
- 
