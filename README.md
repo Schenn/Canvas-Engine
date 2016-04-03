@@ -8,6 +8,8 @@ and other events you'll need for your web game.
 To get started,
 
 run bower install to install the dependencies.
+    (Currently - only jQuery)
+    
 run grunt compile to compile out the dependencies and primary files.
 
 To add a bower library, run grunt installLibrary libraryName. This will 
