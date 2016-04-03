@@ -27,3 +27,13 @@ To Use:
 2. Create your init object (See Below)
 3. Attach the Canvas Engine to it with $(myCanvasSelector).attachCanvasEngine(init);
 4. Magic!
+
+
+
+About:
+
+Many of the jquery rendering methods come from the jCanvas 5.1 library, 
+written by Caleb Evans, licensed under the MIT License. A really great 
+jQuery plugin, however my code deviated quite some time ago and I had to 
+remove it save for the handful of rendering methods which were just too
+useful.
