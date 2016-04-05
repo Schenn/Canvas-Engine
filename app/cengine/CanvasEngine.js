@@ -231,7 +231,8 @@ CanvasEngine.prototype.drawZ = function(z, positions){
       meta.isDrawn = false;
     }
 
-    if(window.utilities.exists(entity.animates) && entity.animates()){
+    if((window.utilities.exists(entity.animates) && entity.animates()) ||
+      (window.utilities.exists(entity.moves) && entity.moves())){
       meta.isDrawn = false;
     }
 

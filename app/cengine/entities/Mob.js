@@ -75,8 +75,12 @@ var Mob = function(spritesheet, directions) {
     this.ySpeed = ySpeed;
   };
 
+  this.moves = function(){
+    return this.ySpeed > 0 || this.xSpeed >0;
+  };
+
   this.animates = function(){
-    return this.atimer.getMS() > this.fTime || (this.ySpeed > 0 || this.xSpeed > 0);
+    return this.atimer.getMS() > this.fTime ;
   };
 
   /**
@@ -85,6 +89,7 @@ var Mob = function(spritesheet, directions) {
    * @method
    */
   this.animateDirection = function () {
+    // Is it time to animate?
     this.setAnimationTimes();
     if (this.currentFrame === this.directionAnimations[this.direction].length - 1) {
       this.currentFrame = 0;
