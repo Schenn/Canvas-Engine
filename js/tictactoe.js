@@ -378,7 +378,7 @@ tictactoeGame.prototype.announceWinner = function (token, spotArray) {
     var winMob = function () {
       this.type = "mob";
       this.spritesheet = "winningStar";
-      this.ySpeed = 100;
+      this.ySpeed = 50;
       this.x = Math.ceil(Math.random() * width);
       this.y = 0;
       this.z_index = 5;
@@ -389,7 +389,7 @@ tictactoeGame.prototype.announceWinner = function (token, spotArray) {
       this.name = "winStar";
       this.height = 100;
       this.width = 100;
-      this.ySpeed = 10;
+      this.animationSpeed = 2000;
     };
 
 
