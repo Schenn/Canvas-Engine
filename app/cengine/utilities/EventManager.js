@@ -16,6 +16,11 @@ var EventManager = function(){
   // On PostDraw event, run Entity postDraw
 
 
+  window.addEventListener("sendGA", function(e){
+    if(window.utilities.exists(window.ga)){
+      ga.apply(ga, ["send", "event"].concat(e.detail));
+    }
+  });
 };
 
 window.EventManager = new EventManager();

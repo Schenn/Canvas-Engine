@@ -38,7 +38,6 @@ var CanvasEngine = function(init){
   this.filters = {};
   this.pattens = {};
 
-
 };
 
 /**
@@ -195,10 +194,6 @@ CanvasEngine.prototype.addZLayer = function(z){
   this.canvasArray[z] = newZ;
 };
 
-CanvasEngine.prototype.markForDrawing=function(name){
-
-};
-
 /**
  * Draw the game screen!
  * @method
@@ -226,13 +221,14 @@ CanvasEngine.prototype.drawZ = function(z, positions){
 
     // Before drawing, perform any pre-drawing methods
 
-    if(window.utilities.isFunction(entity.preDraw)){
-      entity.preDraw(this.canvasArray[z]);
+
+    if(utils.isFunction(entity.preDraw)){
+      entity.preDraw(this.canvasArray[z]).bind(entity);
       meta.isDrawn = false;
     }
 
-    if((window.utilities.exists(entity.animates) && entity.animates()) ||
-      (window.utilities.exists(entity.moves) && entity.moves())){
+    if((utils.exists(entity.animates) && entity.animates()) ||
+      (utils.exists(entity.moves) && entity.moves())){
       meta.isDrawn = false;
     }
 

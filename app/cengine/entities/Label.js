@@ -1,59 +1,51 @@
 /**
- * Created by schenn on 3/24/16.
+ * @todo Adjust y for baseline
  */
+(function(){
+  var EM = CanvasEngine.EntityManager;
+  var utilities = CanvasEngine.utilities;
 
-var Label = function(){
+  // Making a Label
+  EM.setMake("LABEL", function(entity, params) {
 
-  this.fillStyle = "#fff";
-  this.align = "left";
-  this.baseline = "middle";
-  this.font = "normal 1em Georgia, 'Times New Roman', Times, serif";
-
-  // The text to render
-  this.text = "";
-
-  this.clearInfo = function(canvas){
-    try {
-      // Measure the current text on a hidden canvas and use those values to determine the end point of the clear box
-      var c = canvas.loadCanvas();
-      c.font = this.font;
-      var s1 = c.measureText(this.text);
-      var s2 = c.measureText("M");
-      var _x = this.x;
-      if (this.align === "left") {
-        _x += s1.width / 2;
+    // Start by adding a text component
+    EM.attachComponent(entity, "Text", $.extend({}, params, {
+      callback: function(){
+        entity.messageToComponent("Renderer", "markDirty");
       }
-      else if (this.align === "right") {
-        _x -= s1.width / 2;
-      }
-      return ({
-        x: Math.ceil(_x), y: Math.ceil(this.y),
-        height: Math.ceil(s2.width * 1.25),
-        width: Math.ceil(s1.width * 1.25), fromCenter: true
-      });
-    }
-    catch (e){
-      if(!window.utilities.exists(this.x)){
-        console.log("Attempted to clear label before rendering");
-      }
-      console.log(e);
-    }
-  };
+    }));
 
-  this.render = function(canvas){
-    if (typeof(this.text) !== "undefined" && this.text !== "") {
-      canvas.drawText({
-        fillStyle: this.fillStyle,
-        strokeStyle: this.strokeStyle,
-        strokeWidth: this.strokeWidth,
-        x: this.x,
-        y: this.y,
-        text: this.text,
-        align: this.align,
-        baseline: this.baseline,
-        font: this.font
-      });
-    }
-  };
+    // Add a renderer component
+    EM.attachComponent(entity, "Renderer", {
+      fillStyle: "#fff",
+      clearInfo: function(ctx){
+        var s1 = ctx.measureText(this.text);
+        var s2 = ctx.measureText("MWO")/3;
+        var _x = this.x;
 
-};
+        // Adjust x for alignment
+        if (this.align === "left") {
+          _x += s1.width / 2;
+        }
+        else if (this.align === "right") {
+          _x -= s1.width / 2;
+        }
+
+        // Adjust y for baseline
+
+
+
+        return ({
+          x: Math.ceil(_x), y: Math.ceil(this.y),
+          height: Math.ceil(s2.width * 1.25),
+          width: Math.ceil(s1.width * 1.25), fromCenter: true
+        });
+      },
+      draw: function(ctx){
+        ctx.drawText($.extend({}, this, entity.getFromComponent("Text", "asObject")));
+      }
+    });
+
+
+  });
+})();

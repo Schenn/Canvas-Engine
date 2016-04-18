@@ -1,52 +1,37 @@
 /**
- * Created by schenn on 3/24/16.
- */
-/**
- * A Rectangle canvas object
- *
- * @class cRect
- */
-var Rect = function() {
-  this.fromCenter = false;
-  this.height = 100;
-  this.width = 100;
-  this.fillStyle = "#000000";
+ * Create a Rect
+ * */
 
-  /**
-   * Get the clear box for the rect
-   *
-   * @method
-   * @type {Function}
-   * @return object
-   */
-  this.clearInfo = (function () {
-    return ({
-      x: Math.ceil(this.x - 1),
-      y: Math.ceil(this.y),
-      height: Math.ceil(this.height),
-      width: Math.ceil(this.width),
-      fromCenter: this.fromCenter
-    });
-  });
+(function(){
+  var EM = CanvasEngine.EntityManager;
+  var utilities = CanvasEngine.utilities;
 
-  /**
-   * Draw the rectangle on a canvas
-   *
-   * @method
-   * @type {Function}
-   */
-  this.render = (function (canvas) {
-    canvas.drawRect({
-      fillStyle: this.fillStyle,
-      x: this.x, y: this.y,
-      height: this.height, width: this.width,
-      fromCenter: this.fromCenter,
-      strokeStyle: this.strokeStyle,
-      strokeWidth: this.strokeWidth,
-      cornerRadius: this.cornerRadius
+  EM.setMake("RECT", function(entity, params){
+
+    // Start making a RECT by adding a renderer component to the entity.
+    EM.attachComponent(entity, "Renderer", {
+      fromCenter: utilities.exists(params.fromCenter) ? params.fromCenter : false,
+      height:utilities.exists(params.height) ? params.height : 100,
+      width: utilities.exists(params.width) ? params.width : 100,
+      fillStyle: utilities.exists(params.fillStyle) ? params.fillStyle : "#000000",
+      // This is what essentially makes this a rect
+      draw: function(ctx){
+        ctx.drawRect(this);
+      },
+      clearInfo: function () {
+        return ({
+          x: Math.ceil(this.x - 1),
+          y: Math.ceil(this.y),
+          height: Math.ceil(this.height),
+          width: Math.ceil(this.width),
+          fromCenter: this.fromCenter
+        });
+      }
     });
+
+    return entity;
   });
-};
+})();
 
 
 
