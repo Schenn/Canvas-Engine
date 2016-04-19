@@ -2,7 +2,7 @@
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
-  EM.setMake("Mob", function (entity, params) {
+  EM.setMake("MobileSprite", function (entity, params) {
     var images = {}, sheets = {}, animations={}, currentSheet="default", currentAnimation = "default";
     $.each(Object.keys(params.spritesheets), function(index, sheetName){
       images[sheetName+"Image"] = {
@@ -67,6 +67,17 @@
         };
       }
     }, params));
+
+
+    entity.setCurrentSheet = function(sheetName){
+      currentSheet = sheetName;
+    };
+
+    entity.setCurrentAnimation = function(animation){
+      animations[currentAnimation].messageToComponent("Timer", "disable");
+      currentAnimation = animation;
+      animations[currentAnimation].messageToComponent("Timer", "enable");
+    };
 
   });
 

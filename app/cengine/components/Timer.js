@@ -72,6 +72,7 @@
 
     this.enable = function(){
       isActive = true;
+      this.update();
     }
 
   };
