@@ -26,7 +26,7 @@
 
         var text = entity.getFromComponent("Text","asObject");
         width = ctx.measureText({font: text.font, text:"M"+text.text+"O"});
-        height = Math.ceil(ctx.measureText({font: text.font, text:"MWO"}).width/ 3);
+        height = Math.ceil(ctx.measureText({font: text.font, text:"MWO"}).width / 2);
 
         // Adjust x for alignment
         switch(text.align){

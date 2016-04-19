@@ -10,6 +10,7 @@
 
   function Entity(params){
     var components = {};
+    var subEntities = {};
 
     // Fixed Public Properties
     this.z_index= EM.properties.lockedProperty(params.z_index || 0);
@@ -25,6 +26,10 @@
       }
     };
 
+    this.attachSubEntity = function(subEntity){
+      subEntities[subEntity.name] = subEntity;
+    };
+
     this.hasComponent = function(componentName){
       return Object.keys(components).indexOf(componentName)>-1;
     };
@@ -34,6 +39,10 @@
         if(utils.isFunction(component[funcName])){
           component[funcName].call(args);
         }
+      });
+
+      $.each(subEntities, function(name, entity){
+        entity.broadcastToComponents(funcName,args);
       });
     };
 

@@ -38,9 +38,9 @@
     var make = {};
     var components = {};
     var nComponents = [];
+    var dependentEntities = {};
 
     var baseEntity;
-    var baseComponent;
 
     this.properties = {
       lockedProperty: lockedProperty,
@@ -52,24 +52,34 @@
       baseEntity = generateFunc({});
     };
 
-    this.setBaseComponent = function(bc){
-      baseComponent = bc;
-    };
-
     this.isEntity = function(ent){
       return baseEntity instanceof ent;
     };
 
-    this.get = function(type, params){
-      return make[type](baseEntityGenerator(params), params);
+    this.create = function(type, params){
+
+      var createType = function(aType){
+        return make[aType](baseEntityGenerator(params), params);
+      };
+
+      if(!CanvasEngine.utilities.exists(dependentEntities[type])) {
+        return createType(type);
+      } else {
+        return make[type](createType(dependentEntities[type]), params);
+      }
     };
 
-    this.setMake = function(name, func){
-      if(Object.keys(make).indexOf(name) === -1 )
+    this.setMake = function(name, func, from){
+      if(Object.keys(make).indexOf(name) === -1 ){
         make[name] = func;
+      }
 
+      if(CanvasEngine.utilities.exists(from)){
+        dependentEntities[name]=from;
+      }
       return this;
     };
+
 
     this.addComponent = function(name, func, notUnique){
       if(Object.keys(components).indexOf(name) === -1)
@@ -87,11 +97,19 @@
           entity.attachComponent(component, components[component](params, entity));
         }
       } else if(isObject(component)) {
-        var name = Object.keys(component);
-        var com = component[name];
-        if (Object.keys(components).indexOf(com) != -1 && nComponents.indexOf(com) > -1) {
-          entity.attachComponent(name, components[com](params, entity));
+        var com = Object.keys(component);
+        if(isObject(component[com])){
+          // Is a collection of names and data. Each tuple should be added as a component
+          $.each(component[com], function(name, p){
+            entity.attachComponent(name, components[com](p, entity));
+          });
+        } else if(isString(component[com])){
+          var name = component[name];
+          if (Object.keys(components).indexOf(com) != -1 && nComponents.indexOf(com) > -1) {
+            entity.attachComponent(name, components[com](params, entity));
+          }
         }
+
       }
 
 
