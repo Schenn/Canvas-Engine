@@ -19,26 +19,43 @@
     EM.attachComponent(entity, "Renderer", {
       fillStyle: "#fff",
       clearInfo: function(ctx){
-        var s1 = ctx.measureText(this.text);
-        var s2 = ctx.measureText("MWO")/3;
-        var _x = this.x;
+        var width,
+          height,
+          _x = Math.ceil(this.x),
+          _y = Math.ceil(this.y);
+
+        var text = entity.getFromComponent("Text","asObject");
+        width = ctx.measureText({font: text.font, text:"M"+text.text+"O"});
+        height = Math.ceil(ctx.measureText({font: text.font, text:"MWO"}).width/ 3);
 
         // Adjust x for alignment
-        if (this.align === "left") {
-          _x += s1.width / 2;
-        }
-        else if (this.align === "right") {
-          _x -= s1.width / 2;
+        switch(text.align){
+          case "left":
+            _x -= width.width / 2;
+            break;
+          case "right":
+            _x += width.width / 2;
+            break;
+          default:
+            break;
         }
 
         // Adjust y for baseline
-
-
+        switch(text.baseline){
+          case "middle":
+            _y += height/4;
+            break;
+          case "bottom":
+            _y += height/2;
+            break;
+          default:
+            break;
+        }
 
         return ({
-          x: Math.ceil(_x), y: Math.ceil(this.y),
-          height: Math.ceil(s2.width * 1.25),
-          width: Math.ceil(s1.width * 1.25), fromCenter: true
+          x: _x, y: _y,
+          height: height,
+          width: width, fromCenter: true
         });
       },
       draw: function(ctx){

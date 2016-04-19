@@ -14,6 +14,7 @@
   var Renderer = function(params, entity){
     var self = this;
     var isDirty = true;
+    var clearShadow;
 
     this.markDirty = function(){
       isDirty = true;
@@ -32,7 +33,6 @@
       fromCenter= false,
       height= 0,
       inDegrees= true,
-      load= null,
       mask= false,
       opacity= 1,
       projection= 0,
@@ -48,7 +48,6 @@
       shadowX= 0,
       shadowY= 0,
       sides= 3,
-      source = "",
       start= 0,
       strokeCap= 'butt',
       strokeJoin= 'miter',
@@ -56,11 +55,7 @@
       strokeWidth= 1,
       width= 0,
       x= 0,
-      x1= 0,
-      x2= 0,
-      y= 0,
-      y1= 0,
-      y2= 0;
+      y= 0;
 
     // Public Properties
     Object.defineProperties(self, {
@@ -76,7 +71,6 @@
       "fromCenter":props.defaultProperty(fromCenter, this.markDirty),
       "height":props.defaultProperty(height, this.markDirty),
       "inDegrees":props.defaultProperty(inDegrees, this.markDirty),
-      "load":props.defaultProperty(load, this.markDirty),
       "mask":props.defaultProperty(mask, this.markDirty),
       "opacity":props.defaultProperty(opacity, this.markDirty),
       "projection":props.defaultProperty(projection, this.markDirty),
@@ -91,25 +85,15 @@
       "shadowColor":props.defaultProperty(shadowColor, this.markDirty),
       "shadowX": props.defaultProperty(shadowX, this.markDirty),
       "shadowY":props.defaultProperty(shadowY, this.markDirty),
-      "sHeight": props.defaultProperty(sHeight, this.markDirty),
       "sides":props.defaultProperty(sides, this.markDirty),
       "start":props.defaultProperty(start, this.markDirty),
       "strokeCap":props.defaultProperty(strokeCap, this.markDirty),
       "strokeJoin":props.defaultProperty(strokeJoin, this.markDirty),
       "strokeStyle":props.defaultProperty(strokeStyle, this.markDirty),
       "strokeWidth": props.defaultProperty(strokeWidth, this.markDirty),
-      "sWidth":props.defaultProperty(sWidth, this.markDirty),
-      "sx":props.defaultProperty(sx, this.markDirty),
-      "sy":props.defaultProperty(sy, this.markDirty),
-      "text":props.defaultProperty(text, this.markDirty),
       "width":props.defaultProperty(width, this.markDirty),
       "x":props.defaultProperty(x, this.markDirty),
-      "x1":props.defaultProperty(x1, this.markDirty),
-      "x2":props.defaultProperty(x2, this.markDirty),
-      "y":props.defaultProperty(y, this.markDirty),
-      "y1":props.defaultProperty(y1, this.markDirty),
-      "y2":props.defaultProperty(y2, this.markDirty),
-      "source": props.defaultProperty(source, this.markDirty)
+      "y":props.defaultProperty(y, this.markDirty)
     });
 
     if(params.hasOwnProperty("source")){
@@ -153,6 +137,7 @@
         ctx.setDefaults(this);
         this.draw(ctx);
         isDirty = false;
+        this.clearShadow = this.clearInfo(ctx);
       }
     };
 
@@ -164,11 +149,7 @@
   };
 
   Renderer.clear = function(ctx){
-    ctx.clear(this.clearInfo(ctx));
-  };
-
-  Renderer.setClearInfo = function(){
-
+    ctx.clear(this.clearShadow);
   };
 
   CanvasEngine.EntityManager.addComponent("Renderer", function(params, entity){
