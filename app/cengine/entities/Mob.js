@@ -30,8 +30,6 @@
       }
     });
 
-
-
     // A mob can have multiple spritesheets, this means, multiple images for switching between
     EM.attachComponent(entity,
       $.extend({}, {
@@ -59,7 +57,14 @@
         var position = entity.getFromComponent("Movement", "asObject");
         var image = entity.getFromComponent(currentSheet+"Image", "asObject");
 
-        ctx.drawImage($.extend({}, this, {x:position.x, y: position.y}, image));
+        ctx.drawImage($.extend({}, this, image, {x:position.x, y: position.y}));
+      },
+      clearInfo: function(){
+        var position = entity.getFromComponent("Movement", "asObject");
+        return {
+          x: position.x, y: position.y,
+          height: this.height, width: this.width, fromCenter: false
+        };
       }
     }, params));
 
