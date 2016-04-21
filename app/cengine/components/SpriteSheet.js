@@ -28,7 +28,7 @@
     } else {
       var self = this;
       source = new Image();
-      source.onload = function(){self.processSprites()};
+      source.onload = function(){self.processSprites();};
     }
 
     this.getEntity = function(){

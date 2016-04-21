@@ -24,7 +24,7 @@
 
         // If we don't have the y coordinate property, create it.
         if(!coordinateObj.hasOwnProperty("y"+i)) {
-          coordinateObj["y"+ i] = props.defaultProperty(coords[i-1].y, params.callback)
+          coordinateObj["y"+ i] = props.defaultProperty(coords[i-1].y, params.callback);
         } else {
           coordinateObj["y" + i] = coords[i - 1].y;
         }

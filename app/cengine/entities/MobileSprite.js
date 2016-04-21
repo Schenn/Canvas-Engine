@@ -48,6 +48,7 @@
 
 
     // A mob needs to have a movement component
+    // The movement component needs to help figure out which animation to run
     EM.attachComponent(entity, "Movement", params);
 
     // A mob needs a renderer

@@ -68,7 +68,7 @@
           return components[componentName][funcName].call();
         }
       }
-    }
+    };
 
   }
 

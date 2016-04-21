@@ -22,7 +22,7 @@
 
     baseDuration = params.duration;
 
-    duration = (!utilities.exists(frames) || frames.length == 0 || baseDuration == 0) ? 0 : baseDuration / frameCount;
+    duration = (!utilities.exists(frames) || frames.length === 0 || baseDuration === 0) ? 0 : baseDuration / frameCount;
 
     //Add a Timer Component
     EM.attachComponent(entity,"Timer", {duration: duration, onElapsed: function(){

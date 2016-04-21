@@ -104,7 +104,7 @@
     }
 
     if(!CanvasEngine.utilities.isFunction(params.draw)){
-      return window.exit(params.name + ": " + "Renderer missing draw method. Be sure to pass a draw method when attaching a Renderer component.")
+      return window.exit(params.name + ": " + "Renderer missing draw method. Be sure to pass a draw method when attaching a Renderer component.");
     } else {
       this.draw = params.draw;
       delete params.draw;

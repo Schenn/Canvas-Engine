@@ -37,10 +37,10 @@
         return {
           source: this.source,
           load: this.load
-        }
+        };
       }
 
-    }
+    };
   };
 
   CanvasEngine.EntityManager.addComponent("Image", function(params){

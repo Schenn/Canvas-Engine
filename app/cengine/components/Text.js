@@ -45,7 +45,7 @@
 
     this.asObject = function(){
       return $.extend({}, this);
-    }
+    };
   };
 
   CanvasEngine.EntityManager.addComponent("Text", function(params, entity){
