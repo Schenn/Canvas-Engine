@@ -2,32 +2,17 @@
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
+  // Needs a method to determine which animation to use
   EM.setMake("MobileSprite", function (entity, params) {
     var images = {}, sheets = {}, animations={}, currentSheet="default", currentAnimation = "default";
+
+    // Add an image and SpriteSheet for each SpriteSheet.
     $.each(Object.keys(params.spritesheets), function(index, sheetName){
-      images[sheetName+"Image"] = {
-        source: params.spritesheets[sheetName].source,
-        height: params.spritesheets[sheetName].height,
-        width: params.spritesheets[sheetName].width
-      };
-      sheets[sheetName+"Sheet"] =params.spritesheets[sheetName];
+      entity.addSpriteSheet(sheetName, params.spritesheets[sheetName]);
     });
 
     $.each(params.animations, function(name, animation){
-      animations[name] = EM.create("Animator", $.extend({}, {
-        onFrameChange: function(nextFrame){
-          if(currentAnimation == name){
-            // Set the current sprite image to nextFrame
-            entity.messageToComponent(currentSheet+"Image",
-              "setSprite",
-              entity.getFromComponent(currentSheet+"Sheet", "getSprite", nextFrame)
-            );
-          }
-        }
-      }, animation));
-      if(name != currentSheet) {
-        animations[name].disable();
-      }
+      entity.addAnimation(name, animation);
     });
 
     // A mob can have multiple spritesheets, this means, multiple images for switching between
@@ -41,15 +26,17 @@
             onUpdate: function(delta){
               entity.messageToComponent("Movement", "move", delta);
             }
+
           },params.movementTimer)
         }
       }
     ));
 
-
     // A mob needs to have a movement component
     // The movement component needs to help figure out which animation to run
-    EM.attachComponent(entity, "Movement", params);
+    EM.attachComponent(entity, "Movement", $.extend({}, {onDirectionChange:function(direction){
+      entity.onDirectionChange(direction);
+    }},params));
 
     // A mob needs a renderer
     EM.attachComponent(entity, "Renderer", $.extend({}, {
@@ -80,8 +67,42 @@
       animations[currentAnimation].messageToComponent("Timer", "enable");
     };
 
-  });
+    entity.addSpriteSheet = function(sheetName, spriteSheet){
+      images[sheetName+"Image"] = {
+        source: spriteSheet.source,
+        height: spriteSheet.height,
+        width: spriteSheet.width
+      };
+      sheets[sheetName+"Sheet"] =spriteSheet;
+    };
 
+    entity.addAnimation = function(name, animation){
+      animations[name] = EM.create("Animator",
+        $.extend({}, {
+          onFrameChange: function(nextFrame){
+            if(currentAnimation == name){
+              // Set the current sprite image to nextFrame
+              entity.messageToComponent(currentSheet+"Image",
+                "setSprite",
+                entity.getFromComponent(currentSheet+"Sheet", "getSprite", nextFrame)
+              );
+            }
+          }
+        },
+        animation));
+      if(name != currentSheet) {
+        animations[name].disable();
+      }
+    };
+    entity.onDirectionChange = utilities.isFunction(params.onDirectionChange) ?
+      params.onDirectionChange :
+      function(newDirection){
+        if(utilities.exists(animations[newDirection.name])){
+          entity.setCurrentAnimation(newDirection.name);
+        }
+    };
+
+  });
 
 })();
 

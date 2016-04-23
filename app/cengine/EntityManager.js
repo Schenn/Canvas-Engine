@@ -69,6 +69,10 @@
       }
     };
 
+    this.createFromJson = function(jso){
+      return this.create(jso.type, jso);
+    };
+
     this.setMake = function(name, func, from){
       if(Object.keys(make).indexOf(name) === -1 ){
         make[name] = func;
@@ -92,18 +96,18 @@
     };
 
     this.attachComponent = function(entity, component, params){
-      if(isString(component)) {
+      if($.type(component) == "string") {
         if (Object.keys(components).indexOf(component) != -1) {
           entity.attachComponent(component, components[component](params, entity));
         }
-      } else if(isObject(component)) {
+      } else if($.type(component) == "object" || $.type(component) == "function") {
         var com = Object.keys(component);
-        if(isObject(component[com])){
+        if($.type(component[com]) == "object" || $.type(component) == "function"){
           // Is a collection of names and data. Each tuple should be added as a component
           $.each(component[com], function(name, p){
             entity.attachComponent(name, components[com](p, entity));
           });
-        } else if(isString(component[com])){
+        } else if($.type(component[com]) == "string"){
           var name = component[name];
           if (Object.keys(components).indexOf(com) != -1 && nComponents.indexOf(com) > -1) {
             entity.attachComponent(name, components[com](params, entity));

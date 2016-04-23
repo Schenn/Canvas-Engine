@@ -12,8 +12,7 @@
       frames = params.frames;
       frameCount = frames.length;
     } else {
-      // Throw if we don't have either frames or a frameCount
-      frameCount = params.frameCount;
+      frameCount = utilities.exists(params.frameCount) ? params.frameCount : 1;
       frames = [];
       for(var i =0; i < frameCount; i++){
         frames.push(i);
