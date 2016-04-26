@@ -320,7 +320,7 @@
       var pi = Math.PI;
 
       this.setDefaults(renderer);
-      positionShape(renderer, renderer.width, renderer.height);
+      this.positionShape(renderer, renderer.width, renderer.height);
       ctx.beginPath();
 
       // Draw a rounded rectangle if chosen
