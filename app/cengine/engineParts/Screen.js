@@ -25,7 +25,7 @@
      * @method
      */
     this.drawScreen = function(){
-      canvases.forEach(function(z, canvas){
+      canvases.forEach(function(canvas, z){
         var ctx = $(canvas).getEnhancedContext();
 
         CanvasEngine.drawZ(z, ctx);
