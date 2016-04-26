@@ -39,7 +39,7 @@
     this.broadcastToComponents = function(funcName, args){
       $.each(components, function(name, component){
         if(utils.isFunction(component[funcName])){
-          component[funcName].call(args);
+          component[funcName].call(component,args);
         }
       });
 
@@ -53,9 +53,9 @@
         utils.isFunction(components[componentName][funcName])){
 
         if(utils.exists(args)) {
-          components[componentName][funcName].call(args);
+          components[componentName][funcName].call(components[componentName], args);
         }else {
-          components[componentName][funcName].call();
+          components[componentName][funcName].call(components[componentName]);
         }
       }
     };
@@ -65,9 +65,9 @@
         utils.isFunction(components[componentName][funcName])){
 
         if(utils.exists(args)) {
-          return components[componentName][funcName].call(args);
+          return components[componentName][funcName].call(components[componentName],args);
         }else {
-          return components[componentName][funcName].call();
+          return components[componentName][funcName].call(components[componentName]);
         }
       }
     };
