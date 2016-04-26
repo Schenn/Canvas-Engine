@@ -13,8 +13,10 @@
     var subEntities = {};
 
     // Fixed Public Properties
-    this.z_index= EM.properties.lockedProperty(params.z_index || 0);
-    this.name= EM.properties.lockedProperty(params.name || utils.randName());
+    Object.defineProperties(this, {
+      z_index:EM.properties.lockedProperty(params.z_index || 0),
+      name:EM.properties.lockedProperty(params.name || utils.randName())
+    });
 
     if(params.hasOwnProperty("z_index")){
       delete params.z_index;
