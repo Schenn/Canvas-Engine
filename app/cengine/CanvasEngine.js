@@ -1,4 +1,6 @@
-var CanvasEngine = {};
+var CanvasEngine = {
+  paused: true
+};
 CanvasEngine.addMap = function(screenMap, start){
   // Convert to entity Array
   var entities = this.EntityManager.fromMap(screenMap);
@@ -10,7 +12,7 @@ CanvasEngine.addMap = function(screenMap, start){
   this.EntityTracker.addEntities(entities);
 
   if(start){
-    this.Loop();
+    this.pause();
   }
 };
 
@@ -50,6 +52,7 @@ CanvasEngine.positionsAtPixel = function(p, w, h){
   }
 };
 
-CanvasEngine.setup = function(canvas, init){
+CanvasEngine.setup = function(canvas, init, start){
   CanvasEngine.Screen.setScreen(canvas);
+  this.addMap(init, start);
 };
