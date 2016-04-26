@@ -73,7 +73,7 @@
         direction: direction,
         xSpeed: xSpeed,
         ySpeed: ySpeed
-      }
+      };
     };
 
 

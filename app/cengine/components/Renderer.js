@@ -141,6 +141,28 @@
       }
     };
 
+    this.containsPixel = function(data){
+      var coords = data.pixel;
+      // if we contain the pixel position
+      var leftBoundry = x;
+      var rightBoundry = x;
+      var topBoundry = y;
+      var bottomBoundry = y;
+      if (fromCenter) {
+        leftBoundry -= (0.5 * width);
+        rightBoundry += (0.5 * width);
+        topBoundry -= (0.5 * height);
+        bottomBoundry += (0.5 * height);
+      }
+      else {
+        rightBoundry += width;
+        bottomBoundry += height;
+      }
+
+      return ((coords.x >= leftBoundry) && (coords.x <= rightBoundry) &&
+      ((coords.y >= topBoundry) && (coords.y <= bottomBoundry)));
+    };
+
     this.isDirty = function(){
       return isDirty;
     };

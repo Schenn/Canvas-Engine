@@ -42,7 +42,12 @@ module.exports = function(grunt) {
           quoteStyle: 3
         },
         files: {
-          'js/cengine.min.js': ['<%= cengine %>/jqueryPlugins/**/*.js','<%= cengine %>/utilities/*.js','<%= cengine %>/components/*.js','<%= cengine %>/entities/*.js','<%= cengine %>/*.js' ]
+          'js/cengine.min.js': [
+            '<%= cengine %>/jqueryPlugins/**/*.js',
+            '<%= cengine %>/*.js',
+            '<%= cengine %>/engineParts/*.js',
+            '<%= cengine %>/entities/*.js',
+            '<%= cengine %>/components/*.js' ]
         }
       },
       jqPlugins: {

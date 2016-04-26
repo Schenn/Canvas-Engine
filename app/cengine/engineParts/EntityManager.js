@@ -33,7 +33,7 @@
     };
   }
 
-  CanvasEngine.EntityManager = function(){
+  var EntityManager = function(){
     var baseEntityGenerator;
     var make = {};
     var components = {};
@@ -62,15 +62,10 @@
         return make[aType](baseEntityGenerator(params), params);
       };
 
-      if(!CanvasEngine.utilities.exists(dependentEntities[type])) {
-        return createType(type);
-      } else {
+      if(CanvasEngine.utilities.exists(dependentEntities[type])) {
         return make[type](createType(dependentEntities[type]), params);
       }
-    };
-
-    this.createFromJson = function(jso){
-      return this.create(jso.type, jso);
+      return createType(type);
     };
 
     this.setMake = function(name, func, from){
@@ -83,7 +78,6 @@
       }
       return this;
     };
-
 
     this.addComponent = function(name, func, notUnique){
       if(Object.keys(components).indexOf(name) === -1)
@@ -119,5 +113,26 @@
 
       return this;
     };
+
+    /**
+     * Generate an array of entities from a json blob
+     * @param screenMap
+     */
+    this.fromMap = function(screenMap){
+      var entities = [];
+
+      $.each(screenMap, function(index, data){
+        var entity = CanvasEngine.EntityManager.create(data.type, data);
+        if(!CanvasEngine.utilities.exists(entities[entity.z_index])){
+          entities[entity.z_index] = [];
+        }
+
+        entities[entity.z_index].push(entity);
+      });
+
+      return entities;
+    };
   };
+
+  CanvasEngine.EntityManager = new EntityManager();
 })();
