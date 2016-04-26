@@ -4,7 +4,7 @@ CanvasEngine.addMap = function(screenMap, start){
   var entities = this.EntityManager.fromMap(screenMap);
 
   $.each(entities, function(z){
-    this.Screen.addZLayer(z);
+    CanvasEngine.Screen.addZLayer(z);
   });
 
   this.EntityTracker.addEntities(entities);
@@ -16,14 +16,14 @@ CanvasEngine.addMap = function(screenMap, start){
 
 CanvasEngine.Loop = function(){
   if(this.paused === false){
-    requestAnimationFrame(function(timestamp){
-      window.CanvasEngine.Screen.drawScreen(timestamp);
-      window.CanvasEngine.Loop(timestamp);
+    requestAnimationFrame(function(){
+      CanvasEngine.Screen.drawScreen();
+      CanvasEngine.Loop();
     });
   }
 };
 
-CanvasEngine.DrawZ = function(z, ctx){
+CanvasEngine.drawZ = function(z, ctx){
   $.each(this.EntityTracker.getEntitiesByZ(z), function(index, entity){
     entity.broadcastToComponents("update");
     entity.messageToComponent("Renderer", "clear", ctx);
