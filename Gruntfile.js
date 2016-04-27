@@ -46,6 +46,7 @@ module.exports = function(grunt) {
             '<%= cengine %>/jqueryPlugins/**/*.js',
             '<%= cengine %>/*.js',
             '<%= cengine %>/engineParts/*.js',
+            '<%= cengine %>/resources/*.js',
             '<%= cengine %>/entities/*.js',
             '<%= cengine %>/components/*.js' ]
         }
