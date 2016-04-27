@@ -34,6 +34,18 @@ CanvasEngine.drawZ = function(z, ctx){
   });
 };
 
+CanvasEngine.removeEntities = function(names){
+  // Get all the entities
+  var entities = CanvasEngine.EntityTracker.getEntities(names);
+  for(var i = 0; i < entities.length; i++){
+    // Ask the screen to clear the entity
+    CanvasEngine.Screen.clear(entities[i]);
+  }
+
+  // Tell the EntityTracker to remove the names
+  CanvasEngine.EntityTracker.removeEntities(names);
+};
+
 CanvasEngine.checkClickMap = function(coords){
   var ents = CanvasEngine.positionsAtPixel(coords, 1, 1);
   $.each(ents, function(index, ent){
