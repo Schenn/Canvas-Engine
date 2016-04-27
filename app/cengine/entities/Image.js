@@ -16,7 +16,7 @@
           ctx.drawImage($.extend({}, this, entity.getFromComponent("Image", "asObject")));
         }
       }));
-
+      return entity;
     });
 
 })();

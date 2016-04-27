@@ -10,6 +10,7 @@
       }
     }, params));
 
+    return entity;
   }, "SPRITE");
 
 

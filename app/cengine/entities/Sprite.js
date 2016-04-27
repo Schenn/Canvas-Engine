@@ -29,6 +29,8 @@
     };
 
     entity.setSprite(currentSpriteName);
+
+    return entity;
   });
 
 })();

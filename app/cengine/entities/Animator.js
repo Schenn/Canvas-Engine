@@ -2,7 +2,8 @@
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
-  // Entity is a sprite and has all of the sprite components and methods
+  // Animates an array of strings over time.
+  // Why? You ask. Because those strings can then be applied against maps somewhere else with more relevant information.
   EM.setMake("Animator", function (entity, params) {
     var frames, baseDuration, duration, frameCount, currentFrame;
 

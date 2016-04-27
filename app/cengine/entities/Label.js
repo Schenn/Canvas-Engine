@@ -9,14 +9,14 @@
   EM.setMake("LABEL", function(entity, params) {
 
     // Start by adding a text component
-    EM.attachComponent(entity, "Text", $.extend({}, params, {
+    EM.attachComponent(entity, "Text", $.extend({}, {
       callback: function(){
         entity.messageToComponent("Renderer", "markDirty");
       }
-    }));
+    },params));
 
     // Add a renderer component
-    EM.attachComponent(entity, "Renderer", {
+    EM.attachComponent(entity, "Renderer", $.extend({}, {
       fillStyle: "#fff",
       clearInfo: function(ctx){
         var width,
@@ -61,8 +61,8 @@
       draw: function(ctx){
         ctx.drawText($.extend({}, this, entity.getFromComponent("Text", "asObject")));
       }
-    });
+    }, params));
 
-
+    return entity;
   });
 })();
