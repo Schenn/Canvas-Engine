@@ -13,15 +13,13 @@
     },params));
 
     // Attach an image component
-    EM.attachComponent(entity, "Image", $.extend({}, {callback: function(){
+    EM.attachComponent(entity, "Image", $.extend({}, {source: params.spritesheet.source(), callback: function(){
       entity.messageToComponent("Renderer", "markDirty");
-    }},params));
+    }}));
 
     // Attach a spritesheet component
     // The callback is fired when the spritesheet is loaded.
-    EM.attachComponent(entity, "SpriteSheet", $.extend({}, {source: params.source, callback: function(){
-      entity.setSprite(currentSpriteName);
-    }}, params.spritesheet));
+    EM.attachComponent(entity, "SpriteSheet", $.extend({}, {spritesheet: params.spritesheet}));
 
     entity.setSprite = function(name){
       currentSpriteName = name;
@@ -29,6 +27,8 @@
         entity.getFromComponent("SpriteSheet", "getSprite", name)
       );
     };
+
+    entity.setSprite(currentSpriteName);
   });
 
 })();

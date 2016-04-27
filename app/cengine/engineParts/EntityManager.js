@@ -62,6 +62,15 @@
         return make[aType](baseEntityGenerator(params), params);
       };
 
+      // Replace image, sound and SpriteSheet params with their values from the ResourceManager
+      if(typeof(params.image) !== "undefined"){
+        params.image = CanvasEngine.ResourceManager.getImage(params.image);
+      }
+
+      if(typeof(params.spritesheet) !== "undefined"){
+        params.spritesheet = CanvasEngine.ResourceManager.getSpriteSheet(params.spritesheet);
+      }
+
       if(CanvasEngine.utilities.exists(dependentEntities[type])) {
         return make[type](createType(dependentEntities[type]), params);
       }

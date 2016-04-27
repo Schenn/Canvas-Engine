@@ -4,20 +4,18 @@
 (function(){
   var props = CanvasEngine.EntityManager.properties;
 
-  var image = function(params, entity){
+  var img = function(params, entity){
     var source = params.source,
-      load = CanvasEngine.utilities.isFunction(params.load) ? params.load : null,
-      sx= CanvasEngine.utilities.isFunction(params.sx) ? params.sx : 0,
-      sy= CanvasEngine.utilities.isFunction(params.sy) ? params.sy : 0,
-      sw= CanvasEngine.utilities.isFunction(params.sWidth) ? params.sWidth : 0,
-      sh= CanvasEngine.utilities.isFunction(params.sHeight) ? params.sHeight : 0,
-      cropFromCenter = CanvasEngine.utilities.isFunction(params.cropFromCenter) ? params.cropFromCenter : true;
+      sx= 0,
+      sy= 0,
+      sw= 0,
+      sh= 0,
+      cropFromCenter = CanvasEngine.utilities.exists(params.cropFromCenter) ? params.cropFromCenter : true;
 
     var callback = CanvasEngine.utilities.isFunction(params.callback) ? params.callback : null;
 
     Object.defineProperties(this, {
       "source":props.lockedProperty(source),
-      "load": props.lockedProperty(load),
       "sx":props.defaultProperty(sx, callback),
       "sy":props.defaultProperty(sy, callback),
       "sWidth":props.defaultProperty(sw, callback),
@@ -35,15 +33,21 @@
         return $.extend({}, this);
       } else {
         return {
-          source: this.source,
-          load: this.load
+          source: this.source
         };
       }
 
     };
+
+    this.setSprite = function(sprite){
+      sx = sprite.x;
+      sy = sprite.y;
+      sw = sprite.width;
+      sh = sprite.height;
+    };
   };
 
   CanvasEngine.EntityManager.addComponent("Image", function(params){
-    return new image();
+    return new img();
   }, true);
 })();
