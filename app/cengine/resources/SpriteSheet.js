@@ -17,17 +17,20 @@
     var processSprites = function(){
       var sx = 0, sy= 0, index=0;
       var useCache = utils.exists(spriteCache);
+
       while(sy<source.height){
         while(sx < source.width){
           var name = useCache ? spriteCache[index] : index;
           sprites[name] = {
-            sx: sx, sy: sy, width: width, height: height
+            x: sx, y: sy, width: spriteWidth, height: spriteHeight
           };
-          sx += width;
+          sx += spriteWidth;
           index++;
         }
-        sy += height;
+        sy += spriteHeight;
+        sx = 0;
       }
+
     };
 
     // If sprites are an object, take their data and fill in the rest.
@@ -39,8 +42,11 @@
 
     this.processSprites = function(img){
       source = img;
-      var keys = Object.keys(spriteCache);
-      if(keys.length > 0 && !utils.exists(spriteCache[0])){
+      // If we have a spriteCache and it's an object, not an array
+      if(utils.exists(spriteCache) &&
+        Object.keys(spriteCache).length > 0 &&
+        !utils.exists(spriteCache[0])){
+
         processSpriteObject();
       }
       else{

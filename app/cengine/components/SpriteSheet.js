@@ -30,7 +30,7 @@
 
   };
 
-  CanvasEngine.EntityManager.addComponent("SpriteSheet", function(){
+  CanvasEngine.EntityManager.addComponent("SpriteSheet", function(params, entity){
     return new SpriteSheet(params, entity);
   });
 })();

@@ -29,7 +29,7 @@
         cleaner.push(cleanMe[i]);
       }
     }
-    return (cleaner);
+    return cleaner;
   };
 
   utilities.randName = function () {

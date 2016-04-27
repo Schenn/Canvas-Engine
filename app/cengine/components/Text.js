@@ -14,9 +14,9 @@
       txt = "";
 
     Object.defineProperties(this, {
-      "align":props.defaultProperty(align),
-      "baseline":props.defaultProperty(baseline),
-      "text":props.defaultProperty(txt),
+      "align":props.defaultProperty(align, params.callback),
+      "baseline":props.defaultProperty(baseline,params.callback),
+      "text":props.defaultProperty(txt,params.callback),
       // Font is special
       // This gives us the ability to change the text size, family and weight independently
       "font": {
@@ -32,6 +32,7 @@
           fontSize = (sizeMatches !== null) ? sizeMatches[0] : fontSize;
 
           fontFamily = newFont.replace(fontWeight, "").replace(fontSize, "").trim();
+          params.callback();
         }
       }
     });
@@ -47,6 +48,10 @@
 
     this.asObject = function(){
       return $.extend({}, this);
+    };
+
+    this.setText = function(phrase){
+      this.text = phrase;
     };
   };
 

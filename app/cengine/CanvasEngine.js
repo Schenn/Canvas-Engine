@@ -12,38 +12,37 @@ CanvasEngine.addMap = function(screenMap, start){
   this.EntityTracker.addEntities(entities);
 
   if(start){
-    this.pause();
+    this.paused = false;
+    this.Loop();
   }
 };
 
 CanvasEngine.Loop = function(){
-  if(this.paused === false){
-    requestAnimationFrame(function(){
-      CanvasEngine.Screen.drawScreen();
-      CanvasEngine.Loop();
+  requestAnimationFrame(function(){
+    CanvasEngine.Screen.drawScreen();
+    CanvasEngine.Loop();
+  });
+};
+
+CanvasEngine.drawZ = function(z, ctx){
+  if(!this.paused && CanvasEngine.EntityTracker.entityCount() > 0) {
+    $.each(this.EntityTracker.getEntitiesByZ(z), function (index, entity) {
+      if(CanvasEngine.utilities.exists(entity)){
+        entity.broadcastToComponents("update");
+        if(entity.getFromComponent("Renderer", "isDirty")){
+          entity.messageToComponent("Renderer", "clear", ctx);
+          entity.messageToComponent("Renderer", "render", ctx);
+        }
+        entity.broadcastToComponents("postRender");
+      }
     });
   }
 };
 
-CanvasEngine.drawZ = function(z, ctx){
-  $.each(this.EntityTracker.getEntitiesByZ(z), function(index, entity){
-    entity.broadcastToComponents("update");
-    entity.messageToComponent("Renderer", "clear", ctx);
-    entity.messageToComponent("Renderer", "render", ctx);
-    entity.broadcastToComponents("postRender");
-  });
-};
-
-CanvasEngine.removeEntities = function(names){
-  // Get all the entities
-  var entities = CanvasEngine.EntityTracker.getEntities(names);
-  for(var i = 0; i < entities.length; i++){
-    // Ask the screen to clear the entity
-    CanvasEngine.Screen.clear(entities[i]);
-  }
-
-  // Tell the EntityTracker to remove the names
-  CanvasEngine.EntityTracker.removeEntities(names);
+CanvasEngine.clearEntities = function(){
+  this.paused = true;
+  CanvasEngine.EntityTracker.clearEntities();
+  this.paused = false;
 };
 
 CanvasEngine.checkClickMap = function(coords){
@@ -55,7 +54,6 @@ CanvasEngine.checkClickMap = function(coords){
 
 CanvasEngine.pause = function(){
   this.paused = !this.paused;
-  if(!this.paused){ this.Loop();}
 };
 
 CanvasEngine.positionsAtPixel = function(p, w, h){

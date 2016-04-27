@@ -133,12 +133,14 @@
      * @param ctx EnhancedContext
      */
     this.render = function(ctx){
-      if(this.isDirty()) {
-        ctx.setDefaults(this);
-        this.draw(ctx);
-        isDirty = false;
-        this.clearShadow = this.clearInfo(ctx);
-      }
+      ctx.setDefaults(this);
+      this.draw(ctx);
+      isDirty = false;
+      this.clearShadow = this.clearInfo(ctx);
+    };
+
+    this.clear = function(ctx){
+      ctx.clear(this.clearShadow ? this.clearShadow: this.clearInfo(ctx));
     };
 
     this.containsPixel = function(data){
@@ -168,10 +170,6 @@
     };
 
     CanvasEngine.utilities.setProperties(this, params);
-  };
-
-  Renderer.clear = function(ctx){
-    ctx.clear(this.clearShadow);
   };
 
   CanvasEngine.EntityManager.addComponent("Renderer", function(params, entity){

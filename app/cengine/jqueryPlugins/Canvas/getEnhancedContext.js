@@ -33,7 +33,7 @@
     enhancedContext.clear = function(clearInfo){
       // Clear entire canvas
       if (!clearInfo.width && !clearInfo.height) {
-        ctx.clearRect(0, 0, this[e].width, this[e].height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       } else {
         ctx.clearRect(clearInfo.x-clearInfo.width/2, clearInfo.y-clearInfo.height/2, clearInfo.width, clearInfo.height);
       }
@@ -226,7 +226,7 @@
           }
 
           // Draw image
-          this.positionShape(renderer, renderer.width, renderer.height);
+          enhancedContext.positionShape(renderer, renderer.width, renderer.height);
           ctx.drawImage(
             img,
             renderer.sx - renderer.sWidth / 2,

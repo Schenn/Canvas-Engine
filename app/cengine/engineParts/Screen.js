@@ -7,6 +7,29 @@
     var canvases = [];
     var baseCanvas;
 
+    this.height = function(){
+      return baseCanvas.height();
+    };
+
+    this.width = function(){
+      return baseCanvas.width();
+    };
+
+    this.setScreen = function(canvas){
+      if(!(canvas instanceof jQuery)){
+        canvas = $(canvas);
+      }
+      canvases[0] = canvas;
+      baseCanvas = canvas;
+      baseCanvas.on("click", CanvasEngine.checkClickMap);
+    };
+
+    this.maximize = function(modifier){
+      canvases.forEach(function(canvas){
+        canvas.maximize(modifier);
+      });
+    };
+
     this.addZLayer = function(z){
       if(CanvasEngine.utilities.exists(canvases[z])) return;
 
@@ -18,7 +41,15 @@
       );
 
       newZ.on("click", CanvasEngine.checkClickMap);
+      // Set reference to the canvas element, not its jQuery wrapped version.
+      // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
       canvases[z] = newZ;
+    };
+
+    this.removeZLayer = function(z){
+      if(z > 0) {
+        canvases[z].remove();
+      }
     };
 
     /**
@@ -27,41 +58,26 @@
      */
     this.drawScreen = function(){
       canvases.forEach(function(canvas, z){
-        var ctx = $(canvas).getEnhancedContext();
+        var ctx = canvas.getEnhancedContext();
 
         CanvasEngine.drawZ(z, ctx);
       });
     };
 
-    this.removeZLayer = function(z){
-      if(z > 0) {
-        $(canvases[z]).remove();
-      }
-    };
-
-    this.maximize = function(modifier){
-      canvases.forEach(function(canvas){
-        $(canvas).maximize(modifier);
-      });
-    };
-
-    this.setScreen = function(canvas){
-      canvases[0] = canvas;
-      baseCanvas = $(canvas);
-    };
-
     this.clear = function(entity){
-      var ctx = $(canvases[entity.z_index]).getEnhancedContext();
-      entity.messageToComponent("Renderer", "Clear", ctx);
+      var ctx = canvases[entity.z_index].getEnhancedContext();
+      entity.messageToComponent("Renderer", "clear", ctx);
     };
 
-    this.height = function(){
-      return canvases[0].height;
+    this.atPixel = function(x, y, h, w, flag){
+      // For each canvas
+      // Ask the canvas if it has a solid pixel at that location
+      // If so, collect it.
+
+      // Return [z:solidPixel] or []
+
     };
 
-    this.width = function(){
-      return canvases[0].width;
-    };
   };
 
   CanvasEngine.Screen = new Screen();

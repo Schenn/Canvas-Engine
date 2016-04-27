@@ -71,6 +71,9 @@
         params.spritesheet = CanvasEngine.ResourceManager.getSpriteSheet(params.spritesheet);
       }
 
+      // Make sure that the z_index is set properly
+
+
       if(CanvasEngine.utilities.exists(dependentEntities[type])) {
         return make[type](createType(dependentEntities[type]), params);
       }

@@ -12,15 +12,13 @@
       sh= 0,
       cropFromCenter = CanvasEngine.utilities.exists(params.cropFromCenter) ? params.cropFromCenter : true;
 
-    var callback = CanvasEngine.utilities.isFunction(params.callback) ? params.callback : null;
-
     Object.defineProperties(this, {
       "source":props.lockedProperty(source),
-      "sx":props.defaultProperty(sx, callback),
-      "sy":props.defaultProperty(sy, callback),
-      "sWidth":props.defaultProperty(sw, callback),
-      "sHeight":props.defaultProperty(sh, callback),
-      "cropFromCenter":props.defaultProperty(cropFromCenter, callback)
+      "sx":props.defaultProperty(sx, params.callback ),
+      "sy":props.defaultProperty(sy, params.callback ),
+      "sWidth":props.defaultProperty(sw, params.callback ),
+      "sHeight":props.defaultProperty(sh, params.callback ),
+      "cropFromCenter":props.defaultProperty(cropFromCenter, params.callback )
 
     });
 
@@ -40,14 +38,14 @@
     };
 
     this.setSprite = function(sprite){
-      sx = sprite.x;
-      sy = sprite.y;
-      sw = sprite.width;
-      sh = sprite.height;
+      this.sx = sprite.x;
+      this.sy = sprite.y;
+      this.sWidth = sprite.width;
+      this.sHeight = sprite.height;
     };
   };
 
-  CanvasEngine.EntityManager.addComponent("Image", function(params){
-    return new img();
+  CanvasEngine.EntityManager.addComponent("Image", function(params, entity){
+    return new img(params, entity);
   }, true);
 })();

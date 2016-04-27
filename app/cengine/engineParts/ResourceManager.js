@@ -13,29 +13,51 @@
       imagePath = path;
     };
 
+    /**
+     * @todo
+     * @param name
+     * @param sound
+     */
     this.addSound = function(name, sound) {
 
     };
 
     this.addImage = function(name, path, load){
       var image = new Image();
+      images[name] = image;
       resourcesLoaded[name] = false;
       var self = this;
+      var triggerOnLoad = function(){
+        if(self.resourcesAreLoaded() &&
+          resourcesLoaded[name] === true){
+
+          self.triggerCallback();
+        }
+      };
+
       image.addEventListener("load", function(){
         resourcesLoaded[name] = true;
-        if(self.resourcesAreLoaded()){
-          onLoad();
-        }
+        triggerOnLoad();
       });
-      images[name] = image;
       image.addEventListener("load", load);
+
       image.src = imagePath +"/"+path;
+
+      if(image.complete){
+        if (CanvasEngine.utilities.isFunction(load)){
+          load(image);
+        }
+        triggerOnLoad();
+      }
     };
 
     this.addSpriteSheet = function(name, path, details){
       spriteSheets[name] = new this.Resources.SpriteSheet(details);
-      this.addImage(name, path, function(image){
-        spriteSheets[name].processSprites(image);
+      resourcesLoaded[name+"sheet"] = false;
+      this.addImage(name, path, function(imgLoadEvent){
+        spriteSheets[name].processSprites(images[name]);
+        resourcesLoaded[name+"sheet"] = true;
+        CanvasEngine.ResourceManager.triggerCallback();
       });
 
     };
@@ -70,6 +92,12 @@
 
     this.onResourcesLoaded = function(callback){
       onLoad = callback;
+    };
+
+    this.triggerCallback = function(){
+      if(this.resourcesAreLoaded() && CanvasEngine.utilities.isFunction(onLoad)){
+        onLoad();
+      }
     };
   };
 

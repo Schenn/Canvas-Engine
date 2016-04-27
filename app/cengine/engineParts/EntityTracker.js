@@ -7,6 +7,7 @@
     var entities = {};
     var entitiesByZ = [];
     var zExcludedFromInteractions = [];
+    var maxZ = 0;
 
     this.addEntities = function(ents){
       $.each(ents, function(z, z_entities){
@@ -14,6 +15,7 @@
           entities[entity.name]=entity;
           if(!CanvasEngine.utilities.exists(entitiesByZ[z])){
             entitiesByZ[z] = [];
+            maxZ = z;
           }
           entitiesByZ[z].push(entity.name);
         });
@@ -42,34 +44,40 @@
 
     this.removeEntities = function(names){
       $.each(names, function(index, name){
-        // remove each entity from the entity list
+        CanvasEngine.Screen.clear(entities[name]);
         var z = entities[name].z_index;
-        var deleteIndex;
-        // remove each entity from the z index
-        entitiesByZ[z].forEach(function(index, value){
+        var deleteIndex = -1;
+
+        // remove entity from the z index
+        entitiesByZ[z].forEach(function(value, index){
           if(value === name){
             deleteIndex = index;
           }
         });
-
-        if(CanvasEngine.utilities.exists(deleteIndex)){
+        if(deleteIndex >= 0){
           delete entitiesByZ[z][deleteIndex];
+          // Remove the empty index
+          entitiesByZ[z] = CanvasEngine.utilities.cleanArray(entitiesByZ[z]);
         }
 
-        $.cleanArray(entitiesByZ[z]);
-        // tell screen to remove the z index if its empty
+
+        // If no more entities occupy that z layer, tell the screen to remove the dispay for that z layer.
         if(entitiesByZ[z].length === 0){
           CanvasEngine.Screen.removeZLayer(z);
+          delete entitiesByZ[z];
+          entitiesByZ = CanvasEngine.utilities.cleanArray(entitiesByZ);
         }
-      });
+        // remove entity from the entity list
+        delete entities[name];
 
+      });
     };
 
     this.clearEntities = function(){
       // Starting with the last z index, work backwards, clearing each collection
       var zs = Object.keys(entitiesByZ);
 
-      for(var i = zs.length; i>0; i--){
+      for(var i = zs.length-1; i>=0; i--){
         this.removeEntities(entitiesByZ[zs[i]]);
       }
     };
@@ -102,6 +110,10 @@
       }
     };
 
+
+    this.entityCount = function(){
+      return Object.keys(entities).length;
+    };
   };
 
   CanvasEngine.EntityTracker = new EntityTracker();
