@@ -10,11 +10,13 @@
       baseline = "middle",
       fontWeight = "normal",
       fontSize = "12pt",
-      fontFamily = "sans-serif";
+      fontFamily = "sans-serif",
+      txt = "";
 
     Object.defineProperties(this, {
       "align":props.defaultProperty(align),
       "baseline":props.defaultProperty(baseline),
+      "text":props.defaultProperty(txt),
       // Font is special
       // This gives us the ability to change the text size, family and weight independently
       "font": {
