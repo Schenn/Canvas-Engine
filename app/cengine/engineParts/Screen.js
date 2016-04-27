@@ -5,14 +5,15 @@
 
   var Screen = function(){
     var canvases = [];
+    var baseCanvas;
 
     this.addZLayer = function(z){
       if(CanvasEngine.utilities.exists(canvases[z])) return;
 
-      var newZ = canvases[0].
+      var newZ = baseCanvas.
       addZLayer(
-        canvases[0].attr("height"),
-        canvases[0].attr("width"),
+        baseCanvas.attr("height"),
+        baseCanvas.attr("width"),
         z
       );
 
@@ -33,7 +34,9 @@
     };
 
     this.removeZLayer = function(z){
-
+      if(z > 0) {
+        $(canvases[z]).remove();
+      }
     };
 
     this.maximize = function(modifier){
@@ -44,6 +47,20 @@
 
     this.setScreen = function(canvas){
       canvases[0] = canvas;
+      baseCanvas = $(canvas);
+    };
+
+    this.clear = function(entity){
+      var ctx = $(canvases[entity.z_index]).getEnhancedContext();
+      entity.messageToComponent("Renderer", "Clear", ctx);
+    };
+
+    this.height = function(){
+      return canvases[0].height;
+    };
+
+    this.width = function(){
+      return canvases[0].width;
     };
   };
 
