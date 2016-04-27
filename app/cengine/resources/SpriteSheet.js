@@ -2,17 +2,16 @@
 
   var utils = CanvasEngine.utilities;
 
-  CanvasEngine.ResourceManager.Resources.SpriteSheet = function(details, source){
+  CanvasEngine.ResourceManager.Resources.SpriteSheet = function(details){
     var spriteHeight = details.height;
     var spriteWidth = details.width;
     var sprites = [];
     var spriteCache;
+    var source;
 
     if(typeof(details.sprites) !== "undefined"){
       spriteCache = details.sprites;
     }
-    this.processSprites();
-
     // If no sprites are defined, run through the image y->x, the sprite name is the index.
     // If sprites are array of names, run through the image y->x using the names provided
     var processSprites = function(){
@@ -38,7 +37,8 @@
       });
     };
 
-    this.processSprites = function(){
+    this.processSprites = function(img){
+      source = img;
       var keys = Object.keys(spriteCache);
       if(keys.length > 0 && !utils.exists(spriteCache[0])){
         processSpriteObject();
