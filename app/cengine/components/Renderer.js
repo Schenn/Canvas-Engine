@@ -136,11 +136,16 @@
       ctx.setDefaults(this);
       this.draw(ctx);
       isDirty = false;
-      this.clearShadow = this.clearInfo(ctx);
+      clearShadow = this.clearInfo(ctx);
     };
 
     this.clear = function(ctx){
-      ctx.clear(this.clearShadow ? this.clearShadow: this.clearInfo(ctx));
+      console.log(clearShadow);
+      console.log(this);
+      if(!CanvasEngine.utilities.exists(clearShadow)){
+        clearShadow = this.clearInfo(ctx);
+      }
+      ctx.clear(clearShadow);
     };
 
     this.containsPixel = function(coords){
