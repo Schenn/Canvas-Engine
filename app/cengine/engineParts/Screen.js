@@ -49,6 +49,8 @@
     this.removeZLayer = function(z){
       if(z > 0) {
         canvases[z].remove();
+        delete canvases[z];
+        canvases = CanvasEngine.utilities.cleanArray(canvases);
       }
     };
 
