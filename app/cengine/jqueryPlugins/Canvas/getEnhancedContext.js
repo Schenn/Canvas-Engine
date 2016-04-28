@@ -438,6 +438,24 @@
       return ctx.measureText(params.text);
     };
 
+    enhancedContext.atPixel = function(x,y,h,w,t){
+      var img = ctx.getImageData(x, y, w, h);
+      var data = img.data;
+      //data = [r,g,b,a] at pixel
+      if (t) //if checking for transparency
+      {
+        for (var a = 3; a < data.length; a += 4) {
+          if (data[a] > 0) //if alpha not transparent
+          {
+            return (true);
+          }
+        }
+        return (false);
+      }
+      // Otherwise, return the pixel data
+      return (data);
+    };
+
     return enhancedContext;
   };
 })(jQuery);

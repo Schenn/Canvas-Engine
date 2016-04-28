@@ -57,8 +57,11 @@ CanvasEngine.pause = function(){
 };
 
 CanvasEngine.positionsAtPixel = function(p, w, h){
-  if (CanvasEngine.Screen.atPixel(p.x, p.y, h, w, true)) {
-    return CanvasEngine.EntityTracker.positionsAtPixel(p,w,h);
+  var zPixels =CanvasEngine.Screen.atPixel(p.x, p.y, h, w, true);
+  if (zPixels.length > 0) {
+    return CanvasEngine.EntityTracker.positionsAtPixel(p,w,h, Object.keys(zPixels));
+  } else {
+    return [];
   }
 };
 

@@ -21,7 +21,7 @@
       }
       canvases[0] = canvas;
       baseCanvas = canvas;
-      baseCanvas.on("click", CanvasEngine.checkClickMap);
+      baseCanvas.on("click", this.onClick);
     };
 
     this.maximize = function(modifier){
@@ -40,7 +40,7 @@
         z
       );
 
-      newZ.on("click", CanvasEngine.checkClickMap);
+      newZ.on("click", this.onClick);
       // Set reference to the canvas element, not its jQuery wrapped version.
       // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
       canvases[z] = newZ;
@@ -69,13 +69,28 @@
       entity.messageToComponent("Renderer", "clear", ctx);
     };
 
-    this.atPixel = function(x, y, h, w, flag){
+    this.atPixel = function(x, y, h, w, transparent){
+      var pixelHits = [];
+      var zs = Object.keys(canvases);
+
       // For each canvas
-      // Ask the canvas if it has a solid pixel at that location
-      // If so, collect it.
+      $.each(zs, function(index, zIndex){
+        // Ask the canvas if it has a solid pixel at that location
+        if(canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent)){
+          pixelHits[zIndex] = true;
+        }
+        // If so, collect it.
+      });
 
-      // Return [z:solidPixel] or []
+      return pixelHits;
+    };
 
+    this.onClick = function(e){
+      var coords = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      CanvasEngine.checkClickMap(coords);
     };
 
   };

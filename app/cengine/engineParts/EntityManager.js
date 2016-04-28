@@ -63,21 +63,35 @@
       };
 
       // Replace image, sound and SpriteSheet params with their values from the ResourceManager
-      if(typeof(params.image) !== "undefined"){
+      if(CanvasEngine.utilities.exists(params.image)){
         params.image = CanvasEngine.ResourceManager.getImage(params.image);
       }
 
-      if(typeof(params.spritesheet) !== "undefined"){
+      if(CanvasEngine.utilities.exists(params.spritesheet)){
         params.spritesheet = CanvasEngine.ResourceManager.getSpriteSheet(params.spritesheet);
       }
 
       // Make sure that the z_index is set properly
+      if(!CanvasEngine.utilities.exists(params.z_index)){
+        params.z_index = CanvasEngine.EntityTracker.maxZ();
+      }
 
+      // Create the entity
+      var entity;
 
       if(CanvasEngine.utilities.exists(dependentEntities[type])) {
-        return make[type](createType(dependentEntities[type]), params);
+        entity = make[type](createType(dependentEntities[type]), params);
+      } else {
+        entity = createType(type);
       }
-      return createType(type);
+
+      // Attach the click and other event handling components.
+      if(CanvasEngine.utilities.exists(params.onClick)){
+        this.attachComponent(entity, "Click", params);
+      }
+
+
+      return entity;
     };
 
     this.setMake = function(name, func, from){

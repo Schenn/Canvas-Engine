@@ -66,6 +66,8 @@
           CanvasEngine.Screen.removeZLayer(z);
           delete entitiesByZ[z];
           entitiesByZ = CanvasEngine.utilities.cleanArray(entitiesByZ);
+
+          maxZ = Object.keys(entitiesByZ)[-1];
         }
         // remove entity from the entity list
         delete entities[name];
@@ -90,9 +92,11 @@
       return ents;
     };
 
-    this.entitiesAtPixel = function(p){
+    this.positionsAtPixel = function(p, zIndexes){
       var positions = [];
-      for (var z = entitiesByZ.length - 1; z >= 0; z--) {
+      console.log(p);
+      console.log(zIndexes);
+      for(var z =0; z< zIndexes.length; z++){
         if (!(zExcludedFromInteractions[z])) {
           var ents = this.getEntitiesByZ(z);
           for (var i = 0; i < ents.length; i++) {
@@ -102,6 +106,7 @@
           }
         }
       }
+
       if (typeof(positions[0]) !== "undefined") {
         return (positions);
       }
@@ -110,6 +115,9 @@
       }
     };
 
+    this.maxZ = function(){
+      return maxZ;
+    };
 
     this.entityCount = function(){
       return Object.keys(entities).length;
