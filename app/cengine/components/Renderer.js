@@ -145,10 +145,10 @@
 
     this.containsPixel = function(coords){
       // if we contain the pixel position
-      var leftBoundry = x;
-      var rightBoundry = x;
-      var topBoundry = y;
-      var bottomBoundry = y;
+      var leftBoundry = self.x;
+      var rightBoundry = self.x;
+      var topBoundry = self.y;
+      var bottomBoundry = self.y;
       if (fromCenter) {
         leftBoundry -= (0.5 * self.width);
         rightBoundry += (0.5 * self.width);
