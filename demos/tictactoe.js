@@ -4,6 +4,27 @@ var game = function(){
   this.player2Wins = 0;
   this.turnCounter = 0;  //turns taken
 
+  this.loadResources = function(){
+    CanvasEngine.ResourceManager.onResourcesLoaded(function(){
+      CanvasEngine.EntityTracker.getEntities(["Loading"])[0].messageToComponent("Text", "setText", "All resources loaded.");
+    });
+    CanvasEngine.ResourceManager.addSpriteSheet("ticTacSprites", "tictacsprites.png",
+      {
+        height: 50,
+        width: 50,
+        sprites:[
+          "oToken", "xToken", "positionBack", "winStar"
+        ]
+      }
+    );
+    CanvasEngine.ResourceManager.addSpriteSheet("winningStar", "starsprites.png",{
+      height: 50,
+      width: 50
+    });
+
+    CanvasEngine.ResourceManager.finishedAddingResources();
+  };
+
   this.setup = function(canvas){
     CanvasEngine.setup(canvas);
     CanvasEngine.Screen.maximize();
@@ -31,24 +52,8 @@ var game = function(){
 
     CanvasEngine.addMap(gamePieces, true);
 
-    CanvasEngine.ResourceManager.onResourcesLoaded(function(){
-      CanvasEngine.EntityTracker.getEntities(["Loading"])[0].messageToComponent("Text", "setText", "All resources loaded.");
-    });
-    CanvasEngine.ResourceManager.addSpriteSheet("ticTacSprites", "tictacsprites.png",
-      {
-        height: 50,
-        width: 50,
-        sprites:[
-          "oToken", "xToken", "positionBack", "winStar"
-        ]
-      }
-    );
-    CanvasEngine.ResourceManager.addSpriteSheet("winningStar", "starsprites.png",{
-      height: 50,
-      width: 50
-    });
+    this.loadResources();
 
-    CanvasEngine.ResourceManager.finishedAddingResources();
   };
 
   // We have to wait for our assets to finish loading before we can use them.
@@ -109,6 +114,47 @@ var game = function(){
       }
       gamePieces[i] = temp;
     }
+
+    //player 1 score labels
+    gamePieces.push({
+      name: "score1label",
+      x: 10,
+      y: 20,
+      align: 'left',
+      text: "Player 1 Wins: ",
+      z_index: 1,
+      type: "LABEL"
+    });
+    gamePieces.push({
+      name: "score1",
+      x: 25,
+      y: 35,
+      align: "left",
+      text: this.player1Wins.toString(),
+      z_index: 1,
+      type: "LABEL"
+    });
+
+    //player 2 score labels
+    gamePieces.push({
+      name: "score2label",
+      x: 10,
+      y: 60,
+      align: 'left',
+      text: "Player 2 Wins: ",
+      z_index: 1,
+      type: "LABEL"
+    });
+
+    gamePieces.push({
+      name: "score2",
+      x: 25,
+      y: 80,
+      align: "left",
+      text: this.player2Wins.toString(),
+      z_index: 1,
+      type: "LABEL"
+    });
 
     CanvasEngine.addMap(gamePieces);
 
