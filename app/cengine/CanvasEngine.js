@@ -48,7 +48,6 @@ CanvasEngine.clearEntities = function(){
 CanvasEngine.checkClickMap = function(coords){
   var ents = CanvasEngine.positionsAtPixel(coords, 1, 1);
   $.each(ents, function(index, ent){
-    console.log(ent);
     ent.broadcastToComponents("Click", coords);
   });
 };

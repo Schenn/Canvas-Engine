@@ -14,7 +14,6 @@
     };
 
     this.Click = function(args){
-      console.log("Something was clicked");
       $.each(onClick, function(index, callback){
         callback.call(entity, args);
       });
