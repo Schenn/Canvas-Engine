@@ -9,21 +9,19 @@ var game = function(){
     CanvasEngine.Screen.maximize();
 
     CanvasEngine.ResourceManager.setImagePath("tictacgraphics");
-    CanvasEngine.ResourceManager.onResourcesLoaded(function(){
-  //    tictactoe.resourcesLoaded();
-    });
+    CanvasEngine.ResourceManager.onResourcesLoaded();
     CanvasEngine.ResourceManager.addSpriteSheet("ticTacSprites", "tictacsprites.png",
       {
-        height: 100,
-        width: 100,
+        height: 50,
+        width: 50,
         sprites:[
           "oToken", "xToken", "positionBack", "winStar"
         ]
       }
     );
     CanvasEngine.ResourceManager.addSpriteSheet("winningStar", "starsprites.png",{
-      height: 100,
-      width: 100
+      height: 50,
+      width: 50
     });
 
     CanvasEngine.ResourceManager.finishedAddingResources();
@@ -33,49 +31,97 @@ var game = function(){
     // Black background box
     gamePieces[0] = {
       type: "RECT",
-      height:canvas.height,
-      width: canvas.width,
+      height:CanvasEngine.Screen.height(),
+      width: CanvasEngine.Screen.width(),
       fillStyle: "#000000"
     };
 
     gamePieces[1] = {
       type: "LABEL",
+      name: "Loading",
       text: "Loading...",
-      x: canvas.width/2,
-      y: canvas.height/2,
+      x: CanvasEngine.Screen.width()/2,
+      y: CanvasEngine.Screen.height()/2,
       z_index: 1
     };
 
-    CanvasEngine.addMap(gamePieces);
-    CanvasEngine.Screen.drawScreen();
+    CanvasEngine.addMap(gamePieces, true);
   };
 
   // We have to wait for our assets to finish loading before we can use them.
-  this.resourcesLoaded = function(){
-    CanvasEngine.EntityTracker.clearEntities();
+  this.start = function(){
+    CanvasEngine.clearEntities();
+
     var gamePieces = [];
 
-    var cHeight = CanvasEngine.Screen.height();
-    var cWidth = CanvasEngine.Screen.width();
+    var screenHeight = CanvasEngine.Screen.height();
+    var screenWidth = CanvasEngine.Screen.width();
 
     // Black background box
     gamePieces[0] = {
       type: "RECT",
-      height:canvas.height,
-      width: canvas.width,
+      height:screenHeight,
+      width: screenWidth,
       fillStyle: "#000000"
     };
 
+/**
     gamePieces[1] = {
       type: "SPRITE",
       spritesheet: "ticTacSprites",
       height: 100,
       width: 100,
       defaultSprite: "oToken",
-      x:100
+      x:100,
+      y: 100,
+      z_index:2
+    };
+**/
+
+    // the basic grey box for the tokens to go in
+    var position = {
+      type: "SPRITE",
+      spritesheet: "ticTacSprites",
+      defaultSprite: "positionBack",
+      height: ((screenHeight * .8) / 4),
+      width: ((screenWidth * .8) / 4),
+      onClick: function (e) {
+        tictactoe.addToken(e)
+      },  //calls the addToken function of our tic-tac-toe game when the box is clicked
+      fromCenter: false,
+      z_index: 2
     };
 
-    CanvasEngine.addMap(gamePieces, true);
+    //begins counting up the x and y coordinates for our boxes.
+    //Since our board is a grid, it is simpler to calculate then write out.
+    var xcount = 1;
+    var xcounter = (screenWidth * .25);
+    var ycounter = (screenHeight * .25);
+
+    for (var i = 1; i <= 9; i++) {
+      var temp = $.extend(true, {
+        slot: i
+      }, position);
+      temp.name = "slot" + i;  //gives the slot an appropriate name tied to its position in the grid
+
+      temp.x = (xcounter);
+      temp.y = (ycounter);
+
+
+      if (xcount >= 3) {
+        xcount = 1;
+        xcounter = (screenWidth * .25);
+        ycounter += temp.height + 10;
+      }
+      else {
+        xcount++;
+        xcounter += temp.width + 10;
+      }
+      gamePieces[i] = temp;
+    }
+
+    CanvasEngine.addMap(gamePieces);
+
   }
 };
 
