@@ -9,22 +9,6 @@ var game = function(){
     CanvasEngine.Screen.maximize();
 
     CanvasEngine.ResourceManager.setImagePath("tictacgraphics");
-    CanvasEngine.ResourceManager.onResourcesLoaded();
-    CanvasEngine.ResourceManager.addSpriteSheet("ticTacSprites", "tictacsprites.png",
-      {
-        height: 50,
-        width: 50,
-        sprites:[
-          "oToken", "xToken", "positionBack", "winStar"
-        ]
-      }
-    );
-    CanvasEngine.ResourceManager.addSpriteSheet("winningStar", "starsprites.png",{
-      height: 50,
-      width: 50
-    });
-
-    CanvasEngine.ResourceManager.finishedAddingResources();
 
     var gamePieces = [];
 
@@ -46,6 +30,25 @@ var game = function(){
     };
 
     CanvasEngine.addMap(gamePieces, true);
+
+    CanvasEngine.ResourceManager.onResourcesLoaded(function(){
+      CanvasEngine.EntityTracker.getEntities(["Loading"])[0].messageToComponent("Text", "setText", "All resources loaded.");
+    });
+    CanvasEngine.ResourceManager.addSpriteSheet("ticTacSprites", "tictacsprites.png",
+      {
+        height: 50,
+        width: 50,
+        sprites:[
+          "oToken", "xToken", "positionBack", "winStar"
+        ]
+      }
+    );
+    CanvasEngine.ResourceManager.addSpriteSheet("winningStar", "starsprites.png",{
+      height: 50,
+      width: 50
+    });
+
+    CanvasEngine.ResourceManager.finishedAddingResources();
   };
 
   // We have to wait for our assets to finish loading before we can use them.
