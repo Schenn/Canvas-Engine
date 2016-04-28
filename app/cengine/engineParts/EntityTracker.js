@@ -92,27 +92,21 @@
       return ents;
     };
 
-    this.positionsAtPixel = function(p, zIndexes){
+    this.positionsAtPixel = function(p,w,h, zIndexes){
       var positions = [];
-      console.log(p);
-      console.log(zIndexes);
-      for(var z =0; z< zIndexes.length; z++){
+      for(var i =0; i< zIndexes.length; i++){
+        var z = zIndexes[i];
         if (!(zExcludedFromInteractions[z])) {
           var ents = this.getEntitiesByZ(z);
-          for (var i = 0; i < ents.length; i++) {
-            if(ents.getFromComponent("Renderer", "containsPixel",{x: p.x, y: p.y})){
-              positions.push(ents[i]);
+          for (var j = 0; j < ents.length; j++) {
+            if(ents[j].getFromComponent("Renderer", "containsPixel",p)){
+              positions.push(ents[j]);
             }
           }
         }
       }
 
-      if (typeof(positions[0]) !== "undefined") {
-        return (positions);
-      }
-      else {
-        return (false);
-      }
+      return (positions);
     };
 
     this.maxZ = function(){

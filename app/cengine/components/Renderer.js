@@ -143,22 +143,21 @@
       ctx.clear(this.clearShadow ? this.clearShadow: this.clearInfo(ctx));
     };
 
-    this.containsPixel = function(data){
-      var coords = data.pixel;
+    this.containsPixel = function(coords){
       // if we contain the pixel position
       var leftBoundry = x;
       var rightBoundry = x;
       var topBoundry = y;
       var bottomBoundry = y;
       if (fromCenter) {
-        leftBoundry -= (0.5 * width);
-        rightBoundry += (0.5 * width);
-        topBoundry -= (0.5 * height);
-        bottomBoundry += (0.5 * height);
+        leftBoundry -= (0.5 * self.width);
+        rightBoundry += (0.5 * self.width);
+        topBoundry -= (0.5 * self.height);
+        bottomBoundry += (0.5 * self.height);
       }
       else {
-        rightBoundry += width;
-        bottomBoundry += height;
+        rightBoundry += self.width;
+        bottomBoundry += self.height;
       }
 
       return ((coords.x >= leftBoundry) && (coords.x <= rightBoundry) &&

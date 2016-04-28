@@ -81,7 +81,6 @@
         }
         // If so, collect it.
       });
-
       return pixelHits;
     };
 
