@@ -35,7 +35,11 @@
       if (!clearInfo.width && !clearInfo.height) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       } else {
-        ctx.clearRect(clearInfo.x-clearInfo.width/2, clearInfo.y-clearInfo.height/2, clearInfo.width, clearInfo.height);
+        if(this.fromCenter) {
+          ctx.clearRect(clearInfo.x - clearInfo.width / 2, clearInfo.y - clearInfo.height / 2, clearInfo.width, clearInfo.height);
+        } else {
+          ctx.clearRect(clearInfo.x, clearInfo.y, clearInfo.width, clearInfo.height);
+        }
       }
     };
 
