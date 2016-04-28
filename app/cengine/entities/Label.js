@@ -61,7 +61,6 @@
       },
       draw: function(ctx){
         ctx.drawText($.extend({}, this, entity.getFromComponent("Text", "asObject")));
-        console.log("I should be called after clearing.");
       }
     }, params));
 

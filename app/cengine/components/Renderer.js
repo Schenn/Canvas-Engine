@@ -140,8 +140,6 @@
     };
 
     this.clear = function(ctx){
-      console.log(clearShadow);
-      console.log(this);
       if(!CanvasEngine.utilities.exists(clearShadow)){
         clearShadow = this.clearInfo(ctx);
       }

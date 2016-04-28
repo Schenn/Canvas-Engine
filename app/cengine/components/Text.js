@@ -37,10 +37,7 @@
       }
     });
 
-    this.font = utils.exists(params.font) ? params.font : "normal 1em Georgia, 'Times New Roman', Times, serif";
-
-    // The text to render
-    this.text = utils.exists(params.text) ? params.text : "";
+    CanvasEngine.utilities.setProperties(this, params);
 
     this.getEntity = function(){
       return entity;
@@ -53,6 +50,7 @@
     this.setText = function(phrase){
       this.text = phrase;
     };
+
   };
 
   CanvasEngine.EntityManager.addComponent("Text", function(params, entity){
