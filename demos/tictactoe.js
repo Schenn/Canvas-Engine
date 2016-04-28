@@ -65,19 +65,6 @@ var game = function(){
       fillStyle: "#000000"
     };
 
-/**
-    gamePieces[1] = {
-      type: "SPRITE",
-      spritesheet: "ticTacSprites",
-      height: 100,
-      width: 100,
-      defaultSprite: "oToken",
-      x:100,
-      y: 100,
-      z_index:2
-    };
-**/
-
     // the basic grey box for the tokens to go in
     var position = {
       type: "SPRITE",
@@ -122,7 +109,11 @@ var game = function(){
 
     CanvasEngine.addMap(gamePieces);
 
-  }
+  };
+
+  this.addToken = function(position){
+    console.log(position);
+  };
 };
 
 window.tictactoe = new game();
