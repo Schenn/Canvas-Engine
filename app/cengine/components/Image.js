@@ -10,7 +10,7 @@
       sy= 0,
       sw= 0,
       sh= 0,
-      cropFromCenter = CanvasEngine.utilities.exists(params.cropFromCenter) ? params.cropFromCenter : true;
+      cropFromCenter = CanvasEngine.utilities.exists(params.cropFromCenter) ? params.cropFromCenter : false;
 
     Object.defineProperties(this, {
       "source":props.lockedProperty(source),
