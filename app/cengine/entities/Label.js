@@ -25,9 +25,9 @@
           _y = this.y-1;
 
         var text = entity.getFromComponent("Text","asObject");
-        width = (ctx.measureText({font: text.font, text:text.text}).width)+2;
+        width = (ctx.measureText({font: text.font, text:text.text}).width)+4;
         //noinspection JSSuspiciousNameCombination
-        height = (ctx.measureText({font: text.font, text:"MWO"}).width/3)+2;
+        height = (ctx.measureText({font: text.font, text:"MWO"}).width/3)+4;
 
         // Adjust x for alignment
         switch(text.align){
