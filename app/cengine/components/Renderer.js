@@ -115,7 +115,7 @@
     if(!CanvasEngine.utilities.exists(params.clearInfo)){
       this.clearInfo =function() {
         return ({
-          x: Math.ceil(this.x - 1),
+          x: Math.ceil(this.x),
           y: Math.ceil(this.y),
           height: Math.ceil(this.height),
           width: Math.ceil(this.width),
