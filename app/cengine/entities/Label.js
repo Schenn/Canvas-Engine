@@ -21,13 +21,13 @@
       clearInfo: function(ctx){
         var width,
           height,
-          _x = this.x,
-          _y = this.y;
+          _x = this.x-1,
+          _y = this.y-1;
 
         var text = entity.getFromComponent("Text","asObject");
-        width = ctx.measureText({font: text.font, text:"M"+text.text+"O"}).width;
+        width = (ctx.measureText({font: text.font, text:text.text}).width)+2;
         //noinspection JSSuspiciousNameCombination
-        height = ctx.measureText({font: text.font, text:"MWO"}).width;
+        height = (ctx.measureText({font: text.font, text:"MWO"}).width/3)+2;
 
         // Adjust x for alignment
         switch(text.align){
