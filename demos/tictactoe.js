@@ -78,10 +78,10 @@ var game = function(){
       type: "SPRITE",
       spritesheet: "ticTacSprites",
       defaultSprite: "positionBack",
-      height: ((screenHeight * .8) / 4),
-      width: ((screenWidth * .8) / 4),
+      height: parseInt(((screenHeight * .8) / 4)),
+      width: parseInt(((screenWidth * .8) / 4)),
       onClick: function (e) {
-        tictactoe.addToken(e)
+        tictactoe.addToken(this)
       },  //calls the addToken function of our tic-tac-toe game when the box is clicked
       fromCenter: false,
       z_index: 2
@@ -90,8 +90,8 @@ var game = function(){
     //begins counting up the x and y coordinates for our boxes.
     //Since our board is a grid, it is simpler to calculate then write out.
     var xcount = 1;
-    var xcounter = (screenWidth * .25);
-    var ycounter = (screenHeight * .25);
+    var xcounter = parseInt((screenWidth * .25));
+    var ycounter = parseInt((screenHeight * .25));
 
     for (var i = 1; i <= 9; i++) {
       var temp = $.extend(true, {
@@ -105,7 +105,7 @@ var game = function(){
 
       if (xcount >= 3) {
         xcount = 1;
-        xcounter = (screenWidth * .25);
+        xcounter = (parseInt(screenWidth * .25));
         ycounter += temp.height + 10;
       }
       else {
@@ -161,7 +161,18 @@ var game = function(){
   };
 
   this.addToken = function(position){
-    console.log(position);
+    switch(this.currentPlayer){
+      case 1:
+        position.setSprite("oToken");
+        this.currentPlayer = 2;
+        break;
+      case 2:
+        position.setSprite("xToken");
+        this.currentPlayer = 1;
+        break;
+      default:
+        break;
+    }
   };
 };
 
