@@ -171,6 +171,10 @@
       return isDirty;
     };
 
+    this.asObject = function(){
+      return $.extend({}, this);
+    };
+
     CanvasEngine.utilities.setProperties(this, params);
   };
 
