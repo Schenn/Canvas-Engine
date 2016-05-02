@@ -2,7 +2,9 @@ var game = function(){
   this.currentPlayer = 1;
   this.player1Wins = 0;  //total wins
   this.player2Wins = 0;
-  this.turnCounter = 0;  //turns taken
+  this.turnCounters = [0,0];  //turns taken
+  this.positionsClaimed = {};
+  this.gameOver = false;
 
   this.loadResources = function(){
     CanvasEngine.ResourceManager.onResourcesLoaded(function(){
@@ -161,18 +163,93 @@ var game = function(){
   };
 
   this.addToken = function(position){
-    switch(this.currentPlayer){
-      case 1:
-        position.setSprite("oToken");
-        this.currentPlayer = 2;
+    if(!CanvasEngine.utilities.exists(this.positionsClaimed[position.name]) && !this.gameOver){
+      this.positionsClaimed[position.name] = this.currentPlayer;
+      var spriteName;
+      switch(this.currentPlayer){
+        case 1:
+          spriteName = "oToken";
+          break;
+        case 2:
+          spriteName = "xToken";
+          break;
+        default:
+          console.log("Invalid Player number");
+          break;
+      }
+      var positionData = position.getFromComponent("Renderer", "asObject");
+      var token = {
+        x:positionData.x,
+        y:positionData.y,
+        type: "SPRITE",
+        spritesheet: "ticTacSprites",
+        defaultSprite: spriteName,
+        height: positionData.height,
+        width: positionData.width,
+        fromCenter: positionData.fromCenter,
+        z_index:3
+      };
+
+      CanvasEngine.addMap([token]);
+
+      this.turnCounters[this.currentPlayer-1]++;
+
+      if(this.turnCounters[this.currentPlayer-1] >= 3){
+        this.checkForWinner(position);
+      }
+      this.currentPlayer = (this.currentPlayer ==1) ? 2 : 1;
+    }
+  };
+
+  this.checkForWinner = function(position){
+    // Check to see if the claimed positions form a line and have the same owner
+    /**
+    var slots;
+    switch (position.name) {
+      case(1):
+        slots = [this.ce.getEntities(["slot2owned", "slot3owned"]),
+          this.ce.getEntities(["slot4owned", "slot7owned"]),
+          this.ce.getEntities(["slot5owned", "slot9owned"])];
         break;
-      case 2:
-        position.setSprite("xToken");
-        this.currentPlayer = 1;
+      case(2):
+        slots = [this.ce.getEntities(["slot1owned", "slot3owned"]),
+          this.ce.getEntities(["slot5owned", "slot8owned"])];
         break;
-      default:
+      case(3):
+        slots = [this.ce.getEntities(["slot2owned", "slot1owned"]),
+          this.ce.getEntities(["slot5owned", "slot7owned"]),
+          this.ce.getEntities(["slot6owned", "slot9owned"])];
+        break;
+      case(4):
+        slots = [this.ce.getEntities(["slot1owned", "slot7owned"]),
+          this.ce.getEntities(["slot5owned", "slot6owned"])];
+        break;
+      case(5):
+        slots = [this.ce.getEntities(["slot1owned", "slot9owned"]),
+          this.ce.getEntities(["slot2owned", "slot8owned"]),
+          this.ce.getEntities(["slot3owned", "slot7owned"]),
+          this.ce.getEntities(["slot4owned", "slot6owned"])];
+        break;
+      case(6):
+        slots = [this.ce.getEntities(["slot4owned", "slot5owned"]),
+          this.ce.getEntities(["slot3owned", "slot9owned"])];
+        break;
+      case(7):
+        slots = [this.ce.getEntities(["slot1owned", "slot4owned"]),
+          this.ce.getEntities(["slot3owned", "slot5owned"]),
+          this.ce.getEntities(["slot9owned", "slot8owned"])];
+        break;
+      case(8):
+        slots = [this.ce.getEntities(["slot5owned", "slot2owned"]),
+          this.ce.getEntities(["slot7owned", "slot9owned"])];
+        break;
+      case(9):
+        slots = [this.ce.getEntities(["slot1owned", "slot5owned"]),
+          this.ce.getEntities(["slot3owned", "slot6owned"]),
+          this.ce.getEntities(["slot7owned", "slot8owned"])];
         break;
     }
+  **/
   };
 };
 
