@@ -9,6 +9,10 @@
     var zExcludedFromInteractions = [];
     var maxZ = 0;
 
+    /**
+     * Add an array of entities to the entity tracker
+     * @param ents [zIndex=>entity,..]
+     */
     this.addEntities = function(ents){
       $.each(ents, function(z, z_entities){
         $.each(z_entities, function(index, entity){
