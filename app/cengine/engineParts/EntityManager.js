@@ -24,6 +24,8 @@
           val = Number(val);
         } else if (typeof(privateVar) == "string"){
           val = val.toString();
+        } else if(typeof(privateVar) == "boolean"){
+          val = Boolean(val);
         }
         privateVar = val;
         if(CanvasEngine.utilities.isFunction(callback)){

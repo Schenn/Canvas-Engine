@@ -12,7 +12,7 @@
     var onBeep = utils.isFunction(params.onElapsed) ? params.onElapsed : null,
       onUpdate = utils.isFunction(params.onUpdate) ? params.onUpdate : null,
       timeUntilBeep = utils.exists(params.duration) ? params.duration : 0,
-      beep = this.getMS() + timeUntilBeep;
+      beep = date.getDate() + timeUntilBeep;
 
     this.update = function(){
       if(isActive) {
@@ -25,7 +25,7 @@
           this.getMS() >= beep) {
 
           onBeep(this.deltaTime);
-          beep += timeUntilBeep;
+          beep = this.getMS()+ timeUntilBeep;
         }
 
         if (utils.isFunction(onUpdate)) {
@@ -40,27 +40,27 @@
      * @method
      *
      */
-    this.getMS = (function () {
+    this.getMS = function () {
       return (date.getTime());
-    });
+    };
 
     /**
      * Get the current last updated time in seconds
      * @type {Function}
      * @method
      */
-    this.getS = (function () {
+    this.getS = function () {
       return (Math.round(date.getTime / 1000));
-    });
+    };
 
     /**
      * Get the time since the last update request
      * @type {Function}
      * @method
      */
-    this.deltaTime = (function () {
+    this.deltaTime = function () {
       return ((date.getTime() - delta.getTime()) / 1000);
-    });
+    };
 
     this.getEntity = function(){
       return entity;

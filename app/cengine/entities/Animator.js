@@ -5,7 +5,7 @@
   // Animates an array of strings over time.
   // Why? You ask. Because those strings can then be applied against maps somewhere else with more relevant information.
   EM.setMake("Animator", function (entity, params) {
-    var frames, baseDuration, duration, frameCount, currentFrame;
+    var frames, baseDuration, duration, frameCount, currentFrame=0;
 
     var onFrameChange = params.onFrameChange;
 
@@ -22,15 +22,19 @@
 
     baseDuration = params.duration;
 
-    duration = (!utilities.exists(frames) || frames.length === 0 || baseDuration === 0) ? 0 : baseDuration / frameCount;
+    duration = (baseDuration > 0) ? baseDuration / frameCount : 0;
+
 
     //Add a Timer Component
     EM.attachComponent(entity,"Timer", {duration: duration, onElapsed: function(){
-      if(++currentFrame > frameCount){
+      currentFrame++;
+      if(currentFrame > frameCount-1){
         currentFrame = 0;
       }
       onFrameChange(currentFrame);
     }});
+
+    return entity;
   });
 
 
