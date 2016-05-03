@@ -27,6 +27,10 @@
       }
     });
 
+    entity.plot = function(coords){
+      entity.messageToComponent("PointPlotter","plot", coords);
+    };
+
     return entity;
   });
 
