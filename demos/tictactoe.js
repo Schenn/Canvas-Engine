@@ -82,7 +82,7 @@ var game = function(){
       defaultSprite: "positionBack",
       height: parseInt(((screenHeight * .8) / 4)),
       width: parseInt(((screenWidth * .8) / 4)),
-      onClick: function (e) {
+      onClick: function () {
         tictactoe.addToken(this)
       },  //calls the addToken function of our tic-tac-toe game when the box is clicked
       fromCenter: false,
@@ -163,8 +163,9 @@ var game = function(){
   };
 
   this.addToken = function(position){
-    if(!CanvasEngine.utilities.exists(this.positionsClaimed[position.name]) && !this.gameOver){
-      this.positionsClaimed[position.name] = this.currentPlayer;
+    var slot = position.name.substr(4,1);
+    if(!CanvasEngine.utilities.exists(this.positionsClaimed[slot]) && !this.gameOver){
+      this.positionsClaimed[slot] = this.currentPlayer;
       var spriteName;
       switch(this.currentPlayer){
         case 1:
@@ -202,54 +203,127 @@ var game = function(){
   };
 
   this.checkForWinner = function(position){
-    // Check to see if the claimed positions form a line and have the same owner
-    /**
-    var slots;
-    switch (position.name) {
-      case(1):
-        slots = [this.ce.getEntities(["slot2owned", "slot3owned"]),
-          this.ce.getEntities(["slot4owned", "slot7owned"]),
-          this.ce.getEntities(["slot5owned", "slot9owned"])];
+    // Slots is an array of other positions which may form a line with this position
+    var slots = [[],
+      [
+        [2,3],
+        [4,7],
+        [5,9]
+      ],[
+        [1,3],
+        [5,8]
+      ],[
+        [2,1],
+        [5,7],
+        [6,9]
+      ],[
+        [1,7],
+        [5,6]
+      ],[
+        [1,9],
+        [2,8],
+        [3,7],
+        [4,6]
+      ],[
+        [4,5],
+        [3,9]
+      ],[
+        [
+          [1,4],
+          [3,5],
+          [8,9]
+        ]
+      ],[
+        [2,5],
+        [7,9]
+      ],[
+        [1,5],
+        [3,6],
+        [7,8]
+      ]
+    ];
+
+    var positionSlot = position.name.substr(4,1);
+    var matchingSlots = slots[positionSlot];
+    var winner = 0;
+    var matching = [];
+    for(var i=0; i<matchingSlots.length; i++){
+      var slotA = matchingSlots[i][0];
+      var slotB = matchingSlots[i][1];
+
+      if(this.positionsClaimed[slotA] == this.positionsClaimed[slotB] == this.positionsClaimed[positionSlot]){
+        winner = this.positionsClaimed[slotA];
+        matching.push(slotA, slotB, positionSlot);
         break;
-      case(2):
-        slots = [this.ce.getEntities(["slot1owned", "slot3owned"]),
-          this.ce.getEntities(["slot5owned", "slot8owned"])];
-        break;
-      case(3):
-        slots = [this.ce.getEntities(["slot2owned", "slot1owned"]),
-          this.ce.getEntities(["slot5owned", "slot7owned"]),
-          this.ce.getEntities(["slot6owned", "slot9owned"])];
-        break;
-      case(4):
-        slots = [this.ce.getEntities(["slot1owned", "slot7owned"]),
-          this.ce.getEntities(["slot5owned", "slot6owned"])];
-        break;
-      case(5):
-        slots = [this.ce.getEntities(["slot1owned", "slot9owned"]),
-          this.ce.getEntities(["slot2owned", "slot8owned"]),
-          this.ce.getEntities(["slot3owned", "slot7owned"]),
-          this.ce.getEntities(["slot4owned", "slot6owned"])];
-        break;
-      case(6):
-        slots = [this.ce.getEntities(["slot4owned", "slot5owned"]),
-          this.ce.getEntities(["slot3owned", "slot9owned"])];
-        break;
-      case(7):
-        slots = [this.ce.getEntities(["slot1owned", "slot4owned"]),
-          this.ce.getEntities(["slot3owned", "slot5owned"]),
-          this.ce.getEntities(["slot9owned", "slot8owned"])];
-        break;
-      case(8):
-        slots = [this.ce.getEntities(["slot5owned", "slot2owned"]),
-          this.ce.getEntities(["slot7owned", "slot9owned"])];
-        break;
-      case(9):
-        slots = [this.ce.getEntities(["slot1owned", "slot5owned"]),
-          this.ce.getEntities(["slot3owned", "slot6owned"]),
-          this.ce.getEntities(["slot7owned", "slot8owned"])];
-        break;
+        // break the loop and announce the winner!
+      }
     }
-  **/
+
+    if(winner > 0){
+      // Announce the winner
+      this.announceWinner(winner,matching);
+    } else if(this.turnCounters[0] + this.turnCounters[1] >= 9){
+      // It's a draw!
+      this.announceDraw();
+    }
+
+  };
+
+  this.announceWinner = function(winner, matchingPositions){
+    this.gameOver = true;
+
+    // Sort the positions into lowest -> highest order
+    // We're only sorting 1-9, so regular js sort will work ok here.
+    matchingPositions = matchingPositions.sort();
+
+    // Get the positions of the 3 matching positions
+    var positions = CanvasEngine.EntityTracker.getEntities(
+      ["slot"+matchingPositions[0],
+        "slot"+matchingPositions[1],
+        "slot"+matchingPositions[2]]);
+
+    // Draw a line between their xy coordinates + 1/2 their height and width as they are not being drawn fromCenter
+    var coords = [];
+    for(var i = 0; i < positions.length; i++){
+      var data = positions[i].getFromComponent("Renderer", "asObject");
+      coords.push ({
+        x: data.x + data.width/2, y:data.y + data.height/2
+      });
+    }
+
+    var line = CanvasEngine.EntityManager.create("LINE",{
+      z_index:4,
+      strokeStyle: "#ffffff",
+      strokeJoin: "round"
+    });
+
+    line.plot(coords);
+    var winLabel = CanvasEngine.EntityManager.create("LABEL",{
+      x: CanvasEngine.Screen.width() / 2,
+      y: 40,
+      z_index: 1,
+      name: "winnerLabel",
+      font: "bold 22px Verdana, Arial, Helvetica, sans-serif",
+      align: "center",
+      text: "Player "+winner+ " Wins!"
+    });
+
+
+    // Add the winning star animatedSprites
+
+    // Add the moving star
+
+    var entities = {
+      1: [winLabel],
+      4: [line]
+    };
+
+    CanvasEngine.addEntities(entities);
+  };
+
+  this.announceDraw = function(){
+    this.gameOver = true;
+
   };
 };
 
