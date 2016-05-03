@@ -4,7 +4,7 @@ var game = function(){
   var player2 = 0;
   this.turnCounters = [0,0];  //turns taken
   this.positionsClaimed = {};
-  this.gameOver = false;
+  var gameOver = false;
 
 
   var self = this;
@@ -14,6 +14,9 @@ var game = function(){
     }),
     "player2Wins": CanvasEngine.EntityManager.properties.defaultProperty(player2, function(){
       CanvasEngine.EntityTracker.getEntities(["score2"])[0].messageToComponent("Text", "setText", self.player2Wins);
+    }),
+    "gameOver": CanvasEngine.EntityManager.properties.defaultProperty(gameOver, function(){
+      self.onGameOver();
     })
   });
 
@@ -281,7 +284,6 @@ var game = function(){
   };
 
   this.announceWinner = function(winner, matchingPositions){
-    this.gameOver = true;
 
     // Sort the positions into lowest -> highest order
     // We're only sorting 1-9, so regular js sort will work ok here.
@@ -310,18 +312,13 @@ var game = function(){
 
     line.plot(coords);
     var winLabel = CanvasEngine.EntityManager.create("LABEL",{
-      x: CanvasEngine.Screen.width() / 2,
+      x: (CanvasEngine.Screen.width() / 2),
       y: 40,
       z_index: 1,
-      name: "winnerLabel",
       font: "bold 22px Verdana, Arial, Helvetica, sans-serif",
       align: "center",
       text: "Player "+winner+ " Wins!"
     });
-
-    // Add the winning star animatedSprites
-
-    // Add the moving star
 
     var entities = {
       1: [winLabel],
@@ -340,12 +337,56 @@ var game = function(){
       default:
         break;
     }
+
+    this.gameOver = true;
   };
 
   this.announceDraw = function(){
-    this.gameOver = true;
+    CanvasEngine.addMap([
+      {
+        type: "LABEL",
+        x: (CanvasEngine.Screen.width() / 2),
+        y: 40,
+        z_index: 1,
+        font: "bold 22px Verdana, Arial, Helvetica, sans-serif",
+        align: "center",
+        text: "DRAW GAME"
+      }
+    ]);
 
+    this.gameOver = true;
   };
+
+  this.onGameOver = function(){
+    // Add game over stars
+
+    CanvasEngine.addMap([{
+      type: "ASPRITE",
+      name: "congratsStar",
+      spritesheet: "winningStar",
+      fromCenter: false,
+      x: (CanvasEngine.Screen.width() *0.2),
+      y: -5,
+      height: 100,
+      width: 100,
+      z_index: 6,
+      duration: 2000,
+      frameCount:4
+    },{
+      type: "ASPRITE",
+      spritesheet: "winningStar",
+      fromCenter: false,
+      x: (CanvasEngine.Screen.width() *0.75),
+      y: -5,
+      height: 100,
+      width: 100,
+      duration: 2000,
+      frameCount:4
+    }
+    ]);
+
+    // Add falling stars
+  }
 };
 
 window.tictactoe = new game();
