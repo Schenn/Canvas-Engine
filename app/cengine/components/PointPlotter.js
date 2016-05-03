@@ -9,14 +9,15 @@
     var coordinateArray=[];
     var coordinateObj = {};
 
-    this.coords = props.defaultProperty(coordinateArray,params.callback);
+    Object.defineProperty(this,"coords",props.defaultProperty(coordinateObj));
 
     this.plot = function(coords){
       coordinateArray = coords;
       for (var i = 1; i <= coords.length; i++) {
+
         // If we don't have the x coordinate property, create it.
         if(!coordinateObj.hasOwnProperty("x"+i)) {
-          coordinateObj["x"+ i] = props.defaultProperty(coords[i-1].x, params.callback);
+          Object.defineProperty(coordinateObj,"x"+i,props.defaultProperty(coords[i-1].x, params.callback));
         }
         else {
           coordinateObj["x" + i] = coords[i - 1].x;
@@ -24,7 +25,7 @@
 
         // If we don't have the y coordinate property, create it.
         if(!coordinateObj.hasOwnProperty("y"+i)) {
-          coordinateObj["y"+ i] = props.defaultProperty(coords[i-1].y, params.callback);
+          Object.defineProperty(coordinateObj,"y"+i,props.defaultProperty(coords[i-1].y, params.callback));
         } else {
           coordinateObj["y" + i] = coords[i - 1].y;
         }
