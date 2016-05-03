@@ -70,6 +70,9 @@
           return components[componentName][funcName].call(components[componentName]);
         }
       }
+      else {
+        // Error handle
+      }
     };
 
   }
