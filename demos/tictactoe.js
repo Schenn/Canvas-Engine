@@ -1,10 +1,21 @@
 var game = function(){
   this.currentPlayer = 1;
-  this.player1Wins = 0;  //total wins
-  this.player2Wins = 0;
+  var player1 = 0;  //total wins
+  var player2 = 0;
   this.turnCounters = [0,0];  //turns taken
   this.positionsClaimed = {};
   this.gameOver = false;
+
+
+  var self = this;
+  Object.defineProperties(this, {
+    "player1Wins": CanvasEngine.EntityManager.properties.defaultProperty(player1, function(){
+      CanvasEngine.EntityTracker.getEntities(["score1"])[0].messageToComponent("Text", "setText", self.player1Wins);
+    }),
+    "player2Wins": CanvasEngine.EntityManager.properties.defaultProperty(player2, function(){
+      CanvasEngine.EntityTracker.getEntities(["score2"])[0].messageToComponent("Text", "setText", self.player2Wins);
+    })
+  });
 
   this.loadResources = function(){
     CanvasEngine.ResourceManager.onResourcesLoaded(function(){
@@ -308,7 +319,6 @@ var game = function(){
       text: "Player "+winner+ " Wins!"
     });
 
-
     // Add the winning star animatedSprites
 
     // Add the moving star
@@ -319,6 +329,17 @@ var game = function(){
     };
 
     CanvasEngine.addEntities(entities);
+
+    switch(winner){
+      case 1:
+        this.player1Wins++;
+        break;
+      case 2:
+        this.player2Wins++;
+        break;
+      default:
+        break;
+    }
   };
 
   this.announceDraw = function(){
