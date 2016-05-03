@@ -87,6 +87,8 @@
     };
 
     this.onClick = function(e){
+      e.stopPropagation();
+      e.cancelBubble = true;
       var coords = {
         x: e.offsetX,
         y: e.offsetY
