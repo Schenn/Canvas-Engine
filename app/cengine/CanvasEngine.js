@@ -3,8 +3,13 @@ var CanvasEngine = {
 };
 CanvasEngine.addMap = function(screenMap, start){
   // Convert to entity Array
+
   var entities = this.EntityManager.fromMap(screenMap);
 
+  this.addEntities(entities, start);
+};
+
+CanvasEngine.addEntities = function(entities, start){
   $.each(entities, function(z){
     CanvasEngine.Screen.addZLayer(z);
   });
