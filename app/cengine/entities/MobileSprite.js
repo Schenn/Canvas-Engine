@@ -5,8 +5,16 @@
   // Needs a method to determine which animation to use
   EM.setMake("MSPRITE", function (entity, params) {
 
+    if(utilities.isFunction(params.onMovement)){
+      entity.onMovement = params.onMovement.bind(entity);
+    }
+
     function updateRendererOnMovement(dir, val){
-      entity.messageToComponent("Renderer", "setPosition", {dir: dir, val: val});
+      var data = {dir: dir, val: val};
+      entity.messageToComponent("Renderer", "setPosition", data);
+      if(utilities.isFunction(entity.onMovement)){
+        entity.onMovement.call(entity, data);
+      }
     }
 
     // A mob needs to have a movement component
