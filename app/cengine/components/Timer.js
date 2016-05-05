@@ -18,7 +18,6 @@
       if(isActive) {
         delta = date;
         date = new Date();
-
         // Only beep if we have all the information we need to beep.
         if (utils.isFunction(onBeep) &&
           timeUntilBeep > 0 &&
