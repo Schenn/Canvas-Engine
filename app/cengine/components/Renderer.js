@@ -175,6 +175,13 @@
       return $.extend({}, this);
     };
 
+    this.setPosition = function(position){
+      if((position.dir == "x" || position.dir == "y")){
+        this[position.dir] = position.val;
+      }
+
+    };
+
     CanvasEngine.utilities.setProperties(this, params);
   };
 
