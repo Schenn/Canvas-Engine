@@ -24,6 +24,13 @@
 
     duration = (baseDuration > 0) ? baseDuration / frameCount : 0;
 
+    entity.disable = function(){
+      entity.messageToComponent("Timer", "disable");
+    };
+
+    entity.enable = function(){
+      entity.messageToComponent("Timer", "enable");
+    };
 
     //Add a Timer Component
     EM.attachComponent(entity,"Timer", {duration: duration, onElapsed: function(){
@@ -31,7 +38,7 @@
       if(currentFrame > frameCount-1){
         currentFrame = 0;
       }
-      onFrameChange(currentFrame);
+      onFrameChange(frames[currentFrame]);
     }});
 
     return entity;

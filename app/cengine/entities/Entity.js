@@ -75,6 +75,22 @@
       }
     };
 
+    this.messageToSubEntity = function(entityName, funcName, args){
+      if(utils.exists(subEntities[entityName]) &&
+        utils.isFunction(subEntities[entityName][funcName])){
+
+        if(utils.exists(args)) {
+          subEntities[entityName][funcName].call(subEntities[entityName], args);
+        }else {
+          subEntities[entityName][funcName].call(subEntities[entityName]);
+        }
+      }
+    };
+
+    this.getComponentList = function(){
+      return $.extend({}, components);
+    };
+
   }
 
   EM.setBaseEntityGenerator(function(params){
