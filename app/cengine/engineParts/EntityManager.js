@@ -69,8 +69,21 @@
         params.image = CanvasEngine.ResourceManager.getImage(params.image);
       }
 
-      if(CanvasEngine.utilities.exists(params.spritesheet)){
+      if(CanvasEngine.utilities.exists(params.spritesheet) && typeof(params.spritesheet) === "string"){
         params.spritesheet = CanvasEngine.ResourceManager.getSpriteSheet(params.spritesheet);
+      } else if(CanvasEngine.utilities.exists(params.spritesheets)){
+        /**
+         * {
+         *   refName:
+         *       [sheetName]
+         * }
+         */
+        $.each(params.spritesheets, function(refName,sheetName){
+
+          if(typeof(sheetName) === 'string') {
+            params.spritesheets[refName] = CanvasEngine.ResourceManager.getSpriteSheet(sheetName);
+          }
+        });
       }
 
       // Make sure that the z_index is set properly
@@ -82,7 +95,7 @@
       var entity;
 
       if(CanvasEngine.utilities.exists(dependentEntities[type])) {
-        entity = make[type](createType(dependentEntities[type]), params);
+        entity = make[type](this.create(dependentEntities[type], params), params);
       } else {
         entity = createType(type);
       }
@@ -122,20 +135,23 @@
         if (Object.keys(components).indexOf(component) != -1) {
           entity.attachComponent(component, components[component](params, entity));
         }
-      } else if($.type(component) == "object" || $.type(component) == "function") {
-        var com = Object.keys(component);
-        if($.type(component[com]) == "object" || $.type(component) == "function"){
-          // Is a collection of names and data. Each tuple should be added as a component
-          $.each(component[com], function(name, p){
-            entity.attachComponent(name, components[com](p, entity));
-          });
-        } else if($.type(component[com]) == "string"){
-          var name = component[name];
-          if (Object.keys(components).indexOf(com) != -1 && nComponents.indexOf(com) > -1) {
-            entity.attachComponent(name, components[com](params, entity));
+      } else if($.type(component) == "object") {
+        var coms = Object.keys(component);
+        for(var c = 0; c< coms.length; c++){
+          var com = coms[c];
+          if($.type(component[com]) == "object"){
+            var names = Object.keys(component[com]);
+            for(var n=0; n < names.length; n++){
+              // Whew!
+              entity.attachComponent(names[n], components[com](component[com][names[n]], entity));
+            }
+          } else if($.type(component[com]) == "string"){
+            var name = component[name];
+            if (Object.keys(components).indexOf(com) != -1 && nComponents.indexOf(com) > -1) {
+              entity.attachComponent(name, components[com](params, entity));
+            }
           }
         }
-
       }
 
 
