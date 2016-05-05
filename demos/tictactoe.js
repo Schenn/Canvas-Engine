@@ -92,7 +92,9 @@ var game = function(){
     // the basic grey box for the tokens to go in
     var position = {
       type: "SPRITE",
-      spritesheet: "ticTacSprites",
+      spritesheets: {
+        default: "ticTacSprites"
+      },
       defaultSprite: "positionBack",
       height: parseInt(((screenHeight * .8) / 4)),
       width: parseInt(((screenWidth * .8) / 4)),
@@ -197,7 +199,9 @@ var game = function(){
         x:positionData.x,
         y:positionData.y,
         type: "SPRITE",
-        spritesheet: "ticTacSprites",
+        spritesheets: {
+          default: "ticTacSprites"
+        },
         defaultSprite: spriteName,
         height: positionData.height,
         width: positionData.width,
@@ -360,32 +364,72 @@ var game = function(){
   this.onGameOver = function(){
     // Add game over stars
 
-    CanvasEngine.addMap([{
+    var star = {
       type: "ASPRITE",
-      name: "congratsStar",
-      spritesheet: "winningStar",
+      spritesheets: {
+        default: "winningStar"
+      },
       fromCenter: false,
       x: (CanvasEngine.Screen.width() *0.2),
       y: -5,
       height: 100,
       width: 100,
       z_index: 6,
-      duration: 2000,
-      frameCount:4
-    },{
-      type: "ASPRITE",
-      spritesheet: "winningStar",
-      fromCenter: false,
-      x: (CanvasEngine.Screen.width() *0.75),
-      y: -5,
+      animations: {
+        default:{
+          duration: 2000,
+          frameCount:4
+        }
+      }
+    };
+
+    var leftStar = $.extend({}, star);
+    leftStar.name = "LeftStar";
+    leftStar.x = (CanvasEngine.Screen.width() *0.2);
+
+    var rightStar = $.extend({}, star);
+    rightStar.name = "RightStar";
+    rightStar.x = (CanvasEngine.Screen.width() *0.8);
+
+    var fallingStar ={
+      type:"MSPRITE",
+      spritesheets: {
+        default:"winningStar"
+      },
+      animations: {
+        default:{
+          duration: 2000,
+          frameCount: 1
+        },
+        S: {
+          duration: 2000,
+          frameCount:4
+        }
+      },
+      ySpeed: 50,
+      z_index: 5,
       height: 100,
       width: 100,
-      duration: 2000,
-      frameCount:4
-    }
+      x:100,
+      y:0,
+      onMovement: function(data){
+        if(data.dir == "y" && data.val >= CanvasEngine.Screen.height()){
+          this.messageToComponent("Movement", "setOrigin",
+            {x : Math.ceil(Math.random() * CanvasEngine.Screen.width()),
+              y: 0
+            });
+
+        }
+      }
+    };
+
+    CanvasEngine.addMap([
+      leftStar,
+      rightStar,
+      fallingStar
+
     ]);
 
-    // Add falling stars
   }
 };
 
