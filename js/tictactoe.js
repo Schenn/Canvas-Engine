@@ -252,6 +252,9 @@ tictactoeGame.prototype.addToken = (function (position) {
     counter++;
     this.ce.addMap([token], true); //feeds our token to the game engine with the instruction to continue the game loop
 
+    window.dispatchEvent(new CustomEvent("sendGA", {
+      detail:['Demos', "Demo Interaction", "Tic Tac Toe position ticked:"+ position.name]
+    }));
 
     //check for winner
 
@@ -491,6 +494,9 @@ tictactoeGame.prototype.announceWinner = function (token, spotArray) {
   });
   this.ce.Loop();  //tells our engine to start animating again after taking all the changes
 
+  window.dispatchEvent(new CustomEvent("sendGA", {
+    detail:['Demos', "Demo Win", "Tic Tac Toe "+ winner]
+  }));
 };
 
 window.tictactoe = new tictactoeGame(); //creates a tic tac toe object from the class and puts it into the context of the browser window

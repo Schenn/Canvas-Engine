@@ -2,9 +2,72 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Random api</title>
+  <style>
+    #wrap {
+      height: 400px;
+      width: 400px;
+      display:block;
+    }
+
+    canvas {
+      position: absolute;
+      top:0;
+      left:0;
+    }
+  </style>
+  <script src="js/lib.min.js"></script>
+  <script src="js/cengine.min.js"></script>
+  <script>
+    $(function(){
+      var ce = $("canvas").attachCanvasEngine({});
+      ce.maximize();
+
+      var bg = {
+        height: 400,
+        width: 400,
+        type: "rect",
+        z_index: 0,
+        x: 0, y: 0
+      };
+
+      ce.addMap([bg]);
+      ce.Loop();
+      ce.pause();
+
+
+      // Get Random values from random.org and draw them as squares
+      $.make("app/randomdotorg/randomdotorg.php", function(data){
+
+        data = JSON.parse(data);
+        var dataset = data.result.random.data;
+
+        var ctx = $("canvas")[0].getContext("2d");
+        var x = 0;
+        var y = 0;
+
+        for(var i = 0; i <dataset.length; i+=3)
+        {
+          var r = dataset[i];
+          var g = dataset[i+1];
+          var b = dataset[i+2];
+
+          ctx.fillStyle = "rgba("+r+","+g+","+b+", 1)";
+          ctx.fillRect(x,y,20,20);
+          x+=20;
+          if(x >=400){
+            y+=20;
+            x = 0;
+          }
+        }
+
+      });
+    });
+  </script>
 </head>
 <body>
-
+  <div id="wrap">
+    <canvas></canvas>
+  </div>
 </body>
 </html>
