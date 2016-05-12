@@ -5,6 +5,13 @@
   var props = CanvasEngine.EntityManager.properties;
   var utils = CanvasEngine.utilities;
 
+  /**
+   * The SpriteSheet component handles interactions with a SpriteSheet resource.
+   *
+   * @param params
+   * @param entity
+   * @constructor
+   */
   var SpriteSheet = function(params, entity){
     var sheet=params.spritesheet;
 

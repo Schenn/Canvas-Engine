@@ -1,5 +1,5 @@
 /**
- * Created by schenn on 3/25/16.
+ * Create a canvas z-layer
  */
 (function($){
   $.fn.addZLayer = function(height, width, z){

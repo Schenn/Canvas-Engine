@@ -5,6 +5,12 @@
   var props = CanvasEngine.EntityManager.properties;
   var utils = CanvasEngine.utilities;
 
+  /**
+   * A Text Component handles the manipulation of text and its font.
+   *
+   * @param params
+   * @param entity
+   */
   var text = function(params, entity){
     var align = "center",
       baseline = "middle",
@@ -47,6 +53,7 @@
       return $.extend({}, this);
     };
 
+    // Set the text to a given value.
     this.setText = function(phrase){
       this.text = phrase;
     };

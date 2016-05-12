@@ -1,7 +1,8 @@
 /**
- * Created by schenn on 3/25/16.
+ * Create a Canvas Pattern
+ * @param args
+ * @returns {*}
  */
-// Create pattern
 $.fn.pattern = function(args) {
   if (!this[0].getContext) {return null;}
   var ctx = this[0].getContext('2d'),

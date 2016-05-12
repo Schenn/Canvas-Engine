@@ -1,7 +1,9 @@
 /**
- * Created by schenn on 3/25/16.
+ * Get a canvas as a jpeg
+ *
+ * @param type
+ * @returns {*}
  */
-// Load canvas
 $.fn.getCanvasImage = function(type) {
   if (!this[0].toDataURL) {return null;}
   if (type === undefined) {

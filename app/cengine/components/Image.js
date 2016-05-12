@@ -1,9 +1,11 @@
-/**
- * Created by schenn on 4/18/16.
- */
 (function(){
   var props = CanvasEngine.EntityManager.properties;
 
+  /**
+   * The Image component manages the interactions with an Image source for an Entity.
+   * @param params
+   * @param entity
+   */
   var img = function(params, entity){
     var source = params.source,
       sx= 0,
@@ -26,6 +28,10 @@
       return entity;
     };
 
+    /**
+     * Get the component as a JSO
+     * @returns {{source: *}}
+     */
     this.asObject = function(){
       if(this.sWidth > 0 && this.sHeight > 0){
         return $.extend({}, this);
@@ -37,6 +43,10 @@
 
     };
 
+    /**
+     * Set the current sprite data (sprite x, sprite y) for an image.
+     * @param sprite
+     */
     this.setSprite = function(sprite){
       this.sx = sprite.x;
       this.sy = sprite.y;
@@ -45,6 +55,9 @@
     };
   };
 
+  /**
+   * Add the Image component to the CanvasEngine storage.
+   */
   CanvasEngine.EntityManager.addComponent("Image", function(params, entity){
     return new img(params, entity);
   }, true);

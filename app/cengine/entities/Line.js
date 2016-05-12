@@ -2,7 +2,9 @@
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
-  // Making a LINE
+  /**
+   * Tell the EntityManager how to make a LINE
+   */
   EM.setMake("LINE", function(entity, params){
     // Start by adding a renderer component
     EM.attachComponent(entity, "Renderer", {
@@ -27,6 +29,7 @@
       }
     });
 
+    // Add a plot method shorthand to entity.
     entity.plot = function(coords){
       entity.messageToComponent("PointPlotter","plot", coords);
     };

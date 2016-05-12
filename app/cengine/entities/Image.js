@@ -1,8 +1,10 @@
 (function(){
     var EM = CanvasEngine.EntityManager;
 
-    // Making a Label
-    EM.setMake("IMAGE", function(entity, params) {
+  /**
+   * Tell the EntityManager how to make an IMAGE
+   */
+  EM.setMake("IMAGE", function(entity, params) {
       // Add an Image Component
       EM.attachComponent(entity,"Image", $.extend({}, params, {
         callback: function(){

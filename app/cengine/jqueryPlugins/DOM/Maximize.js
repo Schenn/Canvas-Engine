@@ -1,7 +1,4 @@
 /**
- * Created by schenn on 3/25/16.
- */
-/**
  * Maximize a Canvas (or image) element to the size of its container.
  */
 (function($){

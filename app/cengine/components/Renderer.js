@@ -6,6 +6,8 @@
   var props = CanvasEngine.EntityManager.properties;
 
   /**
+   * The Renderer component is responsible for managing the properties required to draw an object to a canvas.
+   *
    * @param params Object
    * @param entity Entity
    * @returns {*}
@@ -16,6 +18,9 @@
     var isDirty = true;
     var clearShadow;
 
+    /**
+     * The renderer needs to allow a draw to occur
+     */
     this.markDirty = function(){
       isDirty = true;
     };
@@ -103,6 +108,7 @@
       delete params.z_index;
     }
 
+    // The Draw Method is required. You have to tell the renderer how your entity draws itself.
     if(!CanvasEngine.utilities.isFunction(params.draw)){
       return window.exit(params.name + ": " + "Renderer missing draw method. Be sure to pass a draw method when attaching a Renderer component.");
     } else {
@@ -115,10 +121,10 @@
     if(!CanvasEngine.utilities.exists(params.clearInfo)){
       this.clearInfo =function() {
         return ({
-          x: Math.ceil(this.x),
-          y: Math.ceil(this.y),
-          height: Math.ceil(this.height),
-          width: Math.ceil(this.width),
+          x: this.x,
+          y: this.y,
+          height: this.height,
+          width: this.width,
           fromCenter: this.fromCenter
         });
       };
@@ -129,6 +135,8 @@
     }
 
     /**
+     * Set the defaults and call the draw method against a context.
+     *    When a renderer is drawn, it stores a 'shadow' of the render for clearing later.
      *
      * @param ctx EnhancedContext
      */
@@ -139,6 +147,10 @@
       clearShadow = this.clearInfo(ctx);
     };
 
+    /**
+     * Clear the previous render's 'shadow' from a context.
+     * @param ctx
+     */
     this.clear = function(ctx){
       if(!CanvasEngine.utilities.exists(clearShadow)){
         clearShadow = this.clearInfo(ctx);
@@ -146,6 +158,12 @@
       ctx.clear(clearShadow);
     };
 
+    /**
+     * Does a given pixel fall inside of this renderer component?
+     *
+     * @param coords
+     * @returns {boolean}
+     */
     this.containsPixel = function(coords){
       // if we contain the pixel position
       var leftBoundry = self.x;
@@ -167,6 +185,10 @@
       ((coords.y >= topBoundry) && (coords.y <= bottomBoundry)));
     };
 
+    /**
+     * Does the renderer need to render?
+     * @returns {boolean}
+     */
     this.isDirty = function(){
       return isDirty;
     };
@@ -175,6 +197,10 @@
       return $.extend({}, this);
     };
 
+    /**
+     * Set the position of the renderer component
+     * @param position
+     */
     this.setPosition = function(position){
       if((position.dir == "x" || position.dir == "y")){
         this[position.dir] = position.val;
@@ -182,9 +208,11 @@
 
     };
 
+    // This component has a LOT of potential properties. Use the setProperties method to save some keystrokes.
     CanvasEngine.utilities.setProperties(this, params);
   };
 
+  // Add the Renderer component to the CanvasEngine storage
   CanvasEngine.EntityManager.addComponent("Renderer", function(params, entity){
       return new Renderer(params, entity);
   });

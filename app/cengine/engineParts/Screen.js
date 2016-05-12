@@ -1,20 +1,36 @@
-/**
- * Created by schenn on 4/17/16.
- */
 (function(){
 
+  /**
+   * The Screen class manages the individual canvases of the Engine
+   *
+   * @constructor
+   * @class
+   */
   var Screen = function(){
     var canvases = [];
     var baseCanvas;
 
+    /**
+     * Get the height of the drawing area
+     * @returns {number}
+     */
     this.height = function(){
       return baseCanvas.height();
     };
 
+    /**
+     * Get the width of the drawing area
+     * @returns {number}
+     */
     this.width = function(){
       return baseCanvas.width();
     };
 
+    /**
+     * Set the base canvas which forms the back of the screen.
+     *
+     * @param canvas A jQuery wrapped canvas
+     */
     this.setScreen = function(canvas){
       if(!(canvas instanceof jQuery)){
         canvas = $(canvas);
@@ -24,12 +40,21 @@
       baseCanvas.on("click", this.onClick);
     };
 
+    /**
+     * Fill the parent container up to a given modifier.
+     * @param modifier number 1-100.
+     */
     this.maximize = function(modifier){
       canvases.forEach(function(canvas){
         canvas.maximize(modifier);
       });
     };
 
+    /**
+     * Add a z layer to the screen.
+     * A z layer is a new canvas which sits in the stack of canvases
+     * @param z The z index to add
+     */
     this.addZLayer = function(z){
       if(CanvasEngine.utilities.exists(canvases[z])) return;
 
@@ -46,6 +71,12 @@
       canvases[z] = newZ;
     };
 
+    /**
+     * Remove a z layer from the Screen.
+     *    You cannot remove the base canvas.
+     *
+     * @param z The index to remove.
+     */
     this.removeZLayer = function(z){
       if(z > 0) {
         canvases[z].remove();
@@ -66,11 +97,26 @@
       });
     };
 
+    /**
+     * Clear an entity from the game screen.
+     * @param entity
+     */
     this.clear = function(entity){
       var ctx = canvases[entity.z_index].getEnhancedContext();
       entity.messageToComponent("Renderer", "clear", ctx);
     };
 
+    /**
+     * Get the pixel data of a given position
+     *
+     * @param x The x position of the pixel
+     * @param y The y position of the pixel
+     * @param h The height of the search area
+     * @param w The width of the search area
+     * @param transparent Flag to only check for transparent pixels
+     *
+     * @returns {Array}
+     */
     this.atPixel = function(x, y, h, w, transparent){
       var pixelHits = [];
       var zs = Object.keys(canvases);
@@ -86,6 +132,11 @@
       return pixelHits;
     };
 
+    /**
+     * When a screen is clicked, collect the click coordinate and pass it to the CanvasEngine
+     *
+     * @param e The click event
+     */
     this.onClick = function(e){
       e.stopPropagation();
       e.cancelBubble = true;
@@ -98,5 +149,6 @@
 
   };
 
+  // Attach The Screen manager to the CanvasEngine.
   CanvasEngine.Screen = new Screen();
 })();

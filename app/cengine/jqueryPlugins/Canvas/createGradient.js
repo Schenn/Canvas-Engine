@@ -1,7 +1,8 @@
 /**
- * Created by schenn on 3/25/16.
+ * Create a canvas gradient
+ * @param args
+ * @returns {*}
  */
-// Create gradient
 $.fn.createGradient = function(args) {
   if (!this[0].getContext) {return null;}
   var ctx = this[0].getContext('2d'),

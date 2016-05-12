@@ -2,8 +2,14 @@
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
-  // Animates an array of strings over time.
-  // Why? You ask. Because those strings can then be applied against maps somewhere else with more relevant information.
+
+  /**
+   * Tell the EntityManager how to make an Animator entity.
+   *
+   * An Animator entity Animates an array of strings over time.
+   * Why? You ask. Because those strings can then be applied against maps somewhere else with more relevant information on what to do.
+   * This way you can apply the animator to a variety of things, not just a set of images.
+   */
   EM.setMake("Animator", function (entity, params) {
     var frames, baseDuration, duration, frameCount, currentFrame=0;
 
@@ -24,10 +30,12 @@
 
     duration = (baseDuration > 0) ? baseDuration / frameCount : 0;
 
+    // Give the entity a pass through method for telling the timer to disable
     entity.disable = function(){
       entity.messageToComponent("Timer", "disable");
     };
 
+    // Give the entity a pass through method for telling the timer to enable
     entity.enable = function(){
       entity.messageToComponent("Timer", "enable");
     };

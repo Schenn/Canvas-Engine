@@ -1,15 +1,20 @@
-/**
- * Created by schenn on 4/15/16.
- */
 (function($){
-
+  /**
+   * An enhanced context is a regular 2d context with helper drawing functions already attached!
+   *
+   * @returns {{}} An enhanced context
+   */
   $.fn.getEnhancedContext = function(){
 
     var ctx= $(this)[0].getContext('2d');
     var canvas = $(this)[0];
-    
+
     var enhancedContext = {};
 
+    /**
+     * Set the default context properties
+     * @param renderer A renderer component or an object containing the appropriate properties
+     */
     enhancedContext.setDefaults = function(renderer){
       ctx.fillStyle = renderer.fillStyle;
       ctx.strokeStyle = renderer.strokeStyle;
@@ -30,6 +35,10 @@
       ctx.globalCompositeOperation = renderer.compositing;
     };
 
+    /**
+     * Clear a space from the context
+     * @param clearInfo
+     */
     enhancedContext.clear = function(clearInfo){
       // Clear entire canvas
       if (!clearInfo.width && !clearInfo.height) {
@@ -43,6 +52,10 @@
       }
     };
 
+    /**
+     * Close a path belonging to a shape
+     * @param renderer
+     */
     enhancedContext.closePath = function(renderer){
       // Mask if chosen
       if (renderer.mask) {
@@ -60,10 +73,21 @@
       }
     };
 
+    /**
+     * Convert angles to a respective degree
+     * @param renderer
+     * @returns {number}
+     */
     enhancedContext.convertAngles = function(renderer) {
       return renderer.inDegrees ? Math.PI/180 : 1;
     };
 
+    /**
+     * position the context for rendering
+     * @param renderer
+     * @param width
+     * @param height
+     */
     enhancedContext.positionShape = function(renderer, width, height) {
 
       renderer.toRad = this.convertAngles(renderer);
@@ -84,6 +108,11 @@
 
     };
 
+    /**
+     * Draw an Arc
+     *
+     * @param renderer
+     */
     enhancedContext.drawArc = function(renderer){
 
       var pi = Math.PI;
@@ -101,6 +130,10 @@
       this.closePath(ctx, renderer);
     };
 
+    /**
+     * Draw a Bezier curve
+     * @param renderer
+     */
     enhancedContext.drawBezier = function(renderer){
         var l = 2, lc = 1,
         lx, ly,
@@ -131,6 +164,10 @@
         this.closePath(ctx, renderer);
     };
 
+    /**
+     * Draw an ellipse
+     * @param renderer
+     */
     enhancedContext.drawEllipse = function(renderer){
       var controlW = renderer.width * 4/3;
 
@@ -148,7 +185,10 @@
         this.closePath(ctx, renderer);
     };
 
-
+    /**
+     * Draw an image
+     * @param renderer
+     */
     enhancedContext.drawImage = function(renderer){
       var elem, img = new Image(),scaleFac;
       // Use specified element, if not, a source URL
@@ -274,6 +314,10 @@
 
     };
 
+    /**
+     * Draw a Line
+     * @param renderer
+     */
     enhancedContext.drawLine = function(renderer){
       var l=2, lx, ly;
 
@@ -294,6 +338,10 @@
       this.closePath(renderer);
     };
 
+    /**
+     * Draw a Quad
+     * @param renderer
+     */
     enhancedContext.drawQuad = function(renderer){
       var l = 2, lx, ly, lcx, lcy;
 
@@ -318,6 +366,10 @@
 
     };
 
+    /**
+     * Draw a Rect
+     * @param renderer
+     */
     enhancedContext.drawRect = function(renderer){
       var x1, y1, x2, y2, r;
 
@@ -359,6 +411,11 @@
 
     };
 
+    /**
+     * Draw Text
+     * @param renderer
+     * @returns {enhancedContext}
+     */
     enhancedContext.drawText = function(renderer){
 
       // Set text-specific properties
@@ -371,27 +428,49 @@
       return this;
     };
 
+    /**
+     * Use a custom draw method.
+     * @param callback
+     */
     enhancedContext.draw = function(callback){
       callback(ctx);
     };
 
+    /**
+     * Restore a canvas
+     */
     enhancedContext.restore = function(){
       ctx.restore();
     };
 
+    /**
+     * Rotate the context
+     * @param renderer
+     */
     enhancedContext.rotate = function(renderer){
       this.positionShape(renderer, 0, 0);
     };
 
+    /**
+     * Save the context
+     */
     enhancedContext.save = function(){
       ctx.save();
     };
 
+    /**
+     * Translate a context
+     * @param params
+     */
     enhancedContext.translate = function(params){
       ctx.save();
       ctx.translate(params.x, params.y);
     };
 
+    /**
+     * Scale a canvas
+     * @param params
+     */
     enhancedContext.scale = function(params){
       ctx.save();
       ctx.translate(params.x, params.y);
@@ -399,6 +478,10 @@
       ctx.translate(-params.x, -params.y);
     };
 
+    /**
+     * Set specific pixels in a context
+     * @param params
+     */
     enhancedContext.setPixels = function(params) {
       var i,imgData, data, len, px = {};
 
@@ -433,11 +516,26 @@
       ctx.restore();
     };
 
+    /**
+     * Measure the width of a line of text.
+     * @param params
+     * @returns {TextMetrics}
+     */
     enhancedContext.measureText = function(params){
       ctx.font = params.font;
       return ctx.measureText(params.text);
     };
 
+    /**
+     * Get the pixel data of a given position OR if the given position is transparent
+     *
+     * @param x The x location of the pixel
+     * @param y The y location of the pixel
+     * @param h The height of the search area
+     * @param w The width of the search area
+     * @param t Whether or not to only flag for transparency
+     * @returns {*}
+     */
     enhancedContext.atPixel = function(x,y,h,w,t){
       var img = ctx.getImageData(x, y, w, h);
       var data = img.data;

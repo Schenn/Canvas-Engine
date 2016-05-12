@@ -1,7 +1,12 @@
 (function(){
 
   var utils = CanvasEngine.utilities;
-
+  /**
+   * Tell the CanvasEngine how to manager a SpriteSheet resource.
+   *
+   * @param details
+   * @constructor
+   */
   CanvasEngine.ResourceManager.Resources.SpriteSheet = function(details){
     var spriteHeight = details.height;
     var spriteWidth = details.width;
@@ -40,6 +45,10 @@
       });
     };
 
+    /**
+     * Process the sprites against an image.
+     * @param img
+     */
     this.processSprites = function(img){
       source = img;
       // If we have a spriteCache and it's an object, not an array
@@ -55,18 +64,35 @@
       this.spritesLoaded = true;
     };
 
+    /**
+     * Get a sprite detail object by its name
+     * @param name
+     * @returns {{}}
+     */
     this.getSprite = function(name){
       return sprites[name];
     };
 
+    /**
+     * Get the sprite height
+     * @returns {number}
+     */
     this.sHeight = function(){
       return spriteHeight;
     };
 
+    /**
+     * Get the sprite width
+     * @returns {number}
+     */
     this.sWidth = function(){
       return spriteWidth;
     };
 
+    /**
+     * Get the source image
+     * @returns {Image}
+     */
     this.source = function(){
       return source;
     };

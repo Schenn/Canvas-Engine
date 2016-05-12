@@ -5,7 +5,7 @@
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
-  // Making a Label
+  // Tell the EntityManager how to make a LABEL entity
   EM.setMake("LABEL", function(entity, params) {
 
     // Start by adding a text component
@@ -18,6 +18,7 @@
     // Add a renderer component
     EM.attachComponent(entity, "Renderer", $.extend({}, {
       fillStyle: "#fff",
+      // Clearing a label requires a bit of fancy footwork as labels have two additional offset options (alignment, baseline)
       clearInfo: function(ctx){
         var width,
           height,
@@ -25,8 +26,10 @@
           _y = this.y-1;
 
         var text = entity.getFromComponent("Text","asObject");
+        // 2 pixels on the left and right are added to account for letters that extend out a pixel or so.
         width = (ctx.measureText({font: text.font, text:text.text}).width)+4;
         //noinspection JSSuspiciousNameCombination
+        // The measureText method only returns a width of a text element. To get a height, we use the average of the largest characters.
         height = (ctx.measureText({font: text.font, text:"MWO"}).width/3)+4;
 
         // Adjust x for alignment

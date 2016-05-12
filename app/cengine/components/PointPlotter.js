@@ -4,6 +4,12 @@
 (function(){
   var props = CanvasEngine.EntityManager.properties;
 
+  /**
+   * The PointPlotter component manages an array of coordinates (points)
+   *
+   * @param params
+   * @param entity
+   */
   var pointPlotter = function(params, entity){
 
     var coordinateArray=[];
@@ -11,6 +17,10 @@
 
     Object.defineProperty(this,"coords",props.defaultProperty(coordinateObj));
 
+    /**
+     * Plot out the coordinates as a property on the coordinateObj
+     * @param coords
+     */
     this.plot = function(coords){
       coordinateArray = coords;
       for (var i = 1; i <= coords.length; i++) {
@@ -32,6 +42,11 @@
       }
     };
 
+    /**
+     * Get the bounding area of the points
+     *
+     * @returns {{x: number, y: number, width: number, height: number}}
+     */
     this.getArea = function(){
       var smallX = 0;
       var smallY = 0;
@@ -76,6 +91,7 @@
 
   };
 
+  // Add the PointPlotter component to CanvasEngins storage
   CanvasEngine.EntityManager.addComponent("PointPlotter", function(params, entity){
     return new pointPlotter(params, entity);
   }, true);

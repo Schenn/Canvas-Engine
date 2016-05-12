@@ -2,6 +2,9 @@
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
+  /**
+   * Tell the EntityManager how to make a SPRITE
+   */
   EM.setMake("SPRITE", function(entity, params){
     // The Current Sprite
     var currentSpriteName, currentSheet="default";
@@ -34,6 +37,7 @@
       ));
     });
 
+    // Add a method for setting a sprite by name to the entity.
     entity.setSprite = function(name){
       currentSpriteName = name;
       // Set the current sprite image to nextFrame
@@ -43,10 +47,12 @@
       );
     };
 
+    // Add a method to change spritesheets onto an entity.
     entity.setCurrentSheet = function(sheetName){
       currentSheet = sheetName;
     };
 
+    // Set the initial sprite.
     entity.setSprite(utilities.exists(params.defaultSprite)? params.defaultSprite : 0);
 
     return entity;

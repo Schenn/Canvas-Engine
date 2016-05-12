@@ -4,6 +4,12 @@
 (function() {
   var utils = CanvasEngine.utilities;
 
+  /**
+   * The Timer component tracks the passage of time.
+   *  It can run a function when a pre-determined amount of time has passed and/or on every update.
+   * @param params
+   * @param entity
+   */
   var timer = function(params, entity){
     var date = new Date();
     var delta = new Date();
@@ -14,6 +20,9 @@
       timeUntilBeep = utils.exists(params.duration) ? params.duration : 0,
       beep = date.getDate() + timeUntilBeep;
 
+    /**
+     * Update the date information.
+     */
     this.update = function(){
       if(isActive) {
         delta = date;
@@ -65,10 +74,16 @@
       return entity;
     };
 
+    /**
+     * Don't do anything.
+     */
     this.disable = function(){
       isActive = false;
     };
 
+    /**
+     * Do things again
+     */
     this.enable = function(){
       isActive = true;
       this.update();
