@@ -54,7 +54,7 @@
       // If we have a spriteCache and it's an object, not an array
       if(utils.exists(spriteCache) &&
         Object.keys(spriteCache).length > 0 &&
-        !utils.exists(spriteCache[0])){
+        !utils.isArray(spriteCache)){
 
         processSpriteObject();
       }

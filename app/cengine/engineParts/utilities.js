@@ -34,6 +34,15 @@
   };
 
   /**
+   * Is the given value an Array?
+   * @param prop
+   * @returns {boolean}
+   */
+  utilities.isArray = function(prop){
+    return (!!a) && (a.constructor === Array);
+  };
+
+  /**
    * Return angles for drawing things
    * @param params
    * @returns {number}
