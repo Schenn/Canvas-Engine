@@ -152,6 +152,36 @@
         onLoad();
       }
     };
+
+    /**
+     * Load a collection of resources
+     * This method assumes the resource collection IS the full set of resources
+     *  (at least the full set of resources which are needed for the onResourcesLoaded callback)
+     *
+     * @param resourceCollection
+     * @param resourcesLoadedCallback
+     */
+    this.loadResourceCollection = function(resourceCollection, resourcesLoadedCallback){
+      this.onResourcesLoaded(resourcesLoadedCallback);
+      for(var i =0; i<resourceCollection.length; i++){
+        var type = Object.keys(resourceCollection[i])[0];
+        var data = resourceCollection[i][type];
+        switch(type.toLowerCase()){
+          case "spritesheet":
+            this.addSpriteSheet(data.name,data.source,data.details);
+            break;
+          case "image":
+            this.addImage(data.name,data.source,data.details);
+            break;
+          case "sound":
+            this.addSound(data.name,data.source,data.details);
+            break;
+          default:
+            break;
+        }
+      }
+      this.finishedAddingResources();
+    };
   };
 
 
