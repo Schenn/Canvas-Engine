@@ -13,7 +13,7 @@ var game = function(){
     for(var y=0; (y * 32) < CanvasEngine.Screen.height();y++){
       randomTileMap[y]=[];
       for(var x=0; (x * 32) < CanvasEngine.Screen.width(); x++){
-        randomTileMap[y][x] = Math.floor(Math.random() * (21));
+        randomTileMap[y][x] = Math.floor(Math.random() * (4));
       }
     }
 
@@ -52,16 +52,12 @@ var game = function(){
 
   };
 
-
-  this.addEntities = function(){
-
-  };
-
   this.start = function(){
     CanvasEngine.clearEntities();
 
     // Show that even though the sprites are in 16 x 16, we can ask for them to be drawn at 32 x 32.
-    var gamePieces = [
+
+    CanvasEngine.addMap([
       {
         type: "TILEMAP",
         spritesheet: "medieval",
@@ -70,9 +66,7 @@ var game = function(){
           tiles: randomTileMap
         }
       }
-    ];
-
-    CanvasEngine.addMap(gamePieces, true);
+    ], true);
   };
 
 };
