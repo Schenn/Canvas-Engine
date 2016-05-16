@@ -31,6 +31,10 @@
         callback.call(entity, args);
       });
     };
+
+    this.addClickMethods = function(methods){
+      onClick = onClick.concat(methods);
+    };
   };
 
   // Add the Click component to the CanvasEngine Storage
