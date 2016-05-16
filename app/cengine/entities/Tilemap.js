@@ -1,128 +1,102 @@
-/**
- * Created by schenn on 3/25/16.
- */
-/**
- * A Tilemap Canvas Object
- *
- * @param tilesheet The string pointing to the spritesheet with it's tile images.
- * @class Tilemap
- */
-function Tilemap(tilesheet) {
-  this.tilesheet = typeof(tilesheet) !== "undefined" ? tilesheet : "rect";
-  this.tile = {height: 32, width: 32};
-  this.grid = {height: 1000, width: 1000};
-  this.map = [];
-  this.collides = true;
-  this.stopsMovement = true;
-  this.scroll = {
-    x: 0, y: 0
-  };
-  this.isDrawn = false;
+(function(){
+
+  var EM = CanvasEngine.EntityManager;
+  var utilities = CanvasEngine.utilities;
 
   /**
-   * Render the tiles on a canvas
-   *
-   * @type {Function}
-   * @method
-   * @param canvas jCanvas a jCanvas wrapped canvas
+   * Tell the EntityManager how to make a TileMap
    */
-  this.render = function (canvas) {
-    var startRow = Math.floor(this.scroll.x / this.tile.width);
-    var startCol = Math.floor(this.scroll.y / this.tile.height);
-    var rowCount = startRow + Math.floor(canvas.width() / this.tile.width) + 1;
-    var colCount = startCol + Math.floor(canvas.height() / this.tile.height) + 1;
-    rowCount = ((startRow + rowCount) > this.grid.width) ? this.grid.width : rowCount;
-    colCount = ((startCol + colCount) > this.grid.height) ? this.grid.height : colCount;
-    for (var row = startRow; row < rowCount; row++) {
-      for (var col = startCol; col < colCount; col++) {
-        var tileX = this.tile.width * row;
-        var tileY = this.tile.height * col;
-        tileX -= this.scroll.x;
-        tileY -= this.scroll.y;
-        if (typeof(this.map[row]) !== "undefined") {
-          if (typeof(this.map[row][col]) !== "undefined") {
-            if (this.tilesheet === "rect") {
-              canvas.drawRect({
-                x: tileX,
-                y: tileY,
-                height: this.tile.height,
-                width: this.tile.width,
-                fillStyle: "#000",
-                fromCenter: false
-              });
-            }
-            else {
-              canvas.drawImage({
-                source: this.tilesheet.source,
-                x: tileX, y: tileY,
-                height: this.tile.height, width: this.tile.width,
-                sx: this.tilesheet[this.map[row][col]].sx,
-                sy: this.tilesheet[this.map[row][col]].sy,
-                sWidth: this.tilesheet[this.map[row][col]].sWidth,
-                sHeight: this.tilesheet[this.map[row][col]].sHeight,
-                fromCenter: false,
-                cropFromCenter: this.tilesheet[this.map[row][col]].cropFromCenter
-              });
-            }
+  EM.setMake("TILEMAP", function(entity, params){
+
+    // A tilemap needs to reference a spritesheet
+    EM.attachComponent(entity, "SpriteSheet", params);
+
+    // A tilemap needs to reference a tilemap component
+    EM.attachComponent(entity, "TileMap", $.extend({},{
+      onScroll: function(){
+        entity.messageToComponent("Renderer", "markDirty");
+      }
+    }, params.tileMap));
+
+    // A tilemap needs a renderer component
+    EM.attachComponent(entity, "Renderer", $.extend({}, {
+      draw: function(ctx){
+        // Draw each tile in the tilemap
+        var tiles = entity.getFromComponent("TileMap", "getVisibleTiles", {width: CanvasEngine.Screen.width(), height: CanvasEngine.Screen.height()});
+        var tileSize = entity.getFromComponent("TileMap", "getTileSize");
+        // for each row
+        for(var y =0; y < tiles.length; y++){
+          // for each col in row
+          for(var x=0; x < tiles[y].length; x++){
+            var spriteName = tiles[y][x];
+            var tile = entity.getFromComponent("SpriteSheet", "getSprite", spriteName);
+
+            var imgSource = entity.getFromComponent("SpriteSheet", "source");
+            var output =$.extend({},{
+              x: x * tileSize.width,
+              y: y * tileSize.height,
+              source: imgSource,
+              sx: tile.x, sy: tile.y,
+              sHeight: tile.height, sWidth: tile.width,
+              height: tileSize.height, width: tileSize.width
+            });
+            ctx.drawImage(output);
           }
         }
+      },
+      clearInfo: function(ctx){
+        // Clear the whole screen.
+        // When a Tilemap changes, it's because it scrolled.
+
+        /**
+         * We may be able to get away with only clearing the area that the visible tiles don't cover...
+         *
+         * The tiles will be re-drawn on their 'dirty' area when their draw pass comes. However,
+         *    If there aren't enough tiles to fill the visible area (due to the extent of the scroll and
+         *      the resolution of the canvas), then we only need to clear the area without tiles.
+         */
+
+        return {
+          x:0, y:0, height: CanvasEngine.Screen.height(), width: CanvasEngine.Screen.width()
+        };
+      }
+    }, params));
+
+    if(utilities.isFunction(params.tileMap.onTileClick)){
+      var clickFunc = function (coord) {
+        entity.messageToComponent("TileMap", "TileClick", coord);
+      };
+      if(!entity.hasComponent("Click")) {
+        EM.attachComponent(entity, "Click", $.extend({}, {
+          onClick: clickFunc
+        }));
+      } else {
+        entity.messageToComponent("Click", "addClickMethods", clickFunc);
       }
     }
-  };
 
-  /**
-   * Scroll a tilemap along a vector then re-render it
-   *
-   * @method
-   * @type {Function}
-   * @param vector Object the x and y direction
-   * @param canvas jCanvas jCanvas wrapped canvas
-   */
-  this.scroll = function (vector, canvas) {
-    this.scroll.x += vector.x;
-    this.scroll.y += vector.y;
-    this.render(canvas);
-  };
+    /**
+     * Pass-through to tell a tilemap to scroll in a given direction.
+     * @param direction
+     */
+    entity.scroll = function(direction){
+      entity.messageToComponent("TileMap", "scroll", direction);
+    };
 
-  /**
-   * Clear the tilemap from the canvas
-   *
-   * @type {Function}
-   * @method
-   */
-  this.clear = function (canvas) {
-    canvas.clearCanvas();
-  };
+    /**
+     * Pass through to set a specific tile to a new tile value.
+     *    (e.g. an explosion converts the grass tiles into rock tiles)
+     *
+     * @param coord
+     * @param value
+     */
+    entity.setTileAt = function(coord, value){
+      entity.messageToComponent("TileMap", "setTile", {coord: coord, val: value});
+      entity.messageToComponent("Renderer", "markDirty");
+    };
 
-  /**
-   * Convert a pixel position to a tile
-   *
-   * @type {Function}
-   * @method
-   * @param coord Object the x and y position of the click
-   * @return Object the tile position
-   */
-  this.pixelToTile = function (coord) {
-    var row = Math.floor(coord.x / this.tile.width);
-    var col = Math.floor(coord.y / this.tile.height);
-    if (typeof(this.map[row]) !== "undefined") {
-      if (typeof(this.map[row][col]) !== "undefined") {
-        return ({r: row, c: col});
-      }
-    }
-    return (false);
-  };
+    return entity;
 
-  /**
-   * Placeholder for doing something on a click
-   *
-   * @type {Function}
-   * @method
-   * @param coord Object the x and y position
-   */
-  this.onClick = function (coord) {
+  });
 
-    var tile = this.pixelToTile(coord);
-    //call this.tileClick(col,row)
-  };
-}
+})();
