@@ -128,6 +128,8 @@ CanvasEngine.positionsAtPixel = function(p, w, h){
  * @param canvas The canvas to base the engine off of
  * @param init A json array of entities and their data
  * @param start the boolean to indicate whether or not to start animating after adding entities.
+ *
+ * @todo Just remove this. The simplicity sounds nice, but in practice, its not helping.
  */
 CanvasEngine.setup = function(canvas, init, start){
   CanvasEngine.Screen.setScreen(canvas);
