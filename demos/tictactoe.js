@@ -1,3 +1,6 @@
+(function(){
+
+
 var game = function(){
   this.currentPlayer = 1;
   var player1 = 0;  //total wins
@@ -434,3 +437,5 @@ var game = function(){
 };
 
 window.tictactoe = new game();
+
+})();
