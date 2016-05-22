@@ -55,6 +55,8 @@
           size
         );
 
+        this.resize(size);
+
         // Draw the background
         background.messageToComponent("Renderer", "render", ctx);
         // Draw the text
