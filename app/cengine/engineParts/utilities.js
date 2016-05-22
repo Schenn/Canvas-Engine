@@ -39,7 +39,7 @@
    * @returns {boolean}
    */
   utilities.isArray = function(prop){
-    return (!!a) && (a.constructor === Array);
+    return (!!prop) && (prop.constructor === Array);
   };
 
   /**

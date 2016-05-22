@@ -13,7 +13,8 @@
 
     // When the movement component updates its positions, tell the renderer to match those positions
     function updateRendererOnMovement(dir, val){
-      var data = {dir: dir, val: val};
+      var data = {};
+      data[dir] = val;
       entity.messageToComponent("Renderer", "setPosition", data);
       if(utilities.isFunction(entity.onMovement)){
         entity.onMovement.call(entity, data);

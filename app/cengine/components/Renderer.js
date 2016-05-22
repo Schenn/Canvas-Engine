@@ -202,10 +202,23 @@
      * @param position
      */
     this.setPosition = function(position){
-      if((position.dir == "x" || position.dir == "y")){
-        this[position.dir] = position.val;
+      if(CanvasEngine.utilities.exists(position.x)){
+        this.x = position.x;
       }
 
+      if(CanvasEngine.utilities.exists(position.y)){
+        this.y = position.y;
+      }
+
+    };
+
+    this.resize = function(size){
+      if(CanvasEngine.utilities.exists(size.height)){
+        this.height = size.height;
+      }
+      if(CanvasEngine.utilities.exists(size.width)){
+        this.width = size.width;
+      }
     };
 
     // This component has a LOT of potential properties. Use the setProperties method to save some keystrokes.

@@ -271,8 +271,7 @@ var game = function(){
     for(var i=0; i<matchingSlots.length; i++){
       var slotA = matchingSlots[i][0];
       var slotB = matchingSlots[i][1];
-
-      if(this.positionsClaimed[slotA] == this.positionsClaimed[slotB] == this.positionsClaimed[positionSlot]){
+      if(this.positionsClaimed[slotA] == this.positionsClaimed[slotB] && this.positionsClaimed[slotB] == this.positionsClaimed[positionSlot]){
         winner = this.positionsClaimed[slotA];
         matching.push(slotA, slotB, positionSlot);
         break;
@@ -426,10 +425,23 @@ var game = function(){
       }
     };
 
+    var newGame = {
+      type: "Button",
+      x: 50,
+      y: Math.round(CanvasEngine.Screen.height() * 0.8),
+      text: "New Game",
+      padding: 5,
+      fillStyle: "#000",
+      background: {
+        fillStyle: "#fff"
+      }
+    };
+
     CanvasEngine.addMap([
       leftStar,
       rightStar,
-      fallingStar
+      fallingStar,
+      newGame
 
     ]);
 
