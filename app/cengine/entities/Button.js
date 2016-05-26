@@ -23,7 +23,7 @@
       params)
     );
 
-    EM.attachComponent(entity, "Renderer", $.extend({
+    EM.attachComponent(entity, "Renderer", $.extend({}, { fromCenter: true,
       clearInfo: function(ctx){
         // Return the background's clearInfo
         return background.getFromComponent("Renderer", "clearInfo", ctx);

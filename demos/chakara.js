@@ -65,6 +65,20 @@ var game = function(){
           height: 32, width: 32,
           tiles: randomTileMap
         }
+      },
+      {
+        type: "Button",
+        x: CanvasEngine.Screen.width() / 2,
+        y: CanvasEngine.Screen.height() / 2,
+        z_index: 2,
+        text: "Click me",
+        padding: 2,
+        onClick: function(){
+          console.log("I got clicked");
+        },
+        background: {
+          fillStyle: "#00ff00"
+        }
       }
     ], true);
   };
