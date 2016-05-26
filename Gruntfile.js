@@ -43,6 +43,7 @@ module.exports = function(grunt) {
         },
         files: {
           'js/cengine.min.js': [
+            '<%= cengine %>/polyfills/**/*.js',
             '<%= cengine %>/jqueryPlugins/**/*.js',
             '<%= cengine %>/*.js',
             '<%= cengine %>/engineParts/*.js',
@@ -50,22 +51,10 @@ module.exports = function(grunt) {
             '<%= cengine %>/entities/*.js',
             '<%= cengine %>/components/*.js' ]
         }
-      },
-      jqPlugins: {
-        options: {
-          mangle: true,
-          compress: true,
-          screwIE8: true,
-          sourceMap: true
-        },
-        files: {
-          'js/plugins.min.js': ['<%= plugins %>/**/*.js']
-        }
       }
     },
     jshint: {
-      cengine: ['<%= cengine %>'],
-      plugins: ['<%= plugins %>']
+      cengine: ['<%= cengine %>']
     },
     watch: {
       options: {
