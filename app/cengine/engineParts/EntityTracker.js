@@ -143,9 +143,11 @@
      * @param w The search area width
      * @param h The search area height
      * @param zIndexes The indexes to search
+     * @param hasComponent An optional Component to restrict your positions by.
+     *
      * @returns {Array} The collection of found entities.
      */
-    this.positionsAtPixel = function(p,w,h, zIndexes){
+    this.positionsAtPixel = function(p,w,h, zIndexes, hasComponent){
       var positions = [];
       for(var i =0; i< zIndexes.length; i++){
         var z = zIndexes[i];
@@ -153,7 +155,14 @@
           var ents = this.getEntitiesByZ(z);
           for (var j = 0; j < ents.length; j++) {
             if(ents[j].getFromComponent("Renderer", "containsPixel",p)){
-              positions.push(ents[j]);
+              if (!CanvasEngine.utilities.exists(hasComponent)){
+                positions.push(ents[j]);
+              }
+              else if(CanvasEngine.utilities.exists(hasComponent) && ents[j].hasComponent(hasComponent)){
+                positions.push(ents[j]);
+              }
+
+
             }
           }
         }
