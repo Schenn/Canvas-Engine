@@ -91,7 +91,7 @@ module.exports = function(grunt) {
     grunt.task.run('buildlib');
   });
 
-  grunt.registerTask('compile', ['jshint', 'uglify:jqPlugins', 'uglify:cengine']);
+  grunt.registerTask('compile', ['jshint', 'uglify:cengine']);
 
   grunt.event.on('lintAndCompile', function(action, filepath) {
     grunt.config('jshint.compiledJS.src', filepath);
