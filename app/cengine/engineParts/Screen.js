@@ -1,5 +1,7 @@
 (function(){
 
+  var previousMousePosition;
+
   /**
    * The Screen class manages the individual canvases of the Engine
    *
@@ -37,7 +39,12 @@
       }
       canvases[0] = canvas;
       baseCanvas = canvas;
-      baseCanvas.on("click", this.onClick);
+      baseCanvas.parent().on({
+        click:this.onClick,
+        mousedown: this.onMouseDown,
+        mouseup:this.onMouseUp,
+        mousemove: this.onMouseMove
+      }, "canvas");
     };
 
     /**
@@ -58,17 +65,13 @@
     this.addZLayer = function(z){
       if(CanvasEngine.utilities.exists(canvases[z])) return;
 
-      var newZ = baseCanvas.
-      addZLayer(
+      // Set reference to the canvas element, not its jQuery wrapped version.
+      // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
+      canvases[z] = baseCanvas.addZLayer(
         baseCanvas.attr("height"),
         baseCanvas.attr("width"),
         z
       );
-
-      newZ.on("click", this.onClick);
-      // Set reference to the canvas element, not its jQuery wrapped version.
-      // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
-      canvases[z] = newZ;
     };
 
     /**
@@ -144,7 +147,39 @@
         x: e.offsetX,
         y: e.offsetY
       };
-      CanvasEngine.checkClickMap(coords);
+      CanvasEngine.mouse(coords, "Click");
+    };
+
+
+    this.onMouseMove = function(e){
+      e.stopPropagation();
+      e.cancelBubble = true;
+      var coords = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      CanvasEngine.mouse(coords, "MouseMove", previousMousePosition);
+      previousMousePosition = coords;
+    };
+
+    this.onMouseDown = function(e){
+      e.stopPropagation();
+      e.cancelBubble = true;
+      var coords = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      CanvasEngine.mouse(coords, "MouseDown");
+    };
+
+    this.onMouseUp = function(e){
+      e.stopPropagation();
+      e.cancelBubble = true;
+      var coords = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      CanvasEngine.mouse(coords, "MouseUp");
     };
 
   };

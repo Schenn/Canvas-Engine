@@ -131,9 +131,15 @@
       }
 
       // Attach the click and other event handling components.
-      if(CanvasEngine.utilities.exists(params.onClick)){
-        this.attachComponent(entity, "Click", params);
+      if(CanvasEngine.utilities.exists(params.onClick) ||
+        CanvasEngine.utilities.exists(params.onMouseOver) ||
+        CanvasEngine.utilities.exists(params.onMouseUp) ||
+        CanvasEngine.utilities.exists(params.onMouseDown) ||
+        CanvasEngine.utilities.exists(params.onMouseMove)){
+
+        this.attachComponent(entity, "Mouse", params);
       }
+
 
 
       return entity;

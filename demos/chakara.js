@@ -78,6 +78,11 @@ var game = function(){
         },
         background: {
           fillStyle: "#00ff00"
+        },
+        hover: {
+          fillStyle: "#00aa00",
+          strokeStyle: "#000000",
+          strokeWidth: 2
         }
       }
     ], true);
