@@ -138,12 +138,21 @@
         CanvasEngine.utilities.exists(params.onMouseMove)){
 
         this.attachComponent(entity, "Mouse", params);
+        // Don't re-attach the mouse component on any child entities.
+        //  (Otherwise their methods will get fired for each dependent entity)
+        delete params.onClick;
+        delete params.onMouseOver;
+        delete params.onMouseUp;
+        delete params.onMouseDown;
+        delete params.onMouseMove;
       }
 
       if(CanvasEngine.utilities.exists(params.keys)){
         this.attachComponent(entity, "KeyPress", params.keys);
+        // Don't re-attach the keypress component on any child entities.
+        //  (Otherwise their methods will get fired for each dependent entity)
+        delete params.keys;
       }
-
 
       return entity;
     };
