@@ -140,6 +140,9 @@
         this.attachComponent(entity, "Mouse", params);
       }
 
+      if(CanvasEngine.utilities.exists(params.keys)){
+        this.attachComponent(entity, "KeyPress", params.keys);
+      }
 
 
       return entity;
