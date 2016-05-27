@@ -58,6 +58,23 @@
     };
 
     /**
+     * Set the Screen Resolution.
+     *
+     * If you know what resolution your animation looks best at;
+     *  Set it with this method and use CSS to scale the view.
+     *  Be sure to maintain your aspect ratio in your style adjustments.
+     *
+     * @param width
+     * @param height
+     */
+    this.setResolution = function(width, height){
+      $.each(canvases, function(index, canvas){
+        canvas.attr("width", width);
+        canvas.attr("height", height);
+      });
+    };
+
+    /**
      * Add a z layer to the screen.
      * A z layer is a new canvas which sits in the stack of canvases
      * @param z The z index to add
