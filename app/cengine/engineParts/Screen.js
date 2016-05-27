@@ -1,5 +1,7 @@
 (function(){
 
+  var previousMousePosition;
+
   /**
    * The Screen class manages the individual canvases of the Engine
    *
@@ -37,7 +39,12 @@
       }
       canvases[0] = canvas;
       baseCanvas = canvas;
-      baseCanvas.on("click", this.onClick);
+      baseCanvas.parent().on({
+        click:this.onClick,
+        mousedown: this.onMouseDown,
+        mouseup:this.onMouseUp,
+        mousemove: this.onMouseMove
+      }, "canvas");
     };
 
     /**
@@ -51,6 +58,23 @@
     };
 
     /**
+     * Set the Screen Resolution.
+     *
+     * If you know what resolution your animation looks best at;
+     *  Set it with this method and use CSS to scale the view.
+     *  Be sure to maintain your aspect ratio in your style adjustments.
+     *
+     * @param width
+     * @param height
+     */
+    this.setResolution = function(width, height){
+      $.each(canvases, function(index, canvas){
+        canvas.attr("width", width);
+        canvas.attr("height", height);
+      });
+    };
+
+    /**
      * Add a z layer to the screen.
      * A z layer is a new canvas which sits in the stack of canvases
      * @param z The z index to add
@@ -58,17 +82,13 @@
     this.addZLayer = function(z){
       if(CanvasEngine.utilities.exists(canvases[z])) return;
 
-      var newZ = baseCanvas.
-      addZLayer(
+      // Set reference to the canvas element, not its jQuery wrapped version.
+      // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
+      canvases[z] = baseCanvas.addZLayer(
         baseCanvas.attr("height"),
         baseCanvas.attr("width"),
         z
       );
-
-      newZ.on("click", this.onClick);
-      // Set reference to the canvas element, not its jQuery wrapped version.
-      // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
-      canvases[z] = newZ;
     };
 
     /**
@@ -144,9 +164,69 @@
         x: e.offsetX,
         y: e.offsetY
       };
-      CanvasEngine.checkClickMap(coords);
+      CanvasEngine.mouse(coords, "Click");
     };
 
+
+    this.onMouseMove = function(e){
+      e.stopPropagation();
+      e.cancelBubble = true;
+      var coords = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      CanvasEngine.mouse(coords, "MouseMove", previousMousePosition);
+      previousMousePosition = coords;
+    };
+
+    this.onMouseDown = function(e){
+      e.stopPropagation();
+      e.cancelBubble = true;
+      var coords = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      CanvasEngine.mouse(coords, "MouseDown");
+    };
+
+    this.onMouseUp = function(e){
+      e.stopPropagation();
+      e.cancelBubble = true;
+      var coords = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      CanvasEngine.mouse(coords, "MouseUp");
+    };
+
+    /**
+     * Capture a screenshot
+     */
+    this.capture = function(){
+      // Create a hidden canvas of the appropriate size
+      var output = $("<canvas><canvas>");
+      output.attr("height", baseCanvas.height);
+      output.attr("width", baseCanvas.width);
+      output.hide();
+
+      var ctx = output.getContext("2d");
+
+      // Draw each canvas to the hidden canvas in order of z index
+      for(var z=0; z < canvases.length; z++){
+        ctx.drawImage(canvases[i], 0, 0);
+      }
+
+      // Get the image data
+      var dataUrl = output.toDataURL();
+
+      // Save the image as a png
+      var a = $("<a></a>");
+      a.attr("href", dataUrl);
+      a.attr("download", "ScreenShot"+(new Date().getDate())+".png");
+      $("body").append(a);
+      a.click();
+      a.remove();
+    };
   };
 
   // Attach The Screen manager to the CanvasEngine.

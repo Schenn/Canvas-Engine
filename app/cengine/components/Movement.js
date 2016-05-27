@@ -14,6 +14,8 @@
       xSpeed = utils.exists(params.xSpeed) ? params.xSpeed : 0,
       ySpeed = utils.exists(params.ySpeed) ? params.ySpeed : 0;
 
+    var destX, destY;
+
     var lastDirection;
 
     if(utils.isFunction(params.onDirectionChange)){
@@ -31,17 +33,35 @@
      * @param delta
      */
     this.move = function(delta){
-      if(delta > 0){
-        this.x += (xSpeed > 0) ? xSpeed * delta : 0;
-        this.y += (ySpeed > 0) ? ySpeed * delta : 0;
-      } else {
-        this.x += (xSpeed > 0) ? xSpeed : 0;
-        this.y += (ySpeed > 0) ? ySpeed : 0;
-      }
-      if(this.getDirection().direction !== lastDirection && utils.isFunction(this.onDirectionChange)){
-        var dir = this.getDirection();
-        this.onDirectionChange(dir);
-        lastDirection = dir.direction;
+      if(!CanvasEngine.isPaused()) {
+        this.x += (xSpeed !== 0) ? xSpeed * delta : 0;
+        this.y += (ySpeed !== 0) ? ySpeed * delta : 0;
+
+        if (xSpeed > 0) {
+          if (this.x >= destX && destX !== 0) {
+            xSpeed = 0;
+          }
+        } else if (xSpeed < 0) {
+          if (this.x <= destX && destX !== 0) {
+            xSpeed = 0;
+          }
+        }
+
+        if (ySpeed > 0) {
+          if (this.y >= destY && destY !== 0) {
+            ySpeed = 0;
+          }
+        } else if (ySpeed < 0) {
+          if (this.y <= destY && destY !== 0) {
+            ySpeed = 0;
+          }
+        }
+
+        if (this.getDirection().direction !== lastDirection && utils.isFunction(this.onDirectionChange)) {
+          var dir = this.getDirection();
+          this.onDirectionChange(dir);
+          lastDirection = dir.direction;
+        }
       }
     };
 
@@ -76,6 +96,8 @@
 
     /**
      * Get this components data as a jso
+     *
+     * @returns {{x: number, y: number, xSpeed: number, ySpeed: number}}
      */
     this.asObject = function(){
       return $.extend({}, {x:this.x, y:this.y,xSpeed: xSpeed, ySpeed: ySpeed});
@@ -99,6 +121,39 @@
         xSpeed: xSpeed,
         ySpeed: ySpeed
       };
+    };
+
+    /**
+     * Travel a distance in a given direction.
+     *
+     * When the entity reaches that destination,
+     *  it will set it's speeds to 0 and stop moving.
+     *
+     * @param distance {{x: number, y: number, speed: number }}
+     */
+    this.travel = function(distance){
+      if(ySpeed === 0) {
+        if (utils.exists(distance.y)) {
+          destY = this.y + distance.y;
+          if (distance.y < 0) {
+            ySpeed = Math.abs(distance.speed) * -1;
+          } else {
+            ySpeed = Math.abs(distance.speed);
+          }
+        }
+      }
+
+      if(xSpeed === 0){
+        if(utils.exists(distance.x)){
+          destX = this.x + distance.x;
+          if(distance.x < 0){
+            xSpeed = Math.abs(distance.speed) * -1;
+          } else {
+            xSpeed = Math.abs(distance.speed);
+          }
+        }
+      }
+
     };
 
 

@@ -63,7 +63,7 @@
       y= 0;
 
     // Public Properties
-    Object.defineProperties(self, {
+    Object.defineProperties(this, {
       "textAlign":props.defaultProperty(align, this.markDirty),
       "angle":props.defaultProperty(angle, this.markDirty),
       "baseline":props.defaultProperty(baseline, this.markDirty),
@@ -166,19 +166,19 @@
      */
     this.containsPixel = function(coords){
       // if we contain the pixel position
-      var leftBoundry = self.x;
-      var rightBoundry = self.x;
-      var topBoundry = self.y;
-      var bottomBoundry = self.y;
-      if (fromCenter) {
-        leftBoundry -= (0.5 * self.width);
-        rightBoundry += (0.5 * self.width);
-        topBoundry -= (0.5 * self.height);
-        bottomBoundry += (0.5 * self.height);
+      var leftBoundry = this.x;
+      var rightBoundry = this.x;
+      var topBoundry = this.y;
+      var bottomBoundry = this.y;
+      if (this.fromCenter) {
+        leftBoundry -= (0.5 * this.width);
+        rightBoundry += (0.5 * this.width);
+        topBoundry -= (0.5 * this.height);
+        bottomBoundry += (0.5 * this.height);
       }
       else {
-        rightBoundry += self.width;
-        bottomBoundry += self.height;
+        rightBoundry += this.width;
+        bottomBoundry += this.height;
       }
 
       return ((coords.x >= leftBoundry) && (coords.x <= rightBoundry) &&
@@ -218,6 +218,12 @@
       }
       if(CanvasEngine.utilities.exists(size.width)){
         this.width = size.width;
+      }
+    };
+
+    this.set = function(prop, val){
+      if(CanvasEngine.utilities.exists(this[prop])){
+        this[prop] = val;
       }
     };
 

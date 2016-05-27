@@ -32,17 +32,19 @@
      * @param direction
      */
     this.scroll = function(direction){
-      var actualX = Math.round(direction.x / tileSize.width);
-      var actualY = Math.round(direction.y / tileSize.height);
-      // Change our initial tile position based on the distance in pixels over the size of a tile.
-      scrollOffset.x += actualX;
-      scrollOffset.y += actualY;
+      if(!CanvasEngine.isPaused()) {
+        var actualX = Math.round(direction.x / tileSize.width);
+        var actualY = Math.round(direction.y / tileSize.height);
+        // Change our initial tile position based on the distance in pixels over the size of a tile.
+        scrollOffset.x += actualX;
+        scrollOffset.y += actualY;
 
-      // Tell the CanvasEngine event manager to fire a scrollMap event.
-      // If there's a scrollMap event, living, non-gui entities should be forced
-      //    to move the tileDistance which actually occurred.
+        // Tell the CanvasEngine event manager to fire a scrollMap event.
+        // If there's a scrollMap event, living, non-gui entities should be forced
+        //    to move the tileDistance which actually occurred.
 
-      // CanvasEngine.EventManager.fire("ScrollWorld", {x: actualX * tileSize.width, y: actualY * tileSize.height});
+        // CanvasEngine.EventManager.fire("ScrollWorld", {x: actualX * tileSize.width, y: actualY * tileSize.height});
+      }
     };
 
     this.getVisibleTiles = function(area){
