@@ -182,6 +182,34 @@
       CanvasEngine.mouse(coords, "MouseUp");
     };
 
+    /**
+     * Capture a screenshot
+     */
+    this.capture = function(){
+      // Create a hidden canvas of the appropriate size
+      var output = $("<canvas><canvas>");
+      output.attr("height", baseCanvas.height);
+      output.attr("width", baseCanvas.width);
+      output.hide();
+
+      var ctx = output.getContext("2d");
+
+      // Draw each canvas to the hidden canvas in order of z index
+      for(var z=0; z < canvases.length; z++){
+        ctx.drawImage(canvases[i], 0, 0);
+      }
+
+      // Get the image data
+      var dataUrl = output.toDataURL();
+
+      // Save the image as a png
+      var a = $("<a></a>");
+      a.attr("href", dataUrl);
+      a.attr("download", "ScreenShot"+(new Date().getDate())+".png");
+      $("body").append(a);
+      a.click();
+      a.remove();
+    };
   };
 
   // Attach The Screen manager to the CanvasEngine.
