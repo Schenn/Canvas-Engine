@@ -70,7 +70,7 @@
         size.width += (params.padding * 2);
         size.height += (params.padding * 2);
 
-        if(isHovering){
+        if(isHovering && utilities.exists(hover)){
           hover.messageToComponent(
             "Renderer", "setPosition", {x: this.x}
           );
