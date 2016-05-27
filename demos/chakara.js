@@ -70,11 +70,11 @@ var game = function(){
         type: "Button",
         x: CanvasEngine.Screen.width() / 2,
         y: CanvasEngine.Screen.height() / 2,
-        z_index: 2,
-        text: "Click me",
+        z_index: 3,
+        text: "Add Movable Entity",
         padding: 2,
         onClick: function(){
-          console.log("I got clicked");
+          chakara.addMovable();
         },
         background: {
           fillStyle: "#00ff00"
@@ -86,6 +86,54 @@ var game = function(){
         }
       }
     ], true);
+  };
+
+  this.addMovable = function(){
+    CanvasEngine.addMap([
+      {
+        type: "MSPRITE",
+        x: 98, y:98,
+        z_index: 2,
+        spritesheets: {
+          default: "medieval"
+        },
+        animations: {
+          default:{
+            duration: 0,
+            frames: ["90"]
+          }
+        },
+        defaultSprite: "90",
+        height: 32, width: 32, fromCenter: false,
+        keys: {
+          w: function(){
+            this.messageToComponent("Movement", "travel", {
+              y: -32,
+              speed: 50
+            });
+          },
+          a: function(){
+            this.messageToComponent("Movement", "travel", {
+              x: -32,
+              speed: 50
+            });
+          },
+          s: function(){
+            this.messageToComponent("Movement", "travel", {
+              y: 32,
+              speed: 50
+            });
+          },
+          d: function(){
+            this.messageToComponent("Movement", "travel", {
+              x: 32,
+              speed: 50
+            });
+          }
+        }
+      }
+    ]);
+
   };
 
 };
