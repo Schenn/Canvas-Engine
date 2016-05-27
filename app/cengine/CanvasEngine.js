@@ -1,10 +1,11 @@
 (function(){
+  var contextMenuOpen = false;
+  var paused = true;
   /**
    * CanvasEngine is the window level object which contains all the functionality.
    * @class
    */
   var CanvasEngine = {
-    paused: true
   };
 
   /**
@@ -37,7 +38,7 @@
     this.EntityTracker.addEntities(entities);
 
     if(start){
-      this.paused = false;
+      paused = false;
       this.Loop();
     }
   };
@@ -60,7 +61,7 @@
    * @param ctx The EnhancedContext of a canvas
    */
   CanvasEngine.drawZ = function(z, ctx){
-    if(!this.paused && CanvasEngine.EntityTracker.entityCount() > 0) {
+    if(!paused && CanvasEngine.EntityTracker.entityCount() > 0) {
       setTimeout(function(){
         $.each(CanvasEngine.EntityTracker.getEntitiesByZ(z), function (index, entity) {
           if(CanvasEngine.utilities.exists(entity)){
@@ -80,9 +81,9 @@
    * Clear all entities from the game
    */
   CanvasEngine.clearEntities = function(){
-    this.paused = true;
+    paused = true;
     CanvasEngine.EntityTracker.clearEntities();
-    this.paused = false;
+    paused = false;
   };
 
 
@@ -135,11 +136,31 @@
   /**
    * Pause the game
    * @method
+   * @param forceIt bool
    */
-  CanvasEngine.pause = function(){
-    this.paused = !this.paused;
+  CanvasEngine.pause = function(forceIt){
+    paused = (CanvasEngine.utilities.exists(forceIt)) ? forceIt : !paused;
+
+    if(!paused){
+      this.Loop();
+    }
   };
 
+  CanvasEngine.pauseOnRightClick = function(){
+    contextMenuOpen = true;
+    paused = true;
+  };
+
+  CanvasEngine.unPause = function(){
+    $(document).off(".unpause");
+    $(window).off(".unpause");
+
+    paused = false;
+  };
+
+  CanvasEngine.isPaused = function(){
+    return paused;
+  };
 
   /**
    * Get all the entities at a given pixel
@@ -166,10 +187,22 @@
    * @method
    * @param canvas The canvas to base the engine off of
    *
-   * @todo Just remove this. The simplicity sounds nice, but in practice, its not helping.
    */
   CanvasEngine.setup = function(canvas){
     CanvasEngine.Screen.setScreen(canvas);
+    $(document).on("contextmenu", function(){
+      CanvasEngine.pauseOnRightClick();
+
+      $(document).on("keypress.unpause", function(e){
+        if(e.keyCode === 27){
+          CanvasEngine.unPause();
+        }
+      });
+      $(document).on("click.unpause", CanvasEngine.unPause);
+      $(window).on("blur.unpause", CanvasEngine.unPause);
+
+    });
+
   };
 
   window.CanvasEngine = CanvasEngine;

@@ -33,33 +33,35 @@
      * @param delta
      */
     this.move = function(delta){
+      if(!CanvasEngine.isPaused()) {
         this.x += (xSpeed !== 0) ? xSpeed * delta : 0;
         this.y += (ySpeed !== 0) ? ySpeed * delta : 0;
 
-      if(xSpeed > 0){
-        if(this.x >= destX && destX !== 0){
-          xSpeed = 0;
+        if (xSpeed > 0) {
+          if (this.x >= destX && destX !== 0) {
+            xSpeed = 0;
+          }
+        } else if (xSpeed < 0) {
+          if (this.x <= destX && destX !== 0) {
+            xSpeed = 0;
+          }
         }
-      } else if (xSpeed < 0){
-        if(this.x <= destX && destX !== 0){
-          xSpeed = 0;
-        }
-      }
 
-      if(ySpeed > 0){
-        if(this.y >= destY && destY !== 0){
-          ySpeed = 0;
+        if (ySpeed > 0) {
+          if (this.y >= destY && destY !== 0) {
+            ySpeed = 0;
+          }
+        } else if (ySpeed < 0) {
+          if (this.y <= destY && destY !== 0) {
+            ySpeed = 0;
+          }
         }
-      } else if (ySpeed < 0){
-        if(this.y <= destY && destY !== 0){
-          ySpeed = 0;
-        }
-      }
 
-      if(this.getDirection().direction !== lastDirection && utils.isFunction(this.onDirectionChange)){
-        var dir = this.getDirection();
-        this.onDirectionChange(dir);
-        lastDirection = dir.direction;
+        if (this.getDirection().direction !== lastDirection && utils.isFunction(this.onDirectionChange)) {
+          var dir = this.getDirection();
+          this.onDirectionChange(dir);
+          lastDirection = dir.direction;
+        }
       }
     };
 

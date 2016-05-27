@@ -56,39 +56,51 @@
      * @constructor
      */
     this.Click = function(args){
-      $.each(onClick, function(index, callback){
-        callback.call(entity, args);
-      });
+      if(!CanvasEngine.isPaused()) {
+        $.each(onClick, function (index, callback) {
+          callback.call(entity, args);
+        });
+      }
     };
 
     this.onMouseOver = function(args){
-      $.each(onMouseOver, function(index, callback){
-        callback.call(entity, args);
-      });
+      if(!CanvasEngine.isPaused()) {
+        $.each(onMouseOver, function (index, callback) {
+          callback.call(entity, args);
+        });
+      }
     };
 
     this.onMouseDown = function(args){
-      $.each(onMouseDown, function(index, callback){
-        callback.call(entity, args);
-      });
+      if(!CanvasEngine.isPaused()) {
+        $.each(onMouseDown, function (index, callback) {
+          callback.call(entity, args);
+        });
+      }
     };
 
     this.onMouseUp = function(args){
-      $.each(onMouseUp, function(index, callback){
-        callback.call(entity, args);
-      });
+      if(!CanvasEngine.isPaused()) {
+        $.each(onMouseUp, function (index, callback) {
+          callback.call(entity, args);
+        });
+      }
     };
 
     this.onMouseMove = function(args){
-      $.each(onMouseMove, function(index, callback){
-        callback.call(entity, args);
-      });
+      if(!CanvasEngine.isPaused()) {
+        $.each(onMouseMove, function (index, callback) {
+          callback.call(entity, args);
+        });
+      }
     };
 
     this.onMouseOut = function(){
-      $.each(onMouseOut, function(index, callback){
-        callback.call(entity);
-      });
+      if(!CanvasEngine.isPaused()) {
+        $.each(onMouseOut, function (index, callback) {
+          callback.call(entity);
+        });
+      }
     };
 
     this.addClickMethods = function(methods){

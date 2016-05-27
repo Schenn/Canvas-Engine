@@ -14,7 +14,7 @@
     };
 
     this.onKeyDown = function(key){
-      if(CanvasEngine.utilities.isFunction(keyCallbacks[key])) {
+      if(!CanvasEngine.isPaused() && CanvasEngine.utilities.isFunction(keyCallbacks[key])) {
         keyCallbacks[key].call(entity);
       }
     };
