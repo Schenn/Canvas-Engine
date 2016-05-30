@@ -1,10 +1,14 @@
-(function(){
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+(function(CanvasEngine){
 
   /**
    * The EntityTracker manages the information about all current living Entities in our engine.
    *
    * @class
-   * @constructor
+   * @memberOf CanvasEngine
+   * @inner
    */
   var EntityTracker = function(){
     var entities = {};
@@ -15,8 +19,7 @@
     /**
      * Add an array of entities to the entity tracker
      *
-     * @method
-     * @param ents [zIndex=>entity,..]
+     * @param {Array} ents [zIndex=>entity,..]
      * @todo Thats a stupid sorting order, especially since Entities have z_index information.
      *
      **/
@@ -33,15 +36,15 @@
       });
     };
 
+    //noinspection JSUnusedGlobalSymbols
     /**
      * Prevent a z-index from interacting with things.
      *
      * Use this to make a z-index not search its objects for click and collision interactions
      * Use to increase performance
      *
-     * @method
-     * @param indexes The z-indexes to mark
-     * @param invert Bool to unmark a z-index.
+     * @param {Array} indexes The z-indexes to mark
+     * @param {boolean} invert Remove the mark from a z index if true
      */
     this.excludeZ = function(indexes, invert){
       indexes.forEach(function(index){
@@ -56,8 +59,7 @@
     /**
      * Get the entities with the given names
      *
-     * @method
-     * @param names array of names
+     * @param {Array} names array of names
      * @returns {Array}
      */
     this.getEntities = function(names){
@@ -73,8 +75,7 @@
     /**
      * Remove a collection of entities from the Tracker.
      *
-     * @method
-     * @param names array of names
+     * @param {Array} names array of names
      */
     this.removeEntities = function(names){
       $.each(names, function(index, name){
@@ -110,8 +111,7 @@
     };
 
     /**
-     * Clear all the entities being tracked.
-     * @method
+     * Clear all the active entities
      */
     this.clearEntities = function(){
       // Starting with the last z index, work backwards, clearing each collection
@@ -125,7 +125,7 @@
     /**
      * Get all the entities on a given z-index
      *
-     * @param z int the Z index
+     * @param {number} z the Z index
      * @returns {Array} Array of entities
      */
     this.getEntitiesByZ = function(z){
@@ -139,11 +139,11 @@
     /**
      * Get the entities at a given pixel
      *
-     * @param p The pixel coordinate
-     * @param w The search area width
-     * @param h The search area height
-     * @param zIndexes The indexes to search
-     * @param hasComponent An optional Component to restrict your positions by.
+     * @param {coord} p The pixel coordinate
+     * @param {number} w The search area width
+     * @param {number} h The search area height
+     * @param {Array} zIndexes The indexes to search
+     * @param {string} [hasComponent] An optional Component to restrict your positions by.
      *
      * @returns {Array} The collection of found entities.
      */
@@ -191,4 +191,4 @@
 
   // Attach the EntityTracker to the CanvasEngine.
   CanvasEngine.EntityTracker = new EntityTracker();
-})();
+})(window.CanvasEngine);

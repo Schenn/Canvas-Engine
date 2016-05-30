@@ -1,19 +1,12 @@
 /**
  * @todo Adjust y for baseline
  */
-(function(){
+(function(CanvasEngine){
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
   // Tell the EntityManager how to make a LABEL entity
   EM.setMake("LABEL", function(entity, params) {
-
-    // Start by adding a text component
-    EM.attachComponent(entity, "Text", $.extend({}, {
-      callback: function(){
-        entity.messageToComponent("Renderer", "markDirty");
-      }
-    },params));
 
     // Add a renderer component
     EM.attachComponent(entity, "Renderer", $.extend({}, {
@@ -67,6 +60,14 @@
       }
     }, params));
 
+    // Start by adding a text component
+    EM.attachComponent(entity, "Text", $.extend({}, {
+      callback: function(){
+        entity.messageToComponent("Renderer", "markDirty");
+      }
+    },params));
+
+
     return entity;
   });
-})();
+})(window.CanvasEngine);

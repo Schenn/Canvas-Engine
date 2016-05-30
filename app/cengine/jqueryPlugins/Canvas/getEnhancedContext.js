@@ -1,43 +1,41 @@
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ * @external "jQuery.fn"
+ * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
+ */
+
+/**
+ * ClearInfo
+ *
+ * @typedef {object} LocalParams~clearInfo
+ * @property {number} x
+ * @property {number} y
+ * @property {number} height
+ * @property {number} width
+ */
+
 (function($){
   /**
    * An enhanced context is a regular 2d context with helper drawing functions already attached!
-   *
-   * @returns {{}} An enhanced context
+   * @class enhancedContext
+   * @memberof external:"jQuery.fn"
    */
   $.fn.getEnhancedContext = function(){
 
+    /**
+     * @type {CanvasRenderingContext2D}
+     */
     var ctx= $(this)[0].getContext('2d');
+    /**
+     * @type {HTMLCanvasElement}
+     */
     var canvas = $(this)[0];
 
     var enhancedContext = {};
 
     /**
-     * Set the default context properties
-     * @param renderer A renderer component or an object containing the appropriate properties
-     */
-    enhancedContext.setDefaults = function(renderer){
-      ctx.fillStyle = renderer.fillStyle;
-      ctx.strokeStyle = renderer.strokeStyle;
-      ctx.lineWidth = renderer.strokeWidth;
-      // Set rounded corners for paths
-      if (renderer.rounded) {
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-      } else {
-        ctx.lineCap = renderer.strokeCap;
-        ctx.lineJoin = renderer.strokeJoin;
-      }
-      ctx.shadowOffsetX = renderer.shadowX;
-      ctx.shadowOffsetY = renderer.shadowY;
-      ctx.shadowBlur = renderer.shadowBlur;
-      ctx.shadowColor = renderer.shadowColor;
-      ctx.globalAlpha = renderer.opacity;
-      ctx.globalCompositeOperation = renderer.compositing;
-    };
-
-    /**
      * Clear a space from the context
-     * @param clearInfo
+     * @param {LocalParams~clearInfo} clearInfo
      */
     enhancedContext.clear = function(clearInfo){
       // Clear entire canvas
@@ -53,16 +51,60 @@
     };
 
     /**
-     * Close a path belonging to a shape
-     * @param renderer
+     * Set the default context properties
+     *  Just because a property CAN be undefined doesn't mean it should be.
+     *  This method is used to prepare context with the basic values that the actual draw method will need
+     *  Be sure to send all of the properties you need to do the draw.
+     * @param {{
+     *  fillStyle: string | undefined
+     *  strokeStyle: string | undefined
+     *  rounded: boolean | undefined
+     *  shadowX: number | undefined
+     *  shadowY: number | undefined
+     *  shadowBlur: number | undefined
+     *  shadowColor: string | undefined
+     *  strokeWidth: number | undefined
+     *  strokeCap: string | undefined
+     *  strokeJoin: string | undefined
+     *  opacity: number | undefined
+     *  compositing: string | undefined
+     * }} defaultParams
      */
-    enhancedContext.closePath = function(renderer){
+    enhancedContext.setDefaults = function(defaultParams){
+      ctx.fillStyle = defaultParams.fillStyle;
+      ctx.strokeStyle = defaultParams.strokeStyle;
+      ctx.lineWidth = defaultParams.strokeWidth;
+      // Set rounded corners for paths
+      if (defaultParams.rounded) {
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+      } else {
+        ctx.lineCap = defaultParams.strokeCap;
+        ctx.lineJoin = defaultParams.strokeJoin;
+      }
+      ctx.shadowOffsetX = defaultParams.shadowX;
+      ctx.shadowOffsetY = defaultParams.shadowY;
+      ctx.shadowBlur = defaultParams.shadowBlur;
+      ctx.shadowColor = defaultParams.shadowColor;
+      ctx.globalAlpha = defaultParams.opacity;
+      ctx.globalCompositeOperation = defaultParams.compositing;
+    };
+
+    /**
+     * Close a path belonging to a shape
+     *
+     * @param {{
+     *  mask: boolean | undefined
+     *  closed: boolean | undefined
+     * }} closePathParams
+     */
+    enhancedContext.closePath = function(closePathParams){
       // Mask if chosen
-      if (renderer.mask) {
+      if (closePathParams.mask) {
         ctx.save();
         ctx.clip();
       }
-      if (renderer.closed) {
+      if (closePathParams.closed) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
@@ -75,35 +117,45 @@
 
     /**
      * Convert angles to a respective degree
-     * @param renderer
+     * @param {{ inDegrees: boolean | undefined }} angleParams
      * @returns {number}
      */
-    enhancedContext.convertAngles = function(renderer) {
-      return renderer.inDegrees ? Math.PI/180 : 1;
+    enhancedContext.convertAngles = function(angleParams) {
+      return angleParams.inDegrees ? Math.PI/180 : 1;
     };
 
     /**
      * position the context for rendering
-     * @param renderer
-     * @param width
-     * @param height
+     *
+     *  If angle is provided, you also have to provide toRad
+     *
+     * @param {{
+     *  x: number
+     *  y: number
+     *  fromCenter: boolean | undefined
+     *  inDegrees: boolean | undefined
+     *  angle: number | undefined
+     *  toRad: number | undefined
+     *  }} shapeParams
+     * @param {number} width
+     * @param {number} height
      */
-    enhancedContext.positionShape = function(renderer, width, height) {
+    enhancedContext.positionShape = function(shapeParams, width, height) {
 
-      renderer.toRad = this.convertAngles(renderer);
+      shapeParams.toRad = this.convertAngles(shapeParams);
       ctx.save();
 
       // Always rotate from center
-      if (!renderer.fromCenter) {
-        renderer.x += width/2;
-        renderer.y += height/2;
+      if (!shapeParams.fromCenter) {
+        shapeParams.x += width/2;
+        shapeParams.y += height/2;
       }
 
       // Rotate only if specified
-      if (renderer.angle) {
-        ctx.translate(renderer.x, renderer.y);
-        ctx.rotate(renderer.angle*renderer.toRad);
-        ctx.translate(-renderer.x, -renderer.y);
+      if (shapeParams.angle) {
+        ctx.translate(shapeParams.x, shapeParams.y);
+        ctx.rotate(shapeParams.angle*shapeParams.toRad);
+        ctx.translate(-shapeParams.x, -shapeParams.y);
       }
 
     };
@@ -111,47 +163,87 @@
     /**
      * Draw an Arc
      *
-     * @param renderer
+     * @param {{
+     *  inDegrees: boolean | undefined
+     *  end: number | undefined
+     *  radius: number
+     *  start: number
+     *  toRad: number
+     *  ccw: boolean | undefined
+     *  x: number
+     *  y: number
+     *  mask: boolean | undefined
+     *  closed: boolean | undefined
+     *  angle: number | undefined
+     *  toRad: number | undefined
+     *  inDegrees: boolean | undefined
+     *  fromCenter: boolean | undefined
+     * }} arcParams
      */
-    enhancedContext.drawArc = function(renderer){
+    enhancedContext.drawArc = function(arcParams){
 
       var pi = Math.PI;
 
-      if (!renderer.inDegrees && renderer.end === 360) {
-        renderer.end = pi * 2;
+      if (!arcParams.inDegrees && arcParams.end === 360) {
+        arcParams.end = pi * 2;
       }
 
-      this.positionShape(ctx, renderer, renderer.radius*2, renderer.radius*2);
+      this.positionShape(arcParams, arcParams.radius*2, arcParams.radius*2);
       // Draw arc
       ctx.beginPath();
-      ctx.arc(renderer.x, renderer.y, renderer.radius, (renderer.start*renderer.toRad)-(pi/2), (renderer.end*renderer.toRad)-(pi/2), renderer.ccw);
+      ctx.arc(arcParams.x, arcParams.y, arcParams.radius, (arcParams.start*arcParams.toRad)-(pi/2), (arcParams.end*arcParams.toRad)-(pi/2), arcParams.ccw);
       // Close path if chosen
       ctx.restore();
-      this.closePath(ctx, renderer);
+      this.closePath(arcParams);
     };
 
     /**
      * Draw a Bezier curve
-     * @param renderer
+     *
+     * @param {{
+     *  x1: number
+     *  y1: number
+     *  x2: number
+     *  y2: number
+     *  cx0: number
+     *  cy0: number
+     *  cx1: number
+     *  cy1: number
+     *  mask: boolean  | undefined
+     *  closed: boolean | undefined
+     *  fillStyle: string | undefined
+     *  strokeStyle: string | undefined
+     *  strokeWidth: number | undefined
+     *  rounded: boolean | undefined
+     *  shadowX: number | undefined
+     *  shadowY: number | undefined
+     *  shadowBlur: number | undefined
+     *  shadowColor: string | undefined
+     *  strokeWidth: number | undefined
+     *  strokeCap: string | undefined
+     *  strokeJoin: string | undefined
+     *  opacity: number | undefined
+     *  compositing: string | undefined
+     * }} bezierParams  - There can be any number of Xs, Ys, CXs and CYs. Just give each their own key -> value
      */
-    enhancedContext.drawBezier = function(renderer){
+    enhancedContext.drawBezier = function(bezierParams){
         var l = 2, lc = 1,
         lx, ly,
         lcx1, lcy1,
         lcx2, lcy2;
 
-        this.setDefaults(renderer);
+        this.setDefaults(bezierParams);
 
         // Draw each point
         ctx.beginPath();
-        ctx.moveTo(renderer.x1, renderer.y1);
+        ctx.moveTo(bezierParams.x1, bezierParams.y1);
         while (true) {
-          lx = renderer['x' + l];
-          ly = renderer['y' + l];
-          lcx1 = renderer['cx' + lc];
-          lcy1 = renderer['cy' + lc];
-          lcx2 = renderer['cx' + (lc+1)];
-          lcy2 = renderer['cy' + (lc+1)];
+          lx = bezierParams['x' + l];
+          ly = bezierParams['y' + l];
+          lcx1 = bezierParams['cx' + lc];
+          lcy1 = bezierParams['cy' + lc];
+          lcx2 = bezierParams['cx' + (lc+1)];
+          lcy2 = bezierParams['cy' + (lc+1)];
           if (lx !== undefined && ly !== undefined && lcx1 !== undefined && lcy1 !== undefined && lcx2 !== undefined && lcy2 !== undefined) {
             ctx.bezierCurveTo(lcx1, lcy1, lcx2, lcy2, lx, ly);
             l += 1;
@@ -161,41 +253,96 @@
           }
         }
         // Close path if chosen
-        this.closePath(ctx, renderer);
+        this.closePath(bezierParams);
     };
 
     /**
      * Draw an ellipse
-     * @param renderer
+     * @param {{
+     *  x: number
+     *  y: number
+     *  height: number
+     *  width: number
+     *  mask: boolean | undefined
+     *  closed: boolean | undefined
+     *  fillStyle: string | undefined
+     *  strokeStyle: string | undefined
+     *  strokeWidth: number | undefined
+     *  rounded: boolean | undefined
+     *  shadowX: number | undefined
+     *  shadowY: number | undefined
+     *  shadowBlur: number | undefined
+     *  shadowColor: string | undefined
+     *  strokeWidth: number | undefined
+     *  strokeCap: string | undefined
+     *  strokeJoin: string | undefined
+     *  opacity: number | undefined
+     *  compositing: string | undefined
+     *  inDegrees: boolean | undefined
+     *  fromCenter: boolean | undefined
+     *  angle: number | undefined
+     *  toRad: number | undefined
+     * }} ellipseParams
      */
-    enhancedContext.drawEllipse = function(renderer){
-      var controlW = renderer.width * 4/3;
+    enhancedContext.drawEllipse = function(ellipseParams){
+      var controlW = ellipseParams.width * 4/3;
 
-        this.setDefaults(renderer);
-        this.positionShape(renderer, renderer.width, renderer.height);
+        this.setDefaults(ellipseParams);
+        this.positionShape(ellipseParams, ellipseParams.width, ellipseParams.height);
 
         // Create ellipse
         ctx.beginPath();
-        ctx.moveTo(renderer.x, renderer.y-renderer.height/2);
+        ctx.moveTo(ellipseParams.x, ellipseParams.y-ellipseParams.height/2);
         // Left side
-        ctx.bezierCurveTo(renderer.x-controlW/2, renderer.y-renderer.height/2, renderer.x-controlW/2, renderer.y+renderer.height/2, renderer.x, renderer.y+renderer.height/2);
+        ctx.bezierCurveTo(ellipseParams.x-controlW/2, ellipseParams.y-ellipseParams.height/2, ellipseParams.x-controlW/2, ellipseParams.y+ellipseParams.height/2, ellipseParams.x, ellipseParams.y+ellipseParams.height/2);
         // Right side
-        ctx.bezierCurveTo(renderer.x+controlW/2, renderer.y+renderer.height/2, renderer.x+controlW/2, renderer.y-renderer.height/2, renderer.x, renderer.y-renderer.height/2);
+        ctx.bezierCurveTo(ellipseParams.x+controlW/2, ellipseParams.y+ellipseParams.height/2, ellipseParams.x+controlW/2, ellipseParams.y-ellipseParams.height/2, ellipseParams.x, ellipseParams.y-ellipseParams.height/2);
         ctx.restore();
-        this.closePath(ctx, renderer);
+        this.closePath(ellipseParams);
     };
 
     /**
      * Draw an image
-     * @param renderer
+     * @param {{
+     *  source: Image | string
+     *  x: number
+     *  y: number
+     *  height: number
+     *  width: number
+     *  mask: boolean | undefined
+     *  closed: boolean | undefined
+     *  fillStyle: string | undefined
+     *  strokeStyle: string | undefined
+     *  strokeWidth: number | undefined
+     *  rounded: boolean | undefined
+     *  shadowX: number | undefined
+     *  shadowY: number | undefined
+     *  shadowBlur: number | undefined
+     *  shadowColor: string | undefined
+     *  strokeWidth: number | undefined
+     *  strokeCap: string | undefined
+     *  strokeJoin: string | undefined
+     *  opacity: number | undefined
+     *  compositing: string | undefined
+     *  inDegrees: boolean | undefined
+     *  fromCenter: boolean | undefined
+     *  angle: number | undefined
+     *  toRad: number | undefined
+     *  sWidth: number | undefined
+     *  sHeight: number | undefined
+     *  sx: number | null | undefined
+     *  sy: number | null | undefined
+     *  cropFromCenter: boolean | undefined
+     *  load: function | undefined
+     * }} imageParams
      */
-    enhancedContext.drawImage = function(renderer){
-      var elem, img = new Image(),scaleFac;
+    enhancedContext.drawImage = function(imageParams){
+      var img = new Image(),scaleFac;
       // Use specified element, if not, a source URL
-      if (renderer.source.src) {
-        img = renderer.source;
-      } else if (renderer.source) {
-        img.src = renderer.source;
+      if (imageParams.source.src) {
+        img = imageParams.source;
+      } else if (imageParams.source) {
+        img.src = imageParams.source;
       }
 
       // Draw image function
@@ -204,83 +351,83 @@
           scaleFac = (img.width / img.height);
 
           // Show whole image if no cropping region is specified
-          renderer.sWidth = renderer.sWidth || img.width;
-          renderer.sHeight = renderer.sHeight || img.height;
+          imageParams.sWidth = imageParams.sWidth || img.width;
+          imageParams.sHeight = imageParams.sHeight || img.height;
           // Ensure cropped region is not bigger than image
-          if (renderer.sWidth > img.width) {
-            renderer.sWidth = img.width;
+          if (imageParams.sWidth > img.width) {
+            imageParams.sWidth = img.width;
           }
-          if (renderer.sHeight > img.height) {
-            renderer.sHeight = img.height;
+          if (imageParams.sHeight > img.height) {
+            imageParams.sHeight = img.height;
           }
           // Destination width/height should equal source unless specified
-          if (renderer.width === 0 && renderer.sWidth !== img.width) {
-            renderer.width = renderer.sWidth;
+          if (imageParams.width === 0 && imageParams.sWidth !== img.width) {
+            imageParams.width = imageParams.sWidth;
           }
-          if (renderer.height === 0 && renderer.sHeight !== img.height) {
-            renderer.height = renderer.sHeight;
+          if (imageParams.height === 0 && imageParams.sHeight !== img.height) {
+            imageParams.height = imageParams.sHeight;
           }
 
           // If no sx/sy specified, use center of image (or top-left corner if cropFromCenter is false)
-          if (renderer.sx === null) {
-            if (renderer.cropFromCenter) {
-              renderer.sx = img.width / 2;
+          if (imageParams.sx === null) {
+            if (imageParams.cropFromCenter) {
+              imageParams.sx = img.width / 2;
             } else {
-              renderer.sx = 0;
+              imageParams.sx = 0;
             }
           }
-          if (renderer.sy === null) {
-            if (renderer.cropFromCenter) {
-              renderer.sy = img.height / 2;
+          if (imageParams.sy === null) {
+            if (imageParams.cropFromCenter) {
+              imageParams.sy = img.height / 2;
             } else {
-              renderer.sy = 0;
+              imageParams.sy = 0;
             }
           }
 
           // Crop from top-left corner if specified (rather than center)
-          if (!renderer.cropFromCenter) {
-            renderer.sx += renderer.sWidth/2;
-            renderer.sy += renderer.sHeight/2;
+          if (!imageParams.cropFromCenter) {
+            imageParams.sx += imageParams.sWidth/2;
+            imageParams.sy += imageParams.sHeight/2;
           }
 
           // Ensure cropped region does not extend image boundary
-          if ((renderer.sx - renderer.sWidth/2) < 0) {
-            renderer.sx = renderer.sWidth/2;
+          if ((imageParams.sx - imageParams.sWidth/2) < 0) {
+            imageParams.sx = imageParams.sWidth/2;
           }
-          if ((renderer.sx + renderer.sWidth/2) > img.width) {
-            renderer.sx = img.width - renderer.sWidth / 2;
+          if ((imageParams.sx + imageParams.sWidth/2) > img.width) {
+            imageParams.sx = img.width - imageParams.sWidth / 2;
           }
-          if ((renderer.sy - renderer.sHeight/2) < 0) {
-            renderer.sy = renderer.sHeight / 2;
+          if ((imageParams.sy - imageParams.sHeight/2) < 0) {
+            imageParams.sy = imageParams.sHeight / 2;
           }
-          if ((renderer.sy + renderer.sHeight/2) > img.height) {
-            renderer.sy = img.height - renderer.sHeight / 2;
+          if ((imageParams.sy + imageParams.sHeight/2) > img.height) {
+            imageParams.sy = img.height - imageParams.sHeight / 2;
           }
 
           // If only width is present
-          if (renderer.width && !renderer.height) {
-            renderer.height = renderer.width / scaleFac;
+          if (imageParams.width && !imageParams.height) {
+            imageParams.height = imageParams.width / scaleFac;
             // If only height is present
-          } else if (!renderer.width && renderer.height) {
-            renderer.width = renderer.height * scaleFac;
+          } else if (!imageParams.width && imageParams.height) {
+            imageParams.width = imageParams.height * scaleFac;
             // If width and height are both absent
-          } else if (!renderer.width && !renderer.height) {
-            renderer.width = img.width;
-            renderer.height = img.height;
+          } else if (!imageParams.width && !imageParams.height) {
+            imageParams.width = img.width;
+            imageParams.height = img.height;
           }
 
           // Draw image
-          enhancedContext.positionShape(renderer, renderer.width, renderer.height);
+          enhancedContext.positionShape(imageParams, imageParams.width, imageParams.height);
           ctx.drawImage(
             img,
-            renderer.sx - renderer.sWidth / 2,
-            renderer.sy - renderer.sHeight / 2,
-            renderer.sWidth,
-            renderer.sHeight,
-            renderer.x - renderer.width / 2,
-            renderer.y - renderer.height / 2,
-            renderer.width,
-            renderer.height
+            imageParams.sx - imageParams.sWidth / 2,
+            imageParams.sy - imageParams.sHeight / 2,
+            imageParams.sWidth,
+            imageParams.sHeight,
+            imageParams.x - imageParams.width / 2,
+            imageParams.y - imageParams.height / 2,
+            imageParams.width,
+            imageParams.height
           );
           ctx.restore();
           return true;
@@ -290,8 +437,8 @@
       }
       // Run callback function
       function callback() {
-        if (typeof(renderer.load) === "function") {
-          renderer.load.call(enhancedContext);
+        if (typeof(imageParams.load) === "function") {
+          imageParams.load.call(enhancedContext);
         }
       }
       // On load function
@@ -301,7 +448,7 @@
       }
 
       // Draw when image is loaded (if chosen)
-      if (!img.complete && renderer.load) {
+      if (!img.complete && imageParams.load) {
         img.onload = onload;
       } else {
         // Draw image if loaded
@@ -316,17 +463,38 @@
 
     /**
      * Draw a Line
-     * @param renderer
+     *
+     * @param {{
+     *  x1: number
+     *  y1: number
+     *  x2: number
+     *  y2: number
+     *  mask: boolean | undefined
+     *  closed: boolean | undefined
+     *  fillStyle: string | undefined
+     *  strokeStyle: string | undefined
+     *  strokeWidth: number | undefined
+     *  rounded: boolean | undefined
+     *  shadowX: number | undefined
+     *  shadowY: number | undefined
+     *  shadowBlur: number | undefined
+     *  shadowColor: string | undefined
+     *  strokeWidth: number | undefined
+     *  strokeCap: string | undefined
+     *  strokeJoin: string | undefined
+     *  opacity: number | undefined
+     *  compositing: string | undefined
+     * }} lineParams
      */
-    enhancedContext.drawLine = function(renderer){
+    enhancedContext.drawLine = function(lineParams){
       var l=2, lx, ly;
 
       // Draw each point
       ctx.beginPath();
-      ctx.moveTo(renderer.x1, renderer.y1);
+      ctx.moveTo(lineParams.x1, lineParams.y1);
       while (true) {
-        lx = renderer['x' + l];
-        ly = renderer['y' + l];
+        lx = lineParams['x' + l];
+        ly = lineParams['y' + l];
         if (lx !== undefined && ly !== undefined) {
           ctx.lineTo(lx, ly);
           l += 1;
@@ -335,24 +503,48 @@
         }
       }
       // Close path if chosen
-      this.closePath(renderer);
+      this.closePath(lineParams);
     };
 
     /**
      * Draw a Quad
-     * @param renderer
+     * @param {{
+     *  x1: number
+     *  y1: number
+     *  x2: number
+     *  y2: number
+     *  cx0: number
+     *  cy0: number
+     *  cx1: number
+     *  cy1: number
+     *  mask: boolean | undefined
+     *  closed: boolean | undefined
+     *  fillStyle: string | undefined
+     *  strokeStyle: string | undefined
+     *  strokeWidth: number | undefined
+     *  rounded: boolean | undefined
+     *  shadowX: number | undefined
+     *  shadowY: number | undefined
+     *  shadowBlur: number | undefined
+     *  shadowColor: string | undefined
+     *  strokeWidth: number | undefined
+     *  strokeCap: string | undefined
+     *  strokeJoin: string | undefined
+     *  opacity: number | undefined
+     *  compositing: string | undefined
+     * }} quadParams
      */
-    enhancedContext.drawQuad = function(renderer){
+    enhancedContext.drawQuad = function(quadParams){
       var l = 2, lx, ly, lcx, lcy;
 
       // Draw each point
       ctx.beginPath();
-      ctx.moveTo(renderer.x1, renderer.y1);
+      ctx.moveTo(quadParams.x1, quadParams.y1);
       while (true) {
-        lx = renderer['x' + l];
-        ly = renderer['y' + l];
-        lcx = renderer['cx' + (l-1)];
-        lcy = renderer['cy' + (l-1)];
+        lx = quadParams['x' + l];
+        ly = quadParams['y' + l];
+        lcx = quadParams['cx' + (l-1)];
+        lcy = quadParams['cy' + (l-1)];
         if (lx !== undefined && ly !== undefined && lcx !== undefined && lcy !== undefined) {
           ctx.quadraticCurveTo(lcx, lcy, lx, ly);
           l += 1;
@@ -361,32 +553,58 @@
         }
       }
       // Close path if chosen
-      this.closePath(renderer);
+      this.closePath(quadParams);
 
 
     };
 
     /**
      * Draw a Rect
-     * @param renderer
+     *
+     * @param {{
+     *  x: number
+     *  y: number
+     *  height: number
+     *  width: number
+     *  mask: boolean | undefined
+     *  closed: boolean | undefined
+     *  fillStyle: string | undefined
+     *  strokeStyle: string | undefined
+     *  strokeWidth: number | undefined
+     *  rounded: boolean | undefined
+     *  shadowX: number | undefined
+     *  shadowY: number | undefined
+     *  shadowBlur: number | undefined
+     *  shadowColor: string | undefined
+     *  strokeWidth: number | undefined
+     *  strokeCap: string | undefined
+     *  strokeJoin: string | undefined
+     *  opacity: number | undefined
+     *  compositing: string | undefined
+     *  inDegrees: boolean | undefined
+     *  fromCenter: boolean | undefined
+     *  angle: number | undefined
+     *  toRad: number | undefined
+     *  cornerRadius: number | undefined
+     * }} rectParams
      */
-    enhancedContext.drawRect = function(renderer){
+    enhancedContext.drawRect = function(rectParams){
       var x1, y1, x2, y2, r;
 
       var pi = Math.PI;
 
-      this.setDefaults(renderer);
-      this.positionShape(renderer, renderer.width, renderer.height);
+      this.setDefaults(rectParams);
+      this.positionShape(rectParams, rectParams.width, rectParams.height);
       ctx.beginPath();
 
       // Draw a rounded rectangle if chosen
-      if (renderer.cornerRadius) {
-        renderer.closed = true;
-        x1 = renderer.x - renderer.width/2;
-        y1 = renderer.y - renderer.height/2;
-        x2 = renderer.x + renderer.width/2;
-        y2 = renderer.y + renderer.height/2;
-        r = renderer.cornerRadius;
+      if (rectParams.cornerRadius) {
+        rectParams.closed = true;
+        x1 = rectParams.x - rectParams.width/2;
+        y1 = rectParams.y - rectParams.height/2;
+        x2 = rectParams.x + rectParams.width/2;
+        y2 = rectParams.y + rectParams.height/2;
+        r = rectParams.cornerRadius;
         // Prevent over-rounded corners
         if ((x2 - x1) - (2 * r) < 0) {
           r = (x2 - x1) / 2;
@@ -404,33 +622,55 @@
         ctx.lineTo(x1,y1+r);
         ctx.arc(x1+r, y1+r, r, pi, 3*pi/2, false);
       } else {
-        ctx.rect(renderer.x-renderer.width/2, renderer.y-renderer.height/2, renderer.width, renderer.height);
+        ctx.rect(rectParams.x-rectParams.width/2, rectParams.y-rectParams.height/2, rectParams.width, rectParams.height);
       }
       ctx.restore();
-      this.closePath(renderer);
+      this.closePath(rectParams);
 
     };
 
     /**
      * Draw Text
-     * @param renderer
+     *
+     * @param {{
+     *  baseline: string | undefined
+     *  align: string | undefined
+     *  font: string
+     *  text: string
+     *  x: number
+     *  y: number
+     *  fillStyle: string | undefined
+     *  strokeStyle: string | undefined
+     *  strokeWidth: number | undefined
+     *  rounded: boolean | undefined
+     *  shadowX: number | undefined
+     *  shadowY: number | undefined
+     *  shadowBlur: number | undefined
+     *  shadowColor: string | undefined
+     *  strokeWidth: number | undefined
+     *  strokeCap: string | undefined
+     *  strokeJoin: string | undefined
+     *  opacity: number | undefined
+     *  compositing: string | undefined
+     * }} textParams
      * @returns {enhancedContext}
      */
-    enhancedContext.drawText = function(renderer){
+    enhancedContext.drawText = function(textParams){
 
       // Set text-specific properties
-      ctx.textBaseline = renderer.baseline;
-      ctx.textAlign = renderer.align;
-      ctx.font = renderer.font;
+      ctx.textBaseline = textParams.baseline;
+      ctx.textAlign = textParams.align;
+      ctx.font = textParams.font;
 
-      ctx.strokeText(renderer.text, renderer.x, renderer.y);
-      ctx.fillText(renderer.text, renderer.x, renderer.y);
+      ctx.strokeText(textParams.text, textParams.x, textParams.y);
+      ctx.fillText(textParams.text, textParams.x, textParams.y);
       return this;
     };
 
     /**
      * Use a custom draw method.
-     * @param callback
+     *
+     * @param {function} callback
      */
     enhancedContext.draw = function(callback){
       callback(ctx);
@@ -445,10 +685,17 @@
 
     /**
      * Rotate the context
-     * @param renderer
+     * @param {{
+     *  x: number
+     *  y: number
+     *  fromCenter: boolean
+     *  inDegrees: boolean
+     *  angle: number
+     *  toRad: number
+     *  }} rotateParams
      */
-    enhancedContext.rotate = function(renderer){
-      this.positionShape(renderer, 0, 0);
+    enhancedContext.rotate = function(rotateParams){
+      this.positionShape(rotateParams, 0, 0);
     };
 
     /**
@@ -460,7 +707,8 @@
 
     /**
      * Translate a context
-     * @param params
+     *
+     * @param {{x: number y: number }} params
      */
     enhancedContext.translate = function(params){
       ctx.save();
@@ -469,7 +717,8 @@
 
     /**
      * Scale a canvas
-     * @param params
+     *
+     * @param {{x:number y: number scaleX: number scaleY: number}} params
      */
     enhancedContext.scale = function(params){
       ctx.save();
@@ -480,7 +729,18 @@
 
     /**
      * Set specific pixels in a context
-     * @param params
+     *
+     * @param {{
+     *  x: number
+     *  y: number
+     *  width: number
+     *  height: number
+     *  fromCenter: boolean | undefined
+     *  inDegrees: boolean | undefined
+     *  angle: number | undefined
+     *  toRad: number | undefined
+     *  each: function | undefined
+     * }} params
      */
     enhancedContext.setPixels = function(params) {
       var i,imgData, data, len, px = {};
@@ -518,7 +778,7 @@
 
     /**
      * Measure the width of a line of text.
-     * @param params
+     * @param {{font: string text: string}} params
      * @returns {TextMetrics}
      */
     enhancedContext.measureText = function(params){
@@ -529,12 +789,12 @@
     /**
      * Get the pixel data of a given position OR if the given position is transparent
      *
-     * @param x The x location of the pixel
-     * @param y The y location of the pixel
-     * @param h The height of the search area
-     * @param w The width of the search area
-     * @param t Whether or not to only flag for transparency
-     * @returns {*}
+     * @param {number} x The x location of the pixel
+     * @param {number} y The y location of the pixel
+     * @param {number} h The height of the search area
+     * @param {number} w The width of the search area
+     * @param {boolean} t Whether or not to only flag for transparency
+     * @returns {boolean | CanvasPixelArray}  True or false if the transparency flag is set, otherwise it returns the pixel data.
      */
     enhancedContext.atPixel = function(x,y,h,w,t){
       var img = ctx.getImageData(x, y, w, h);

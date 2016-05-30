@@ -1,13 +1,22 @@
-(function(){
+/**
+ * @typedef {object} LocalParams~SpriteSheetParams
+ * @property {number} height
+ * @property {number} width
+ * @property {Array|Object} sprites
+ *
+ */
+(function(CanvasEngine){
 
   var utils = CanvasEngine.utilities;
+
   /**
-   * Tell the CanvasEngine how to manager a SpriteSheet resource.
+   * The SpriteSheet Resource manages creating and accessing specific sprites from its source image
    *
-   * @param details
-   * @constructor
+   * @class
+   * @memberOf CanvasEngine.Resources
+   * @param {LocalParams~SpriteSheetParams} details
    */
-  CanvasEngine.ResourceManager.Resources.SpriteSheet = function(details){
+  var SpriteSheet = function(details){
     var spriteHeight = details.height;
     var spriteWidth = details.width;
     var sprites = [];
@@ -47,7 +56,7 @@
 
     /**
      * Process the sprites against an image.
-     * @param img
+     * @param {Image} img
      */
     this.processSprites = function(img){
       source = img;
@@ -61,13 +70,12 @@
       else{
         processSprites();
       }
-      this.spritesLoaded = true;
     };
 
     /**
      * Get a sprite detail object by its name
-     * @param name
-     * @returns {{}}
+     * @param {string} name
+     * @returns {{sx: number sy: number sWidth: number sHeight: number}}
      */
     this.getSprite = function(name){
       return sprites[name];
@@ -97,4 +105,19 @@
       return source;
     };
   };
-})();
+
+  /**
+   * @construct
+   * @memberOf CanvasEngine.Resources.SpriteSheet
+   * @param {LocalParams~SpriteSheetParams} details
+   * @returns {CanvasEngine.Resources.SpriteSheet}
+   */
+  var construct = function(details){
+    return new SpriteSheet(details);
+  };
+
+  /**
+   * Tell the CanvasEngine how to create a SpriteSheet resource.
+   */
+  CanvasEngine.ResourceManager.setResourceType("SpriteSheet", construct);
+})(window.CanvasEngine);

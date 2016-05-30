@@ -1,16 +1,24 @@
 /**
  * Created by schenn on 4/17/16.
  */
-(function(){
+/**
+ * @typedef {object} LocalParams~PointParams
+ * @property {function} [callback] Method to fire when a coordinate changes.
+ * @property {Array} coords The coordinates to position the line by.
+ */
+(function(CanvasEngine){
   var props = CanvasEngine.EntityManager.properties;
 
   /**
    * The PointPlotter component manages an array of coordinates (points)
    *
-   * @param params
-   * @param entity
+   * @param {LocalParams~PointParams} params
+   * @param {CanvasEngine.Entities.Entity} entity
+   * @class
+   * @property {coords} coords
+   * @memberOf CanvasEngine.Components
    */
-  var pointPlotter = function(params, entity){
+  var PointPlotter = function(params, entity){
 
     var coordinateArray=[];
     var coordinateObj = {};
@@ -19,7 +27,7 @@
 
     /**
      * Plot out the coordinates as a property on the coordinateObj
-     * @param coords
+     * @param {Array} coords
      */
     this.plot = function(coords){
       coordinateArray = coords;
@@ -77,22 +85,40 @@
       this.plot(params.coords);
     }
 
+    /**
+     * @returns {CanvasEngine.Entities.Entity}
+     */
     this.getEntity = function(){
       return entity;
     };
 
+    /**
+     * Get the Coordinate collection as an Array
+     * @returns {Array}
+     */
     this.getCoordinatesAsArray = function(){
       return coordinateArray;
     };
 
+    /**
+     * Get the Coordinate collection as an Object
+     * @returns {Object}
+     */
     this.getCoordinatesAsObject = function(){
       return coordinateObj;
     };
 
   };
 
-  // Add the PointPlotter component to CanvasEngins storage
-  CanvasEngine.EntityManager.addComponent("PointPlotter", function(params, entity){
-    return new pointPlotter(params, entity);
+  // Add the PointPlotter component to CanvasEngine storage
+  CanvasEngine.EntityManager.addComponent("PointPlotter",
+    /**
+     * @construct
+     * @memberOf CanvasEngine.Components.PointPlotter
+     * @param {LocalParams~PointParams} params
+     * @param {CanvasEngine.Entities.Entity} entity
+     */
+    function(params, entity){
+    return new PointPlotter(params, entity);
   }, true);
-})();
+})(window.CanvasEngine);

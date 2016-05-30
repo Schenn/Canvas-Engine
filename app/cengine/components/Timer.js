@@ -1,16 +1,24 @@
 /**
- * Created by schenn on 4/17/16.
+ * @author Steven Chennault <schenn@gmail.com>
  */
-(function() {
+/**
+ * @typedef {object} LocalParams~TimerParams
+ * @property {number} [duration]
+ * @property {function} [onUpdate]
+ * @property {function} [onElapsed]
+ */
+(function(CanvasEngine) {
   var utils = CanvasEngine.utilities;
 
   /**
    * The Timer component tracks the passage of time.
    *  It can run a function when a pre-determined amount of time has passed and/or on every update.
-   * @param params
-   * @param entity
+   * @param {LocalParams~TimerParams}params
+   * @param {CanvasEngine.Entities.Entity} entity
+   * @class
+   * @memberOf CanvasEngine.Components
    */
-  var timer = function(params, entity){
+  var Timer = function(params, entity){
     var date = new Date();
     var delta = new Date();
     var isActive = true;
@@ -44,9 +52,6 @@
 
     /**
      * Get the current last updated time in milliseconds
-     * @type {Function}
-     * @method
-     *
      */
     this.getMS = function () {
       return (date.getTime());
@@ -54,8 +59,6 @@
 
     /**
      * Get the current last updated time in seconds
-     * @type {Function}
-     * @method
      */
     this.getS = function () {
       return (Math.round(date.getTime / 1000));
@@ -63,8 +66,6 @@
 
     /**
      * Get the time since the last update request
-     * @type {Function}
-     * @method
      */
     this.deltaTime = function () {
       return ((date.getTime() - delta.getTime()) / 1000);
@@ -75,7 +76,7 @@
     };
 
     /**
-     * Don't do anything.
+     * Stop doing things
      */
     this.disable = function(){
       isActive = false;
@@ -92,6 +93,6 @@
   };
 
   CanvasEngine.EntityManager.addComponent("Timer", function(params, entity){
-    return new timer(params, entity);
+    return new Timer(params, entity);
   }, true);
-})();
+})(window.CanvasEngine);

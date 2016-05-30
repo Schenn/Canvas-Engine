@@ -8,6 +8,8 @@
  * @param height
  * @param width
  * @constructor
+ *
+ * @todo Create a Collider Component, add this to it.
  */
 function BoundryBox(height, width) {
   this.V = []; //top and bottom y

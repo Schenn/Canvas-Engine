@@ -1,8 +1,51 @@
-(function(){
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+/**
+ * @namespace LocalParams
+ */
+/**
+ * Optional CreateParams which trigger specific functionality
+ *
+ * @typedef {object} LocalParams~CreateParams
+ * @property {string | Image } [image] - The name of the Image resource to utilize
+ * @property {string | Object } [spritesheet] - The name of the SpriteSheet resource to utilize
+ * @property {string | Array } [spritesheets] - A collection of spritesheets to utilize.
+ * @property {number} [z_index] - The z-index the entity will live at
+ * @property {Object} [keys] - The alphanumeric keys that your entity will listen for and their callback methods.
+ * @property {function | Array } [onClick] - The callback method(s) your entity will trigger when clicked.
+ * @property {function | Array } [onMouseDown] - The callback method(s) your entity will trigger when the mouse is down over it.
+ * @property {function | Array } [onMouseUp] - The callback method(s) your entity will trigger when the mouse button is released over it.
+ * @property {function | Array } [onMouseOver] - The callback method(s) your entity will trigger when the mouse is sitting over it
+ * @property {function | Array } [onMouseMove] - The callback method(s) your entity will trigger when the mouse is moving over it.
+ *
+ */
+
+(function(CanvasEngine){
+  /**
+   * The make functions for entities.
+   *  These methods describe how to create an Entity
+   *
+   * @namespace CanvasEngine.Entities
+   */
+  var make = {};
+
+  /**
+   * The constructor functions for components
+   *  These methods create a component.
+   *
+   * @namespace CanvasEngine.Components
+   */
+  var components = {};
+
+  /**
+   * @namespace Properties
+   * @memberOf CanvasEngine
+   */
   /**
    * A "locked" object property
    *    A locked property cannot be changed once set.
-   * @param val The value to set the property to.
+   * @param {*} val The value to set the property to.
    * @returns {{enumerable: boolean, writable: boolean, configurable: boolean, value: *}}
    */
   function lockedProperty(val){
@@ -16,8 +59,8 @@
 
   /**
    * A "Default" object property.
-   * @param privateVar The private variable to reference for getting and setting a value.
-   * @param callback Called when the value is changed. The new value is passed as an argument into the function.
+   * @param {*} privateVar The private variable to reference for getting and setting a value.
+   * @param {function} callback Called when the value is changed. The new value is passed as an argument into the function.
    * @returns {{enumerable: boolean, configurable: boolean, get: get, set: set}}
    */
   function defaultProperty(privateVar, callback) {
@@ -46,13 +89,15 @@
   /**
    * The EntityManager handles the creation of Entities and components
    *
-   * @constructor
    * @class
+   * @memberof CanvasEngine
+   * @inner
+   * @borrows CanvasEngine.Entities.Entity as baseEntity
    */
   var EntityManager = function(){
     var baseEntityGenerator;
-    var make = {};
-    var components = {};
+
+
     var nComponents = [];
     var dependentEntities = {};
 
@@ -60,7 +105,7 @@
 
     /**
      * The different types of object properties
-     * @type {{lockedProperty: lockedProperty, defaultProperty: defaultProperty}}
+     * @type {{lockedProperty: CanvasEngine.Properties.lockedProperty, defaultProperty: CanvasEngine.Properties.defaultProperty}}
      */
     this.properties = {
       lockedProperty: lockedProperty,
@@ -69,17 +114,17 @@
 
     /**
      * Set the function which produces the base Entity class
-     * @method
-     * @param generateFunc
+     * @param {function} generateFunc
      */
     this.setBaseEntityGenerator = function(generateFunc){
       baseEntityGenerator = generateFunc;
       baseEntity = generateFunc({});
     };
 
+    //noinspection JSUnusedGlobalSymbols
     /**
      * Is the given object an "Entity" class?
-     * @param ent
+     * @param {CanvasEngine.Entities.Entity} ent
      * @returns {boolean}
      */
     this.isEntity = function(ent){
@@ -89,10 +134,10 @@
     /**
      * Create an entity
      *
-     * @param type the type of entity to create
-     * @param params The data needed to create that entity and its components
-     * @method
-     * @returns {*} The requested Entity
+     * @param {string} type the type of entity to create
+     * @param {LocalParams~CreateParams} params The data needed to create that entity and its components
+     *
+     * @returns {Entity} The requested Entity after being 'made' with its make function
      */
     this.create = function(type, params){
 
@@ -160,15 +205,14 @@
     /**
      * Set a Make function.
      *
-     * The make function provides instructions on how to take a base entity and transform it into a specified type.
-     *  The make function needs to return the completed entity.
-     * @method
-     * @param name The name of the entity that this instruction function creates
-     * @param func The instructions function
-     *    (A base entity or the extended entity are passed as an argument into the instruction function.)
-     * @param from The name of the entity that this entity extends from.
+     * The make function provides instructions on how to take a base entity and transform it into a desired object.
+     *  The make function should return the completed entity.
      *
-     * @returns {EntityManager} For chaining
+     * @param {string} name The 'type' of the entity that this function constructs
+     * @param {function} func The Make function
+     * @param {string} [from] The name of the entity that this entity extends from.
+     *
+     * @returns {EntityManager} for chaining
      */
     this.setMake = function(name, func, from){
       if(Object.keys(make).indexOf(name) === -1 ){
@@ -182,16 +226,14 @@
     };
 
     /**
-     * Add a component to Entity Manager's Component Storage
-     *  To attach a component to an entity, see EntityManager.attachComponent
+     * Add a component to Entity Manager's Component Constructor Storage
      *
-     * The component function contains the constructor for a given component.
-     *  The constructor function needs to return the component.
+     * The component function should construct a given component
      *
-     * @method
-     * @param name The name of the component
-     * @param func The constructor function
-     * @param notUnique If can be attached multiple times to the same entity.
+     * @param {string} name The name of the component
+     * @param {function} func The constructor function
+     * @param {boolean} [notUnique] If can be attached multiple times to the same entity.
+     *
      * @returns {EntityManager}
      */
     this.addComponent = function(name, func, notUnique){
@@ -209,28 +251,33 @@
      *
      * Attach a component or components to a given entity.
      *
-     * @method
-     * @param entity The entity to attach components to.
-     * @param component The components to add.
-     * @param params The arguments for the components.
+     * @param {CanvasEngine.Entities.Entity} entity The entity to attach components to.
+     * @param {string | Object } component The components to add.
+     * @param {Object} params The arguments for the components.
+     *
      * @returns {EntityManager}
      */
     this.attachComponent = function(entity, component, params){
+      // component === "componentName"
+
       if($.type(component) == "string") {
         if (Object.keys(components).indexOf(component) != -1) {
           entity.attachComponent(component, components[component](params, entity));
         }
       } else if($.type(component) == "object") {
+        /** component = { "componentName" : data } */
         var coms = Object.keys(component);
         for(var c = 0; c< coms.length; c++){
           var com = coms[c];
           if($.type(component[com]) == "object"){
+            /** component = {"componentName" : {"name to use" : data }} */
             var names = Object.keys(component[com]);
             for(var n=0; n < names.length; n++){
               // Whew!
               entity.attachComponent(names[n], components[com](component[com][names[n]], entity));
             }
           } else if($.type(component[com]) == "string"){
+            /** component = {"componentName" : "name to use"} */
             var name = component[name];
             if (Object.keys(components).indexOf(com) != -1 && nComponents.indexOf(com) > -1) {
               entity.attachComponent(name, components[com](params, entity));
@@ -239,14 +286,13 @@
         }
       }
 
-
       return this;
     };
 
     /**
      * Convert an array of json data to an array of Entities
      *
-     * @param screenMap The array of entities
+     * @param {Array} screenMap The array of entities
      * @return {Array}
      */
     this.fromMap = function(screenMap){
@@ -267,4 +313,4 @@
 
   // Attach the EntityManager to our CanvasEngine
   CanvasEngine.EntityManager = new EntityManager();
-})();
+})(window.CanvasEngine);

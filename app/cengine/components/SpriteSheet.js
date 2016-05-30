@@ -1,16 +1,15 @@
 /**
- * Created by schenn on 4/18/16.
+ * @author Steven Chennault <schenn@gmail.com>
  */
-(function(){
-  var props = CanvasEngine.EntityManager.properties;
-  var utils = CanvasEngine.utilities;
+(function(CanvasEngine){
 
   /**
    * The SpriteSheet component handles interactions with a SpriteSheet resource.
    *
-   * @param params
-   * @param entity
+   * @param {{spritesheet: CanvasEngine.Resources.SpriteSheet }} params
+   * @param {CanvasEngine.Entities.Entity} entity
    * @constructor
+   * @memberOf CanvasEngine.Components
    */
   var SpriteSheet = function(params, entity){
     var sheet=params.spritesheet;
@@ -37,7 +36,10 @@
 
   };
 
+  /**
+   * Add the SpriteSheet component to the component storage
+   */
   CanvasEngine.EntityManager.addComponent("SpriteSheet", function(params, entity){
     return new SpriteSheet(params, entity);
   });
-})();
+})(window.CanvasEngine);

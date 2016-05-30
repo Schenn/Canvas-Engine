@@ -1,10 +1,25 @@
-(function(){
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+/**
+ * @typedef {object} LocalParams~MouseParams
+ * @property {function | Array} [onClick]
+ * @property {function | Array} [onMouseOver]
+ * @property {function | Array} [onMouseDown]
+ * @property {function | Array} [onMouseUp]
+ * @property {function | Array} [onMouseOut]
+ */
+(function(CanvasEngine){
   /**
    * The click component manages the click response for an entity
-   * @param params params.onClick == the functions being assigned.
-   * @param entity The entity that the component is being attached to.
+   *
+   * @memberOf CanvasEngine.Components
+   * @param {LocalParams~MouseParams} params params.onClick == the functions being assigned.
+   * @param {CanvasEngine.Entities.Entity} entity The entity that the component is being attached to.
+   *
+   * @class
    */
-  var mouse = function(params, entity){
+  var Mouse = function(params, entity){
     var onClick = [];
     var onMouseOver = [];
     var onMouseDown = [];
@@ -44,7 +59,7 @@
 
     /**
      * Get the entity that belongs to the component
-     * @returns {*}
+     * @returns {CanvasEngine.Entities.Entity}
      */
     this.getEntity = function(){
       return entity;
@@ -52,8 +67,7 @@
 
     /**
      * When clicked...
-     * @param args
-     * @constructor
+     * @param {coord} args
      */
     this.Click = function(args){
       if(!CanvasEngine.isPaused()) {
@@ -63,6 +77,10 @@
       }
     };
 
+    /**
+     * When the mouse is over the entity
+     * @param {coord} args
+     */
     this.onMouseOver = function(args){
       if(!CanvasEngine.isPaused()) {
         $.each(onMouseOver, function (index, callback) {
@@ -71,6 +89,10 @@
       }
     };
 
+    /**
+     * When the mouse is down on the entity
+     * @param {coord} args
+     */
     this.onMouseDown = function(args){
       if(!CanvasEngine.isPaused()) {
         $.each(onMouseDown, function (index, callback) {
@@ -79,6 +101,10 @@
       }
     };
 
+    /**
+     * When the mouse is released over the entity
+     * @param {coord} args
+     */
     this.onMouseUp = function(args){
       if(!CanvasEngine.isPaused()) {
         $.each(onMouseUp, function (index, callback) {
@@ -87,6 +113,10 @@
       }
     };
 
+    /**
+     * When the mouse is moved over the entity
+     * @param {coord} args
+     */
     this.onMouseMove = function(args){
       if(!CanvasEngine.isPaused()) {
         $.each(onMouseMove, function (index, callback) {
@@ -95,6 +125,9 @@
       }
     };
 
+    /**
+     * When the mouse is leaves the entity
+     */
     this.onMouseOut = function(){
       if(!CanvasEngine.isPaused()) {
         $.each(onMouseOut, function (index, callback) {
@@ -103,10 +136,19 @@
       }
     };
 
+    /**
+     * Add click methods to the click container
+     * @param {Array} methods
+     */
     this.addClickMethods = function(methods){
       onClick = onClick.concat(methods);
     };
 
+    /**
+     * Add Methods for the other mouse callbacks
+     *
+     * @param {LocalParams~MouseParams} methodContainer
+     */
     this.addMouseMethods = function(methodContainer){
       var mouseMethods = Object.keys(methodContainer);
       var self = this;
@@ -116,8 +158,14 @@
     };
   };
 
+  /**
+   * @construct
+   * @memberOf CanvasEngine.Components.Mouse
+   */
+  var construct = function(params, entity){
+    return new Mouse(params, entity);
+  };
+
   // Add the Click component to the CanvasEngine Storage
-  CanvasEngine.EntityManager.addComponent("Mouse", function(params, entity){
-    return new mouse(params, entity);
-  }, true);
-})();
+  CanvasEngine.EntityManager.addComponent("Mouse", construct, true);
+})(window.CanvasEngine);

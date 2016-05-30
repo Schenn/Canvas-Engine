@@ -1,4 +1,14 @@
-(function() {
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+/**
+ * @typedef {object} LocalParams~AnimatorParams
+ * @property {function} onFrameChange
+ * @property {number} duration
+ * @property {Array} [frames]
+ * @property {number} [frameCount]
+ */
+(function(CanvasEngine) {
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
@@ -10,47 +20,57 @@
    * Why? You ask. Because those strings can then be applied against maps somewhere else with more relevant information on what to do.
    * This way you can apply the animator to a variety of things, not just a set of images.
    */
-  EM.setMake("Animator", function (entity, params) {
-    var frames, baseDuration, duration, frameCount, currentFrame=0;
+  EM.setMake("Animator",
+    /**
+     * @param {CanvasEngine.Entities.Entity} entity
+     * @param {LocalParams~AnimatorParams} params
+     * @returns {CanvasEngine.Entities.Animator}
+     */
+    function (entity, params) {
+      var frames, baseDuration, duration, frameCount, currentFrame=0;
 
-    var onFrameChange = params.onFrameChange;
+      var onFrameChange = params.onFrameChange;
 
-    if(utilities.exists(params.frames)){
-      frames = params.frames;
-      frameCount = frames.length;
-    } else {
-      frameCount = utilities.exists(params.frameCount) ? params.frameCount : 1;
-      frames = [];
-      for(var i =0; i < frameCount; i++){
-        frames.push(i);
+      if(utilities.exists(params.frames)){
+        frames = params.frames;
+        frameCount = frames.length;
+      } else {
+        frameCount = utilities.exists(params.frameCount) ? params.frameCount : 1;
+        frames = [];
+        for(var i =0; i < frameCount; i++){
+          frames.push(i);
+        }
       }
-    }
 
-    baseDuration = params.duration;
+      baseDuration = params.duration;
 
-    duration = (baseDuration > 0) ? baseDuration / frameCount : 0;
+      duration = (baseDuration > 0) ? baseDuration / frameCount : 0;
 
-    // Give the entity a pass through method for telling the timer to disable
-    entity.disable = function(){
-      entity.messageToComponent("Timer", "disable");
-    };
+      /**
+       * @class
+       * @memberOf CanvasEngine.Entities
+       * @augments CanvasEngine.Entities.Entity
+       */
+      var Animator = $.extend(true, {}, {
+        disable: function(){
+          this.messageToComponent("Timer", "disable");
+        },
+        enable: function(){
+          this.messageToComponent("Timer", "disable");
+        }
+      }, entity);
 
-    // Give the entity a pass through method for telling the timer to enable
-    entity.enable = function(){
-      entity.messageToComponent("Timer", "enable");
-    };
+      //Add a Timer Component
+      EM.attachComponent(Animator,"Timer", {duration: duration, onElapsed: function(){
+        currentFrame++;
+        if(currentFrame > frameCount-1){
+          currentFrame = 0;
+        }
+        onFrameChange(frames[currentFrame]);
+      }});
 
-    //Add a Timer Component
-    EM.attachComponent(entity,"Timer", {duration: duration, onElapsed: function(){
-      currentFrame++;
-      if(currentFrame > frameCount-1){
-        currentFrame = 0;
-      }
-      onFrameChange(frames[currentFrame]);
-    }});
-
-    return entity;
+      return Animator;
   });
 
 
-})();
+})(window.CanvasEngine);

@@ -1,52 +1,60 @@
 /**
- * Create a Canvas Pattern
- * @param args
- * @returns {*}
+ * @author Steven Chennault <schenn@gmail.com>
+ * @external "jQuery.fn"
+ * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
-$.fn.pattern = function(args) {
-  if (!this[0].getContext) {return null;}
-  var ctx = this[0].getContext('2d'),
-    params = $.extend({}, args),
-    img = new Image(),
-    pattern;
-  // Use specified element, if not, a source URL
-  if (params.source.src) {
-    img = params.source;
-  } else if (params.source) {
-    img.src = params.source;
-  }
-
-  // Create pattern
-  function create() {
-    if (img.complete) {
-      // Create pattern
-      pattern = ctx.createPattern(img, params.repeat);
-      return true;
-    } else {
-      return false;
+(function($){
+  /**
+   * Create a Canvas Pattern
+   *
+   * @param args
+   * @returns {CanvasPattern}
+   */
+  $.fn.pattern = function(args) {
+    if (!this[0].getContext) {return null;}
+    var ctx = this[0].getContext('2d'),
+      params = $.extend({}, args),
+      img = new Image(),
+      pattern;
+    // Use specified element, if not, a source URL
+    if (params.source.src) {
+      img = params.source;
+    } else if (params.source) {
+      img.src = params.source;
     }
 
-  }
-  // Run callback function
-  function callback() {
-    if (params.load) {
-      params.load.call(this[0], pattern);
+    // Create pattern
+    function create() {
+      if (img.complete) {
+        // Create pattern
+        pattern = ctx.createPattern(img, params.repeat);
+        return true;
+      } else {
+        return false;
+      }
+
     }
-  }
-  function onload() {
-    create();
-    callback();
-  }
-  // Draw when image is loaded (if chosen)
-  if (!img.complete && params.load) {
-    img.onload = onload;
-  } else {
-    // Draw image if loaded
-    if (!create()) {
-      img.onload = onload;
-    } else {
+    // Run callback function
+    function callback() {
+      if (params.load) {
+        params.load.call(this[0], pattern);
+      }
+    }
+    function onload() {
+      create();
       callback();
     }
-  }
-  return pattern;
-};
+    // Draw when image is loaded (if chosen)
+    if (!img.complete && params.load) {
+      img.onload = onload;
+    } else {
+      // Draw image if loaded
+      if (!create()) {
+        img.onload = onload;
+      } else {
+        callback();
+      }
+    }
+    return pattern;
+  };
+})(jQuery);

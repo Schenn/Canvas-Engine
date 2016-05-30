@@ -1,14 +1,27 @@
-(function(){
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+
+/**
+ * @typedef {object} LocalParams~TileMapParams
+ * @property {Array} tiles
+ * @property {function} onScroll
+ * @property {function} onTileClick
+ * @property {number} width
+ * @property {number} height
+ */
+(function(CanvasEngine){
   var props = CanvasEngine.EntityManager.properties;
   var utils = CanvasEngine.utilities;
 
   /**
    * A TileMap Component manages maintaining a collection of values in specific 2-d array positions.
-   *  Those values can then be used against other components or data to
+   *  Those values can then be used against other components or data in reference.
    *
-   * @param params
-   * @param entity
+   * @param {LocalParams~TileMapParams} params
+   * @param {CanvasEngine.Entities.Entity} entity
    * @constructor
+   * @memberOf CanvasEngine.Components
    */
   var TileMap = function(params, entity){
     var map = utils.exists(params.tiles) ? params.tiles :[];
@@ -29,7 +42,7 @@
 
     /**
      * Scroll the TileMap
-     * @param direction
+     * @param {coords} direction
      */
     this.scroll = function(direction){
       if(!CanvasEngine.isPaused()) {
@@ -47,6 +60,11 @@
       }
     };
 
+    /**
+     * Get the tiles visible inside an area starting from the scrolled-to position
+     * @param {{height: number width: number}} area
+     * @returns {Array}
+     */
     this.getVisibleTiles = function(area){
       if(tileSize.height === 0 || tileSize.width ===0){
         return [];
@@ -80,7 +98,7 @@
      * Convert a pixel position into a tile element.
      *  x, and y represent the position's area in pixels.
      *
-     * @param coord
+     * @param {coords} coord
      * @returns {{tile: *, x: number, y: number, row: number, col: number}}
      */
     this.pixelToTile = function(coord){
@@ -103,7 +121,7 @@
      * The user function is run against the position of the tile being clicked.
      *  In other words: The 'this' in your method will be the return value for pixelToTile
      *
-     * @param coord
+     * @param {coords} coord
      * @constructor
      */
     this.TileClick = function(coord){
@@ -114,10 +132,10 @@
     };
 
     /**
-     * Override a tile state
+     * Override a tile state value
      *
-     * @param coord
-     * @param newName
+     * @param {coords} coord
+     * @param {*} newName - Should just be a string or number but realistically could be anything.
      */
     this.setTile = function(coord, newName){
       if(utils.exists(map[coord.y][coord.x])) {
@@ -139,4 +157,4 @@
   CanvasEngine.EntityManager.addComponent("TileMap", function(params, entity){
     return new TileMap(params, entity);
   });
-})();
+})(window.CanvasEngine);

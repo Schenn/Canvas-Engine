@@ -1,8 +1,9 @@
 /**
- * Created by schenn on 3/30/16.
+ * @author Steven Chennault <schenn@gmail.com>
+ *
  */
 
-(function(){
+(function(CanvasEngine){
   // These properties are used but can only be set once
 
   var EM = CanvasEngine.EntityManager;
@@ -12,8 +13,14 @@
    * The Entity Class is the actual class for all the living objects in the Engine.
    *  It contains the base properties required for existing and the methods for communicating with its components and subentities.
    *
-   * @param params
    * @constructor
+   * @param {{ [name]:{string}, [z_index]:{number} }} params
+   *
+   * @property {number} z_index
+   * @property {string} name
+   *
+   * @memberOf CanvasEngine.Entities
+   *
    */
   function Entity(params){
     var components = {};
@@ -33,8 +40,8 @@
     /**
      * Attach a component to this entity;
      *
-     * @param name the name of the component
-     * @param component the instantiated component
+     * @param {string} name the name of the component
+     * @param {object} component the instantiated component
      */
     this.attachComponent = function(name, component){
       if(!this.hasComponent(name)) {
@@ -43,10 +50,13 @@
     };
 
     /**
-     * Attach a subentity to this entity
-     *  A subentity is simply another entity.
+     * Attach a sub-entity to this entity
+     *  A sub-entity is simply another entity.
      *  This allows complex entities made up of multiple entities to be constructed.
-     * @param subEntity
+     *  Warning: BroadcastToComponent iterates over subEntities.
+     *    If you want to disconnect an inner entity from outside messages, don't attach it as a sub-entity.
+     *
+     * @param {CanvasEngine.Entities.Entity} subEntity
      */
     this.attachSubEntity = function(subEntity){
       subEntities[subEntity.name] = subEntity;
@@ -54,7 +64,8 @@
 
     /**
      * Does the entity have a component?
-     * @param componentName
+     *
+     * @param {string} componentName
      * @returns {boolean}
      */
     this.hasComponent = function(componentName){
@@ -65,8 +76,8 @@
      * Tell every component to do a function.
      *    If it can't, that's ok just go to the next component.
      *
-     * @param funcName
-     * @param args
+     * @param {string} funcName
+     * @param {object} [args]
      */
     this.broadcastToComponents = function(funcName, args){
       $.each(components, function(name, component){
@@ -75,19 +86,18 @@
         }
       });
 
-      // Tell the subentities to tell their components to do the function as well.
+      // Tell the sub-entities to tell their components to do the function as well.
       $.each(subEntities, function(name, entity){
         entity.broadcastToComponents(funcName,args);
       });
     };
 
     /**
-     * Tell a specific function to do a function,
-     *    maybe with arguments.
+     * Tell a specific component to do something, maybe with arguments.
      *
-     * @param componentName
-     * @param funcName
-     * @param args
+     * @param {string} componentName
+     * @param {string} funcName
+     * @param {object} [args]
      */
     this.messageToComponent = function(componentName, funcName, args){
       if(utils.exists(components[componentName]) &&
@@ -104,9 +114,9 @@
     /**
      * Get data from a component
      *
-     * @param componentName
-     * @param funcName
-     * @param args
+     * @param {string} componentName
+     * @param {string}funcName
+     * @param {object} [args]
      * @returns {*}
      */
     this.getFromComponent = function(componentName, funcName, args){
@@ -120,17 +130,32 @@
         }
       }
       else {
-        // Error handle
+        throw this.name + " Does not have component: "+ componentName;
       }
     };
 
     /**
-     * Tell a subentity to try to run a function,
-     *    maybe with args
+     * Get or set a property on a component
      *
-     * @param entityName
-     * @param funcName
-     * @param args
+     * @param {string} componentName
+     * @param {string} propertyName
+     * @param {*} [value]
+     * @returns {*}
+     */
+    this.componentProperty = function(componentName, propertyName, value){
+      if(utils.exists(value) && components[componentName].hasOwnProperty(propertyName)){
+        components[componentName][propertyName] = value;
+      }
+
+      return components[componentName][propertyName];
+    };
+
+    /**
+     * Tell a specific sub-entity to do something
+     *
+     * @param {string} entityName
+     * @param {string} funcName
+     * @param {object} [args]
      */
     this.messageToSubEntity = function(entityName, funcName, args){
       if(utils.exists(subEntities[entityName]) &&
@@ -146,7 +171,9 @@
 
     /**
      * Get the current state of the components on this entity.
-     *    Leaves the original components untouched. Nothing you do to these values will affect a component.
+     *    Leaves the original components untouched.
+     *
+     * @return {Array}
      */
     this.getComponentList = function(){
       return $.extend({}, components);
@@ -154,8 +181,16 @@
 
   }
 
-  // Tell the EntityManager how to build a base entity.
-  EM.setBaseEntityGenerator(function(params){
+  /**
+   * @construct
+   * @memberOf CanvasEngine.Entities.Entity
+   * @param {{ [name]:{string}, [z_index]:{number} }} params
+   * @returns {CanvasEngine.Entities.Entity}
+   */
+  var construct = function(params){
     return new Entity(params);
-  });
-})();
+  };
+
+  // Tell the EntityManager how to build a base entity.
+  EM.setBaseEntityGenerator(construct);
+})(window.CanvasEngine);

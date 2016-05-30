@@ -1,14 +1,33 @@
-(function(){
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+/**
+ * @typedef {object} LocalParams~MovementParams
+ * @property {number} x
+ * @property {number} y
+ * @property {number} [xSpeed]
+ * @property {number} [ySpeed]
+ * @property {function} [onDirectionChange] A callback which is fired when the direction of the movement component changes
+ * @property {function} [onMoveX] A callback which is fired when the component moves along the x Axis
+ * @property {function} [onMoveY] A callback which is fired when the component moves along the y Axis
+ *
+ */
+(function(CanvasEngine){
   var props = CanvasEngine.EntityManager.properties;
   var utils = CanvasEngine.utilities;
 
   /**
    * The movement component adjusts the current position based on speed and the passage of time
    *
-   * @param params
-   * @param entity
+   * @class
+   * @memberOf CanvasEngine.Components
+   *
+   * @param {LocalParams~MovementParams} params
+   * @param {CanvasEngine.Entities.Entity} entity
+   * @property {number} x
+   * @property {number} y
    */
-  var movement = function(params, entity){
+  var Movement = function(params, entity){
     var x = params.x,
       y = params.y,
       xSpeed = utils.exists(params.xSpeed) ? params.xSpeed : 0,
@@ -30,7 +49,7 @@
     /**
      * Adjust the position based on axis speeds
      *
-     * @param delta
+     * @param {number} delta The seconds as a decimal since the last render call.
      */
     this.move = function(delta){
       if(!CanvasEngine.isPaused()) {
@@ -68,7 +87,7 @@
     /**
      * Set the axis speeds.
      *
-     * @param speeds
+     * @param {{[xSpeed]: number [ySpeed]: number}} speeds
      */
     this.setSpeed = function(speeds){
       xSpeed = utils.exists(speeds.xSpeed)? speeds.xSpeed : xSpeed;
@@ -77,7 +96,8 @@
 
     /**
      * Set the origin point
-     * @param coords
+     *
+     * @param {coords} coords
      */
     this.setOrigin = function(coords){
       this.x = coords.x;
@@ -88,14 +108,14 @@
     /**
      * Get the entity that the component is attached to.
      *
-     * @returns {*}
+     * @returns {CanvasEngine.Components.Entity}
      */
     this.getEntity = function(){
       return entity;
     };
 
     /**
-     * Get this components data as a jso
+     * Get this components data as a literal object
      *
      * @returns {{x: number, y: number, xSpeed: number, ySpeed: number}}
      */
@@ -106,7 +126,7 @@
     /**
      * Get a "Direction" of movement based on the given axis speeds.
      *
-     * @returns {{direction: string, xSpeed: number, ySpeed: *}}
+     * @returns {{direction: string, xSpeed: number, ySpeed: number}}
      */
     this.getDirection = function () {
       var direction = "";
@@ -156,11 +176,18 @@
 
     };
 
+  };
 
+  /**
+   * @construct
+   * @memberOf CanvasEngine.Components.Movement
+   * @param {LocalParams~MovementParams} params
+   * @param {CanvasEngine.Entities.Entity} entity
+   */
+  var construct = function(params, entity){
+    return new Movement(params, entity);
   };
 
   // Add the movement component to the CanvasEngine storage
-  CanvasEngine.EntityManager.addComponent("Movement", function(params, entity){
-    return new movement(params, entity);
-  }, true);
-})();
+  CanvasEngine.EntityManager.addComponent("Movement", construct, true);
+})(window.CanvasEngine);

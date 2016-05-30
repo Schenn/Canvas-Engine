@@ -1,9 +1,26 @@
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+/**
+ * @typedef {{
+ *  x: number,
+ *  y: number
+ * }} coords
+ */
+
+
 (function(){
-  var contextMenuOpen = false;
-  var paused = true;
   /**
-   * CanvasEngine is the window level object which contains all the functionality.
-   * @class
+   * @type {boolean}
+   * @default
+   */
+  var paused = true;
+
+  /**
+   * CanvasEngine contains the system.
+   *
+   * @namespace
+   *
    */
   var CanvasEngine = {
   };
@@ -11,9 +28,8 @@
   /**
    * Add a collection of entities from a json array.
    *
-   * @method
-   * @param screenMap array of initialization data for each entity
-   * @param start boolean - Start animating after adding entities.
+   * @param {Array} screenMap initialization data for the entities to add.
+   * @param {boolean} start Start animating after adding entities.
    */
   CanvasEngine.addMap = function(screenMap, start){
     // Convert to entity Array
@@ -26,9 +42,11 @@
   /**
    * Add an array of Entities
    *    (Entity being a class derived from the entity base class)
-   * @method
-   * @param entities Array of entities
-   * @param start Boolean - Start animating after adding entities
+   *
+   * @param {Array} entities The Entities to add, grouped by z-index
+   * @param {boolean} start Start animating after adding entities
+   *
+   * @todo Change the expected sort structure of entities
    */
   CanvasEngine.addEntities = function(entities, start){
     $.each(entities, function(z){
@@ -44,21 +62,29 @@
   };
 
   /**
-   * Animate and process
-   * @method
+   * Run Forever
+   *
+   * @private
    */
   CanvasEngine.Loop = function(){
+    var self = this;
     requestAnimationFrame(function(){
-      CanvasEngine.Screen.drawScreen();
-      CanvasEngine.Loop();
+      self.Screen.drawScreen();
+      self.Loop();
     });
   };
 
   /**
-   * Draw a z index
-   * @method
-   * @param z The z index to draw
-   * @param ctx The EnhancedContext of a canvas
+   * Draw through a z-index.
+   *  Go through each entity in the current z-index and tell it to update.
+   *  If it has a renderer component and that component is dirty,
+   *    tell the renderer component to clear
+   *    tell the renderer component to render
+   *  Tell the entity to postRender
+   *
+   *
+   * @param {number} z The z index to draw
+   * @param {enhancedContext} ctx The EnhancedContext of a canvas
    */
   CanvasEngine.drawZ = function(z, ctx){
     if(!paused && CanvasEngine.EntityTracker.entityCount() > 0) {
@@ -78,9 +104,10 @@
   };
 
   /**
-   * Clear all entities from the game
+   * Clear all entities from the system
    */
   CanvasEngine.clearEntities = function(){
+    //noinspection JSUnusedAssignment
     paused = true;
     CanvasEngine.EntityTracker.clearEntities();
     paused = false;
@@ -89,10 +116,14 @@
 
   /**
    * Tell every entity under the current coords that the mouse is interacting with it.
-   * @method
-   * @param coords The click position
-   * @param interaction the type of mouse interaction
-   * @param previous The Previous mouse position
+   *
+   * Called by the Screen when a mouse interacts with the stack.
+   *
+   * @param {coords} coords The click position
+   * @param {string} interaction the type of mouse interaction
+   * @param {coords} previous The Previous mouse position
+   *
+   *
    */
   CanvasEngine.mouse = function(coords, interaction, previous){
     setTimeout(function(){
@@ -135,8 +166,8 @@
 
   /**
    * Pause the game
-   * @method
-   * @param forceIt bool
+   *
+   * @param {boolean} forceIt
    */
   CanvasEngine.pause = function(forceIt){
     paused = (CanvasEngine.utilities.exists(forceIt)) ? forceIt : !paused;
@@ -146,18 +177,28 @@
     }
   };
 
+  /**
+   * Pause the engine on a right click.
+   *
+   */
   CanvasEngine.pauseOnRightClick = function(){
-    contextMenuOpen = true;
-    paused = true;
+    this.pause(true);
   };
 
+  /**
+   * Unpause the engine
+   */
   CanvasEngine.unPause = function(){
     $(document).off(".unpause");
     $(window).off(".unpause");
 
-    paused = false;
+    this.pause(false);
   };
 
+  /**
+   * Is the engine currently paused?
+   * @returns {boolean}
+   */
   CanvasEngine.isPaused = function(){
     return paused;
   };
@@ -165,12 +206,11 @@
   /**
    * Get all the entities at a given pixel
    *
-   * @method
-   * @param p pixel coordinate
-   * @param w width of search area
-   * @param h height of search area
-   * @param hasComponent an optional component to require
-   * @returns {Array} of entities
+   * @param {coords} p pixel coordinate
+   * @param {number} w width of search area
+   * @param {number} h height of search area
+   * @param {string} [hasComponent] Require entities to have a specific component.
+   * @returns {Array} Entities at the specified position
    */
   CanvasEngine.positionsAtPixel = function(p, w, h, hasComponent){
     var zPixels =CanvasEngine.Screen.atPixel(p.x, p.y, h, w, true);
@@ -185,7 +225,7 @@
    * Setup the canvas engine.
    *
    * @method
-   * @param canvas The canvas to base the engine off of
+   * @param {jQuery | HTMLElement} canvas The canvas to base the engine off of
    *
    */
   CanvasEngine.setup = function(canvas){

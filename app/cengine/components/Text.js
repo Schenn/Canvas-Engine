@@ -1,17 +1,37 @@
 /**
- * Created by schenn on 4/17/16.
+ * @author Steven Chennault <schenn@gmail.com>
  */
-(function() {
+/**
+ * @typedef {object} LocalParams~TextParams
+ * @property {string} [align]
+ * @property {string} [baseline]
+ * @property {string} [font]
+ * @property {string} [fontWeight]
+ * @property {string} [fontSize]
+ * @property {string} [fontFamily]
+ * @property {function} [callback]
+ * @property {string} text
+ *
+ */
+(function(CanvasEngine) {
   var props = CanvasEngine.EntityManager.properties;
-  var utils = CanvasEngine.utilities;
 
   /**
    * A Text Component handles the manipulation of text and its font.
    *
-   * @param params
-   * @param entity
+   * @param {LocalParams~TextParams} params
+   * @param {CanvasEngine.Entities.Entity} entity
+   * @property {string} align
+   * @property {string} baseline
+   * @property {string} font
+   * @property {string} fontWeight
+   * @property {string} fontSize
+   * @property {string} fontFamily
+   * @property {string} text
+   * @class
+   * @memberOf CanvasEngine.Components
    */
-  var text = function(params, entity){
+  var Text = function(params, entity){
     var align = "center",
       baseline = "middle",
       fontWeight = "normal",
@@ -23,8 +43,10 @@
       "align":props.defaultProperty(align, params.callback),
       "baseline":props.defaultProperty(baseline,params.callback),
       "text":props.defaultProperty(txt,params.callback),
-      // Font is special
-      // This gives us the ability to change the text size, family and weight independently
+      "fontWeight":props.defaultProperty(fontWeight, params.callback),
+      "fontSize":props.defaultProperty(fontSize, params.callback),
+      "fontFamily":props.defaultProperty(fontFamily, params.callback),
+      // Font is special, it is the combination of weight, size and family
       "font": {
         enumerable: true,
         configurable: false,
@@ -43,8 +65,9 @@
       }
     });
 
-    CanvasEngine.utilities.setProperties(this, params);
-
+    /**
+     * @returns {CanvasEngine.Entities.Entity}
+     */
     this.getEntity = function(){
       return entity;
     };
@@ -53,14 +76,19 @@
       return $.extend({}, this);
     };
 
-    // Set the text to a given value.
+    /**
+     * Set the objects text.
+     *
+     * @param {string} phrase
+     */
     this.setText = function(phrase){
       this.text = phrase;
     };
 
+    CanvasEngine.utilities.setProperties(this, params);
   };
 
   CanvasEngine.EntityManager.addComponent("Text", function(params, entity){
-    return new text(params, entity);
+    return new Text(params, entity);
   }, true);
-})();
+})(window.CanvasEngine);
