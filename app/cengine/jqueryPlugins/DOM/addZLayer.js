@@ -1,17 +1,17 @@
+
 /**
- * @author Steven Chennault <schenn@gmail.com>
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
+ * @param {external:jQuery} $
  */
 (function($){
   /**
    * Add a Canvas to the top of the stack.
    *  Sets the z-index of the canvas so that if they are absolutely positioned, they actually stack.
    *
-   * @param height {number}
-   * @param width {number}
-   * @param z {number}
-   *
+   * @param {number} height
+   * @param {number} width
+   * @param {number} z
+   * @memberof external:jQuery.fn
+   * @alias addZLayer
    * @returns {HTMLElement}
    */
   $.fn.addZLayer = function(height, width, z){

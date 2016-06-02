@@ -19,7 +19,7 @@
     /**
      * Add an array of entities to the entity tracker
      *
-     * @param {Array} ents [zIndex=>entity,..]
+     * @param {Array.<Array.<CanvasEngine.Entity>>} ents
      * @todo Thats a stupid sorting order, especially since Entities have z_index information.
      *
      **/
@@ -36,14 +36,13 @@
       });
     };
 
-    //noinspection JSUnusedGlobalSymbols
     /**
      * Prevent a z-index from interacting with things.
      *
      * Use this to make a z-index not search its objects for click and collision interactions
      * Use to increase performance
      *
-     * @param {Array} indexes The z-indexes to mark
+     * @param {Array.<number>} indexes The z-indexes to mark
      * @param {boolean} invert Remove the mark from a z index if true
      */
     this.excludeZ = function(indexes, invert){
@@ -59,8 +58,8 @@
     /**
      * Get the entities with the given names
      *
-     * @param {Array} names array of names
-     * @returns {Array}
+     * @param {Array<string>} names array of names
+     * @returns {CanvasEngine.Entities.Entity[]}
      */
     this.getEntities = function(names){
       var ents = [];
@@ -75,7 +74,7 @@
     /**
      * Remove a collection of entities from the Tracker.
      *
-     * @param {Array} names array of names
+     * @param {Array.<string>} names array of names
      */
     this.removeEntities = function(names){
       $.each(names, function(index, name){
@@ -126,7 +125,7 @@
      * Get all the entities on a given z-index
      *
      * @param {number} z the Z index
-     * @returns {Array} Array of entities
+     * @returns {Array.<string>} Array of entity names
      */
     this.getEntitiesByZ = function(z){
       var ents = [];
@@ -142,7 +141,7 @@
      * @param {coord} p The pixel coordinate
      * @param {number} w The search area width
      * @param {number} h The search area height
-     * @param {Array} zIndexes The indexes to search
+     * @param {Array.<number>} zIndexes The indexes to search
      * @param {string} [hasComponent] An optional Component to restrict your positions by.
      *
      * @returns {Array} The collection of found entities.
@@ -182,7 +181,7 @@
     /**
      * The number of entities being managed by the game.
      *
-     * @returns {Number}
+     * @returns {number}
      */
     this.entityCount = function(){
       return Object.keys(entities).length;

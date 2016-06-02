@@ -1,14 +1,13 @@
 /**
- * @author Steven Chennault <schenn@gmail.com>
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
+ * @param {external:jQuery} $
  */
 (function($){
   /**
    * Get a canvas as a jpeg
-   * @external "jQuery.fn"
-   *
-   * @param type
+   * @function
+   * @param {string} type
+   * @memberof external:jQuery.fn
+   * @alias getCanvasImage
    * @returns {string}
    */
   $.fn.getCanvasImage = function(type) {

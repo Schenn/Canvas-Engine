@@ -1,34 +1,32 @@
 /**
  * @author Steven Chennault <schenn@gmail.com>
  */
-/**
- * @typedef {object} LocalParams~TextParams
- * @property {string} [align]
- * @property {string} [baseline]
- * @property {string} [font]
- * @property {string} [fontWeight]
- * @property {string} [fontSize]
- * @property {string} [fontFamily]
- * @property {function} [callback]
- * @property {string} text
- *
- */
 (function(CanvasEngine) {
   var props = CanvasEngine.EntityManager.properties;
 
   /**
    * A Text Component handles the manipulation of text and its font.
    *
-   * @param {LocalParams~TextParams} params
+   * @param {object} params
+   * @param {string} [params.align]
+   * @param {string} [params.baseline]
+   * @param {string} [params.font]
+   * @param {string} [params.fontWeight]
+   * @param {string} [params.fontSize]
+   * @param {string} [params.fontFamily]
+   * @param {Callbacks~onPropertyChanged} [params.callback]
+   * @param {string} params.text
+   *
    * @param {CanvasEngine.Entities.Entity} entity
-   * @property {string} align
-   * @property {string} baseline
-   * @property {string} font
-   * @property {string} fontWeight
-   * @property {string} fontSize
-   * @property {string} fontFamily
-   * @property {string} text
-   * @class
+   *
+   * @constructor
+   * @property {string} Text.align
+   * @property {string} Text.baseline
+   * @property {string} Text.font
+   * @property {string} Text.fontWeight
+   * @property {string} Text.fontSize
+   * @property {string} Text.fontFamily
+   * @property {string} Text.text
    * @memberOf CanvasEngine.Components
    */
   var Text = function(params, entity){
@@ -72,8 +70,11 @@
       return entity;
     };
 
+    /**
+     * @returns {{align: string,baseline:string, text: string, font: string }}
+     */
     this.asObject = function(){
-      return $.extend({}, this);
+      return {align: this.align, baseline: this.baseline, text: this.text, font: this.font};
     };
 
     /**

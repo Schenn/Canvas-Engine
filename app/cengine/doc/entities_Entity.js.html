@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: entities/Entity.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: entities/Entity.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Steven Chennault &lt;schenn@gmail.com>
+ *
+ */
+
+(function(CanvasEngine){
+  // These properties are used but can only be set once
+
+  var EM = CanvasEngine.EntityManager;
+  var utils = CanvasEngine.utilities;
+
+  /**
+   * The Entity Class is the actual class for all the living objects in the Engine.
+   *  It contains the base properties required for existing and the methods for communicating with its components and subentities.
+   *
+   * @class
+   * @property {number} z_index
+   * @property {string} name
+   * @memberOf CanvasEngine.Entities
+   *
+   * @param {object} params
+   * @param {string} [params.name]
+   * @param {number} [params.z_index]
+   *
+   */
+  function Entity(params){
+    var components = {};
+    var subEntities = {};
+
+    // Fixed Public Properties
+    // The z_index and name cannot be changed.
+    Object.defineProperties(this, {
+      z_index:EM.properties.lockedProperty(params.z_index || 0),
+      name:EM.properties.lockedProperty(params.name || utils.randName())
+    });
+
+    if(params.hasOwnProperty("z_index")){
+      delete params.z_index;
+    }
+
+    /**
+     * Attach a component to this entity;
+     *
+     * @param {string} name the name of the component
+     * @param {object} component the instantiated component
+     */
+    this.attachComponent = function(name, component){
+      if(!this.hasComponent(name)) {
+        components[name] = component;
+      }
+    };
+
+    /**
+     * Attach a sub-entity to this entity
+     *  A sub-entity is simply another entity.
+     *  This allows complex entities made up of multiple entities to be constructed.
+     *  Warning: BroadcastToComponent iterates over subEntities.
+     *    If you want to disconnect an inner entity from outside messages, don't attach it as a sub-entity.
+     *
+     * @param {CanvasEngine.Entities.Entity} subEntity
+     */
+    this.attachSubEntity = function(subEntity){
+      subEntities[subEntity.name] = subEntity;
+    };
+
+    /**
+     * Does the entity have a component?
+     *
+     * @param {string} componentName
+     * @returns {boolean}
+     */
+    this.hasComponent = function(componentName){
+      return Object.keys(components).indexOf(componentName)>-1;
+    };
+
+    /**
+     * Tell every component to do a function.
+     *    If it can't, that's ok just go to the next component.
+     *
+     * @param {string} funcName
+     * @param {*} [args]
+     */
+    this.broadcastToComponents = function(funcName, args){
+      $.each(components, function(name, component){
+        if(utils.isFunction(component[funcName])){
+          component[funcName].call(component,args);
+        }
+      });
+
+      // Tell the sub-entities to tell their components to do the function as well.
+      $.each(subEntities, function(name, entity){
+        entity.broadcastToComponents(funcName,args);
+      });
+    };
+
+    /**
+     * Tell a specific component to do something, maybe with arguments.
+     *
+     * @param {string} componentName
+     * @param {string} funcName
+     * @param {*} [args]
+     */
+    this.messageToComponent = function(componentName, funcName, args){
+      if(utils.exists(components[componentName]) &amp;&amp;
+        utils.isFunction(components[componentName][funcName])){
+
+        if(utils.exists(args)) {
+          components[componentName][funcName].call(components[componentName], args);
+        }else {
+          components[componentName][funcName].call(components[componentName]);
+        }
+      }
+    };
+
+    /**
+     * Get data from a component
+     *
+     * @param {string} componentName
+     * @param {string} funcName
+     * @param {*} [args]
+     * @throws Will throw an error if the Entity does not have the given component or the component doesn't have the given function
+     * @returns {*}
+     */
+    this.getFromComponent = function(componentName, funcName, args){
+      if(utils.exists(components[componentName]) &amp;&amp;
+        utils.isFunction(components[componentName][funcName])){
+
+        if(utils.exists(args)) {
+          return components[componentName][funcName].call(components[componentName],args);
+        }else {
+          return components[componentName][funcName].call(components[componentName]);
+        }
+      }
+      else {
+        throw this.name + " Does not have component: "+ componentName;
+      }
+    };
+
+    /**
+     * Get or set a property on a component
+     *
+     * @param {string} componentName
+     * @param {string} propertyName
+     * @param {*} [value]
+     * @returns {*}
+     */
+    this.componentProperty = function(componentName, propertyName, value){
+      if(utils.exists(value) &amp;&amp; components[componentName].hasOwnProperty(propertyName)){
+        components[componentName][propertyName] = value;
+      }
+
+      return components[componentName][propertyName];
+    };
+
+    /**
+     * Tell a specific sub-entity to do something
+     *
+     * @param {string} entityName
+     * @param {string} funcName
+     * @param {*} [args]
+     */
+    this.messageToSubEntity = function(entityName, funcName, args){
+      if(utils.exists(subEntities[entityName]) &amp;&amp;
+        utils.isFunction(subEntities[entityName][funcName])){
+
+        if(utils.exists(args)) {
+          subEntities[entityName][funcName].call(subEntities[entityName], args);
+        }else {
+          subEntities[entityName][funcName].call(subEntities[entityName]);
+        }
+      }
+    };
+
+    /**
+     * Get the current state of the components on this entity.
+     *    Leaves the original components untouched.
+     *
+     * @return {Array.&lt;object>}
+     */
+    this.getComponentList = function(){
+      return $.extend({}, components);
+    };
+
+  }
+
+  // Tell the EntityManager how to build a base entity.
+  EM.setBaseEntityGenerator(function(params){
+    return new Entity(params);
+  });
+})(window.CanvasEngine);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas.enhancedContext.html">enhancedContext</a></li><li><a href="CanvasEngine.Components.Image.html">Image</a></li><li><a href="CanvasEngine.Components.KeyPress.html">KeyPress</a></li><li><a href="CanvasEngine.Components.Mouse.html">Mouse</a></li><li><a href="CanvasEngine.Components.Movement.html">Movement</a></li><li><a href="CanvasEngine.Components.PointPlotter.html">PointPlotter</a></li><li><a href="CanvasEngine.Components.Renderer.html">Renderer</a></li><li><a href="CanvasEngine.Components.SpriteSheet.html">SpriteSheet</a></li><li><a href="CanvasEngine.Components.Text.html">Text</a></li><li><a href="CanvasEngine.Components.TileMap.html">TileMap</a></li><li><a href="CanvasEngine.Components.TileMap_TileClick.html">TileClick</a></li><li><a href="CanvasEngine.Components.Timer.html">Timer</a></li><li><a href="CanvasEngine.Entities.AnimatedSprite.html">AnimatedSprite</a></li><li><a href="CanvasEngine.Entities.Animator.html">Animator</a></li><li><a href="CanvasEngine.Entities.Button.html">Button</a></li><li><a href="CanvasEngine.Entities.Entity.html">Entity</a></li><li><a href="CanvasEngine.Entities.Image.html">Image</a></li><li><a href="CanvasEngine.Entities.Line.html">Line</a></li><li><a href="CanvasEngine.Entities.MobileSprite.html">MobileSprite</a></li><li><a href="CanvasEngine.Entities.Rect.html">Rect</a></li><li><a href="CanvasEngine.Entities.Sprite.html">Sprite</a></li><li><a href="CanvasEngine.Entities.TileMap.html">TileMap</a></li><li><a href="CanvasEngine.Resources.SpriteSheet.html">SpriteSheet</a></li><li><a href="CanvasEngine.Screen.html">Screen</a></li><li><a href="CanvasEngine-EntityManager.html">EntityManager</a></li><li><a href="CanvasEngine-EntityManager.baseEntity.html">baseEntity</a></li><li><a href="CanvasEngine-EntityTracker.html">EntityTracker</a></li><li><a href="CanvasEngine-resourceManager.html">resourceManager</a></li></ul><h3>Events</h3><ul><li><a href="keyboard.html#event:keypress">keypress</a></li></ul><h3>Namespaces</h3><ul><li><a href="Callbacks.html">Callbacks</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="CanvasEngine.html">CanvasEngine</a></li><li><a href="CanvasEngine.Components.html">Components</a></li><li><a href="CanvasEngine.Entities.html">Entities</a></li><li><a href="CanvasEngine.Properties.html">Properties</a></li><li><a href="CanvasEngine.Resources.html">Resources</a></li><li><a href="CanvasEngine%250A%250AA%2520collection%2520of%2520utility%2520functions.utilities.html">utilities</a></li><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="GeneralTypes.html">GeneralTypes</a></li><li><a href="keyboard.html">keyboard</a></li><li><a href="LocalParams.html">LocalParams</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jun 02 2016 00:41:14 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

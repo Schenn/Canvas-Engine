@@ -5,6 +5,9 @@
  * @namespace LocalParams
  */
 /**
+ * @namespace Callbacks
+ */
+/**
  * Optional CreateParams which trigger specific functionality
  *
  * @typedef {object} LocalParams~CreateParams
@@ -13,12 +16,17 @@
  * @property {string | Array } [spritesheets] - A collection of spritesheets to utilize.
  * @property {number} [z_index] - The z-index the entity will live at
  * @property {Object} [keys] - The alphanumeric keys that your entity will listen for and their callback methods.
- * @property {function | Array } [onClick] - The callback method(s) your entity will trigger when clicked.
- * @property {function | Array } [onMouseDown] - The callback method(s) your entity will trigger when the mouse is down over it.
- * @property {function | Array } [onMouseUp] - The callback method(s) your entity will trigger when the mouse button is released over it.
- * @property {function | Array } [onMouseOver] - The callback method(s) your entity will trigger when the mouse is sitting over it
- * @property {function | Array } [onMouseMove] - The callback method(s) your entity will trigger when the mouse is moving over it.
+ * @property {Callbacks~onMouse | Callbacks~onMouse[]} [onClick] - The callback method(s) your entity will trigger when clicked.
+ * @property {Callbacks~onMouse | Callbacks~onMouse[]} [onMouseDown] - The callback method(s) your entity will trigger when the mouse is down over it.
+ * @property {Callbacks~onMouse | Callbacks~onMouse[]} [onMouseUp] - The callback method(s) your entity will trigger when the mouse button is released over it.
+ * @property {Callbacks~onMouse | Callbacks~onMouse[]} [onMouseOver] - The callback method(s) your entity will trigger when the mouse is sitting over it
+ * @property {Callbacks~onMouse | Callbacks~onMouse[]} [onMouseMove] - The callback method(s) your entity will trigger when the mouse is moving over it.
  *
+ */
+
+/**
+ * @callback Callbacks~onPropertyChanged
+ * @param {*} value The new Value
  */
 
 (function(CanvasEngine){
@@ -26,7 +34,8 @@
    * The make functions for entities.
    *  These methods describe how to create an Entity
    *
-   * @namespace CanvasEngine.Entities
+   * @namespace Entities
+   * @memberof CanvasEngine
    */
   var make = {};
 
@@ -34,7 +43,8 @@
    * The constructor functions for components
    *  These methods create a component.
    *
-   * @namespace CanvasEngine.Components
+   * @namespace Components
+   * @memberof CanvasEngine
    */
   var components = {};
 
@@ -45,7 +55,9 @@
   /**
    * A "locked" object property
    *    A locked property cannot be changed once set.
+   *
    * @param {*} val The value to set the property to.
+   * @memberof Properties
    * @returns {{enumerable: boolean, writable: boolean, configurable: boolean, value: *}}
    */
   function lockedProperty(val){
@@ -59,6 +71,8 @@
 
   /**
    * A "Default" object property.
+   *
+   * @memberof Properties
    * @param {*} privateVar The private variable to reference for getting and setting a value.
    * @param {function} callback Called when the value is changed. The new value is passed as an argument into the function.
    * @returns {{enumerable: boolean, configurable: boolean, get: get, set: set}}
@@ -121,7 +135,6 @@
       baseEntity = generateFunc({});
     };
 
-    //noinspection JSUnusedGlobalSymbols
     /**
      * Is the given object an "Entity" class?
      * @param {CanvasEngine.Entities.Entity} ent
@@ -252,8 +265,8 @@
      * Attach a component or components to a given entity.
      *
      * @param {CanvasEngine.Entities.Entity} entity The entity to attach components to.
-     * @param {string | Object } component The components to add.
-     * @param {Object} params The arguments for the components.
+     * @param {string | Object.<string, Object> | Object.<string, string> } component The components to add.
+     * @param {Object} [params] The arguments for the components. Optional if you use the Object.<string, Object> argument.
      *
      * @returns {EntityManager}
      */

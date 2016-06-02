@@ -14,7 +14,10 @@
    *
    * @class
    * @memberOf CanvasEngine.Resources
-   * @param {LocalParams~SpriteSheetParams} details
+   * @param {object} details
+   * @param {number} details.height
+   * @param {number} details.width
+   * @param {Array|Object} [details.sprites]
    */
   var SpriteSheet = function(details){
     var spriteHeight = details.height;
@@ -75,7 +78,7 @@
     /**
      * Get a sprite detail object by its name
      * @param {string} name
-     * @returns {{sx: number sy: number sWidth: number sHeight: number}}
+     * @returns {{sx: number, sy: number, sWidth: number, sHeight: number}}
      */
     this.getSprite = function(name){
       return sprites[name];
@@ -107,17 +110,11 @@
   };
 
   /**
-   * @construct
-   * @memberOf CanvasEngine.Resources.SpriteSheet
-   * @param {LocalParams~SpriteSheetParams} details
-   * @returns {CanvasEngine.Resources.SpriteSheet}
-   */
-  var construct = function(details){
-    return new SpriteSheet(details);
-  };
-
-  /**
    * Tell the CanvasEngine how to create a SpriteSheet resource.
+   * @constructs CanvasEngine.Resources.SpriteSheet
    */
-  CanvasEngine.ResourceManager.setResourceType("SpriteSheet", construct);
+  CanvasEngine.ResourceManager.setResourceType("SpriteSheet",
+    function(details){
+    return new SpriteSheet(details);
+  });
 })(window.CanvasEngine);

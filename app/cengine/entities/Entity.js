@@ -13,13 +13,14 @@
    * The Entity Class is the actual class for all the living objects in the Engine.
    *  It contains the base properties required for existing and the methods for communicating with its components and subentities.
    *
-   * @constructor
-   * @param {{ [name]:{string}, [z_index]:{number} }} params
-   *
+   * @class
    * @property {number} z_index
    * @property {string} name
-   *
    * @memberOf CanvasEngine.Entities
+   *
+   * @param {object} params
+   * @param {string} [params.name]
+   * @param {number} [params.z_index]
    *
    */
   function Entity(params){
@@ -77,7 +78,7 @@
      *    If it can't, that's ok just go to the next component.
      *
      * @param {string} funcName
-     * @param {object} [args]
+     * @param {*} [args]
      */
     this.broadcastToComponents = function(funcName, args){
       $.each(components, function(name, component){
@@ -97,7 +98,7 @@
      *
      * @param {string} componentName
      * @param {string} funcName
-     * @param {object} [args]
+     * @param {*} [args]
      */
     this.messageToComponent = function(componentName, funcName, args){
       if(utils.exists(components[componentName]) &&
@@ -115,8 +116,9 @@
      * Get data from a component
      *
      * @param {string} componentName
-     * @param {string}funcName
-     * @param {object} [args]
+     * @param {string} funcName
+     * @param {*} [args]
+     * @throws Will throw an error if the Entity does not have the given component or the component doesn't have the given function
      * @returns {*}
      */
     this.getFromComponent = function(componentName, funcName, args){
@@ -155,7 +157,7 @@
      *
      * @param {string} entityName
      * @param {string} funcName
-     * @param {object} [args]
+     * @param {*} [args]
      */
     this.messageToSubEntity = function(entityName, funcName, args){
       if(utils.exists(subEntities[entityName]) &&
@@ -173,7 +175,7 @@
      * Get the current state of the components on this entity.
      *    Leaves the original components untouched.
      *
-     * @return {Array}
+     * @return {Array.<object>}
      */
     this.getComponentList = function(){
       return $.extend({}, components);
@@ -181,16 +183,8 @@
 
   }
 
-  /**
-   * @construct
-   * @memberOf CanvasEngine.Entities.Entity
-   * @param {{ [name]:{string}, [z_index]:{number} }} params
-   * @returns {CanvasEngine.Entities.Entity}
-   */
-  var construct = function(params){
-    return new Entity(params);
-  };
-
   // Tell the EntityManager how to build a base entity.
-  EM.setBaseEntityGenerator(construct);
+  EM.setBaseEntityGenerator(function(params){
+    return new Entity(params);
+  });
 })(window.CanvasEngine);

@@ -31,6 +31,7 @@
         /**
          * Set the current sprite
          * @param {string | number} name
+         * @memberof Sprite
          */
         setSprite: function(name){
           currentSpriteName = name;
@@ -43,6 +44,7 @@
         /**
          * Set the current spritesheet
          * @param {string} sheetName
+         * @memberof Sprite
          */
         setCurrentSheet: function(sheetName){
           currentSheet = sheetName;

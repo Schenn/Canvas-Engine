@@ -2,100 +2,71 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 /**
- * Use these param properties to override the defaults.
- *   The draw method is required to use the Renderer component
- *   You can provide your own clear method if your shape is too irregular to clear with a rect
- *   You can provide your own clearInfo method or object to specify what area to clear
- *
- * @typedef {object} LocalParams~RendererParams
- * @property {number} angle
- * @property {boolean} ccw
- * @property {boolean} closed
- * @property {string} compositing
- * @property {number} cornerRadius
- * @property {number} end
- * @property {string} fillStyle
- * @property {boolean} fromCenter
- * @property {number} height
- * @property {boolean} inDegrees
- * @property {boolean} mask
- * @property {number} opacity
- * @property {number} projection
- * @property {number} r1
- * @property {number} r2
- * @property {number} radius
- * @property {string} repeat
- * @property {boolean} rounded
- * @property {number} scaleX
- * @property {number} scaleY
- * @property {number} shadowBlur
- * @property {string} shadowColor
- * @property {number} shadowX
- * @property {number} shadowY
- * @property {number} sides
- * @property {number} start
- * @property {string} strokeCap
- * @property {string} strokeJoin
- * @property {string} strokeStyle
- * @property {number} strokeWidth
- * @property {number} width
- * @property {number} x
- * @property {number} y
- *
- * @property {Image} source
- * @property {number} z_index
- * @property {string} name
- * @property {function} draw - REQUIRED
- * @property {LocalParams~clearInfo | function} clearInfo
- * @property {function} clear
- *
+ * @callback Callbacks~Draw
+ * @param {jQuery.enhancedContext} ctx
  */
-(function(){
+
+/**
+ * @callback Callbacks~Clear
+ * @param {jQuery.enhancedContext} ctx
+ */
+(function(CanvasEngine){
 
   var props = CanvasEngine.EntityManager.properties;
 
   /**
    * The Renderer component is responsible for managing the properties required to draw an object to a canvas.
    *
-   * @class
-   * @memberof CanvasEngine.Components
-   * @param params {LocalParams~RendererParams}} The container of property values.
-   * @param entity {{CanvasEngine.Entities.Entity}} The entity to attach the Renderer Component to
-   * @property {number} angle
-   * @property {boolean} ccw
-   * @property {boolean} closed
-   * @property {string} compositing
-   * @property {number} cornerRadius
-   * @property {number} end
-   * @property {string} fillStyle
-   * @property {boolean} fromCenter
-   * @property {number} height
-   * @property {boolean} inDegrees
-   * @property {boolean} mask
-   * @property {number} opacity
-   * @property {number} projection
-   * @property {number} r1
-   * @property {number} r2
-   * @property {number} radius
-   * @property {string} repeat
-   * @property {boolean} rounded
-   * @property {number} scaleX
-   * @property {number} scaleY
-   * @property {number} shadowBlur
-   * @property {string} shadowColor
-   * @property {number} shadowX
-   * @property {number} shadowY
-   * @property {number} sides
-   * @property {number} start
-   * @property {string} strokeCap
-   * @property {string} strokeJoin
-   * @property {string} strokeStyle
-   * @property {number} strokeWidth
-   * @property {number} width
-   * @property {number} x
-   * @property {number} y
+   *   You can provide your own clear method if your shape is too irregular to clear with a rect
+   *   If no clearInfo method is provided, the Renderer uses its x, y, height and width in a clearRect method.
    *
-   * @todo Allow the Renderer to use Gradient and Pattern resources when it has them.
+   *
+   * @class Renderer
+   * @memberof CanvasEngine.Components
+   *
+   * @todo Allow the Renderer to use gradients and patterns
+   *
+   * @param {object} params The container of property values.
+   *
+   * @param {Callbacks~Draw} params.draw - The actual bit that does the rendering. @see {CanvasEngine.Entities}.
+   * @param {number} [params.angle]
+   * @param {boolean} [params.ccw]
+   * @param {boolean} [params.closed]
+   * @param {string} [params.compositing]
+   * @param {number} [params.cornerRadius]
+   * @param {number} [params.end]
+   * @param {string} [params.fillStyle]
+   * @param {boolean} [params.fromCenter]
+   * @param {number} [params.height]
+   * @param {boolean} [params.inDegrees]
+   * @param {boolean} [params.mask]
+   * @param {number} [params.opacity]
+   * @param {number} [params.projection]
+   * @param {number} [params.r1]
+   * @param {number} [params.r2]
+   * @param {number} [params.radius]
+   * @param {string} [params.repeat]
+   * @param {boolean} [params.rounded]
+   * @param {number} [params.scaleX]
+   * @param {number} [params.scaleY]
+   * @param {number} [params.shadowBlur]
+   * @param {string} [params.shadowColor]
+   * @param {number} [params.shadowX]
+   * @param {number} [params.shadowY]
+   * @param {number} [params.sides]
+   * @param {number} [params.start]
+   * @param {string} [params.strokeCap]
+   * @param {string} [params.strokeJoin]
+   * @param {string} [params.strokeStyle]
+   * @param {number} [params.strokeWidth]
+   * @param {number} [params.width]
+   * @param {number} [params.x]
+   * @param {number} [params.y]
+   * @param {Image} [params.source]
+   * @param {GeneralTypes~ClearInfo | Callbacks~ClearInfo} [params.clearInfo]
+   * @param {Callbacks~Clear} [params.clear]
+   * @param {CanvasEngine.Entities.Entity} entity The entity to attach the Renderer Component to
+   *
    */
   var Renderer = function(params, entity){
     var isDirty = true;
@@ -145,51 +116,209 @@
 
     // Public Properties
     Object.defineProperties(this, {
-      "angle":props.defaultProperty(angle, this.markDirty),
-      "ccw":props.defaultProperty(ccw, this.markDirty),
-      "closed":props.defaultProperty(closed, this.markDirty),
-      "compositing":props.defaultProperty(compositing, this.markDirty),
-      "cornerRadius":props.defaultProperty(cornerRadius, this.markDirty),
-      "end":props.defaultProperty(end, this.markDirty),
-      "fillStyle":props.defaultProperty(fillStyle, this.markDirty),
-      "fromCenter":props.defaultProperty(fromCenter, this.markDirty),
-      "height":props.defaultProperty(height, this.markDirty),
-      "inDegrees":props.defaultProperty(inDegrees, this.markDirty),
-      "mask":props.defaultProperty(mask, this.markDirty),
-      "opacity":props.defaultProperty(opacity, this.markDirty),
-      "projection":props.defaultProperty(projection, this.markDirty),
-      "r1":props.defaultProperty(r1, this.markDirty),
-      "r2":props.defaultProperty(r2, this.markDirty),
-      "radius":props.defaultProperty(radius, this.markDirty),
-      "repeat":props.defaultProperty(repeat, this.markDirty),
-      "rounded":props.defaultProperty(rounded, this.markDirty),
-      "scaleX":props.defaultProperty(scaleX, this.markDirty),
-      "scaleY":props.defaultProperty(scaleY, this.markDirty),
-      "shadowBlur":props.defaultProperty(shadowBlur, this.markDirty),
-      "shadowColor":props.defaultProperty(shadowColor, this.markDirty),
-      "shadowX": props.defaultProperty(shadowX, this.markDirty),
-      "shadowY":props.defaultProperty(shadowY, this.markDirty),
-      "sides":props.defaultProperty(sides, this.markDirty),
-      "start":props.defaultProperty(start, this.markDirty),
-      "strokeCap":props.defaultProperty(strokeCap, this.markDirty),
-      "strokeJoin":props.defaultProperty(strokeJoin, this.markDirty),
-      "strokeStyle":props.defaultProperty(strokeStyle, this.markDirty),
-      "strokeWidth": props.defaultProperty(strokeWidth, this.markDirty),
-      "width":props.defaultProperty(width, this.markDirty),
-      "x":props.defaultProperty(x, this.markDirty),
-      "y":props.defaultProperty(y, this.markDirty)
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      angle:props.defaultProperty(angle, this.markDirty),
+      /**
+       * @type boolean
+       * @instance
+       * @memberof Renderer
+       */
+      ccw:props.defaultProperty(ccw, this.markDirty),
+      /**
+       * @type boolean
+       * @instance
+       * @memberof Renderer
+       */
+      closed:props.defaultProperty(closed, this.markDirty),
+      /**
+       * @type string
+       * @instance
+       * @memberof Renderer
+       */
+      compositing:props.defaultProperty(compositing, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      cornerRadius:props.defaultProperty(cornerRadius, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      end:props.defaultProperty(end, this.markDirty),
+      /**
+       * @type string
+       * @instance
+       * @memberof Renderer
+       */
+      fillStyle:props.defaultProperty(fillStyle, this.markDirty),
+      /**
+       * @type boolean
+       * @instance
+       * @memberof Renderer
+       */
+      fromCenter:props.defaultProperty(fromCenter, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      height:props.defaultProperty(height, this.markDirty),
+      /**
+       * @type boolean
+       * @instance
+       * @memberof Renderer
+       */
+      inDegrees:props.defaultProperty(inDegrees, this.markDirty),
+      /**
+       * @type boolean
+       * @instance
+       * @memberof Renderer
+       */
+      mask:props.defaultProperty(mask, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      opacity:props.defaultProperty(opacity, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      projection:props.defaultProperty(projection, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      r1:props.defaultProperty(r1, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      r2:props.defaultProperty(r2, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      radius:props.defaultProperty(radius, this.markDirty),
+      /**
+       * @type string
+       * @instance
+       * @memberof Renderer
+       */
+      repeat:props.defaultProperty(repeat, this.markDirty),
+      /**
+       * @type boolean
+       * @instance
+       * @memberof Renderer
+       */
+      rounded:props.defaultProperty(rounded, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      scaleX:props.defaultProperty(scaleX, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      scaleY:props.defaultProperty(scaleY, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      shadowBlur:props.defaultProperty(shadowBlur, this.markDirty),
+      /**
+       * @type string
+       * @instance
+       * @memberof Renderer
+       */
+      shadowColor:props.defaultProperty(shadowColor, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      shadowX: props.defaultProperty(shadowX, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      shadowY:props.defaultProperty(shadowY, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      sides:props.defaultProperty(sides, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      start:props.defaultProperty(start, this.markDirty),
+      /**
+       * @type string
+       * @instance
+       * @memberof Renderer
+       */
+      strokeCap:props.defaultProperty(strokeCap, this.markDirty),
+      /**
+       * @type string
+       * @instance
+       * @memberof Renderer
+       */
+      strokeJoin:props.defaultProperty(strokeJoin, this.markDirty),
+      /**
+       * @type string
+       * @instance
+       * @memberof Renderer
+       */
+      strokeStyle:props.defaultProperty(strokeStyle, this.markDirty),
+      /**
+       * @type string
+       * @instance
+       * @memberof Renderer
+       */
+      strokeWidth: props.defaultProperty(strokeWidth, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      width:props.defaultProperty(width, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      x:props.defaultProperty(x, this.markDirty),
+      /**
+       * @type number
+       * @instance
+       * @memberof Renderer
+       */
+      y:props.defaultProperty(y, this.markDirty)
     });
-
-    if(params.hasOwnProperty("source")){
-      delete params.source;
-    }
-    if(params.hasOwnProperty("z_index")){
-      delete params.z_index;
-    }
 
     // The Draw Method is required. You have to tell the renderer how your entity draws itself.
     if(!CanvasEngine.utilities.isFunction(params.draw)){
-      console.log(params.name + ": " + "Renderer missing draw method. Be sure to pass a draw method when attaching a Renderer component.");
+      console.log(entity.name + ": " + "Renderer missing draw method. Be sure to pass a draw method when attaching a Renderer component.");
     } else {
       this.draw = params.draw;
       delete params.draw;
@@ -209,7 +338,6 @@
       };
     } else {
       this.clearInfo = params.clearInfo;
-      delete params.clearInfo;
       this.clearInfo.bind(this);
     }
 
@@ -217,7 +345,7 @@
      * Set the defaults and call the draw method against a context.
      *    When a renderer is drawn, it stores a 'shadow' of the render for clearing later.
      *
-     * @param {enhancedContext} ctx EnhancedContext
+     * @param {jQuery#enhancedContext} ctx EnhancedContext
      */
     this.render = function(ctx){
       ctx.setDefaults($.extend({},this));
@@ -230,38 +358,43 @@
      * Clear the previous render's 'shadow' from a context.
      * @param {enhancedContext} ctx
      */
-    this.clear = (CanvasEngine.utilities.isFunction(params.clear)) ? params.clear : function(ctx){
-      if(!CanvasEngine.utilities.exists(clearShadow)){
-        clearShadow = this.clearInfo(ctx);
-      }
-      ctx.clear(clearShadow);
-    }.bind(this);
+    if((CanvasEngine.utilities.isFunction(params.clear))){
+      this.clear = params.clear;
+      this.clear.bind(this);
+    } else {
+      this.clear = function(ctx){
+        if(!CanvasEngine.utilities.exists(clearShadow)){
+          clearShadow = this.clearInfo(ctx);
+        }
+        ctx.clear(clearShadow);
+      };
+    }
 
     /**
      * Does a given pixel fall inside of this renderer component?
      *
-     * @param {coords} coords
+     * @param {GeneralTypes~coords} coords
      * @returns {boolean}
      */
     this.containsPixel = function(coords){
       // if we contain the pixel position
-      var leftBoundry = this.x;
-      var rightBoundry = this.x;
-      var topBoundry = this.y;
-      var bottomBoundry = this.y;
+      var leftBoundary = this.x;
+      var rightBoundary = this.x;
+      var topBoundary = this.y;
+      var bottomBoundary = this.y;
       if (this.fromCenter) {
-        leftBoundry -= (0.5 * this.width);
-        rightBoundry += (0.5 * this.width);
-        topBoundry -= (0.5 * this.height);
-        bottomBoundry += (0.5 * this.height);
+        leftBoundary -= (0.5 * this.width);
+        rightBoundary += (0.5 * this.width);
+        topBoundary -= (0.5 * this.height);
+        bottomBoundary += (0.5 * this.height);
       }
       else {
-        rightBoundry += this.width;
-        bottomBoundry += this.height;
+        rightBoundary += this.width;
+        bottomBoundary += this.height;
       }
 
-      return ((coords.x >= leftBoundry) && (coords.x <= rightBoundry) &&
-      ((coords.y >= topBoundry) && (coords.y <= bottomBoundry)));
+      return ((coords.x >= leftBoundary) && (coords.x <= rightBoundary) &&
+      ((coords.y >= topBoundary) && (coords.y <= bottomBoundary)));
     };
 
     /**
@@ -278,7 +411,7 @@
 
     /**
      * Set the position of the renderer component
-     * @param {coords} position
+     * @param {GeneralTypes~coords} position
      */
     this.setPosition = function(position){
       if(CanvasEngine.utilities.exists(position.x)){
@@ -306,7 +439,7 @@
 
     /**
      * Return the Entity
-     * @returns {{CanvasEngine.Entities.Entity}}
+     * @returns {CanvasEngine.Entities.Entity}
      */
     this.getEntity = function(){
       return entity;
@@ -316,15 +449,10 @@
     CanvasEngine.utilities.setProperties(this, params);
   };
 
-  /**
-   * @construct
-   * @memberOf Renderer
-   */
-  var construct = function(params, entity){
-    return new Renderer(params, entity);
-  };
-
   // Add the Renderer component to the CanvasEngine storage
-  CanvasEngine.EntityManager.addComponent("Renderer",construct);
+  CanvasEngine.EntityManager.addComponent("Renderer",
+    function(params, entity){
+    return new Renderer(params, entity);
+  });
 
-})();
+})(window.CanvasEngine);

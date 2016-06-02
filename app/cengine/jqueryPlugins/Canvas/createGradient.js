@@ -1,11 +1,19 @@
 /**
- * @author Steven Chennault <schenn@gmail.com>
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
+ * @param {external:jQuery} $
  */
 (function($){
   /**
-   * @param args {{}}
+   * Generates a CanvasGradient
+   *
+   * @param {object} args
+   * @param {number} args.x1
+   * @param {number} args.y1
+   * @param {number} args.x2
+   * @param {number} args.y2
+   * @param {...string} args.c1  // Each Color (c) gets its own index (args.c1, args.c2, args.c3)
+   * @param {...number} args.s1  // Each Color Stop (s) gets its own index which must equal the color index.
+   * @memberof external:jQuery.fn
+   * @alias createGradient
    * @returns {CanvasGradient}
    */
   $.fn.createGradient = function(args) {
@@ -24,7 +32,7 @@
     }
 
     // Count number of color stops
-    while (params['c' + i] !== undefined) {
+    while (typeof(params['c' + i]) !== undefined) {
       stops += 1;
       i += 1;
     }

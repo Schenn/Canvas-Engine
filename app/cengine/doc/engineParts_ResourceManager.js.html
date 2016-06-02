@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: engineParts/ResourceManager.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: engineParts/ResourceManager.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Steven Chennault &lt;schenn@gmail.com>
+ */
+/**
+ * @callback Callbacks~onImageLoad
+ */
+/**
+ * @callback Callbacks~onResourcesLoaded
+ */
+(function(CanvasEngine){
+  var sounds = {}, images={}, spriteSheets = {}, imagePath = "";
+  var resourcesLoaded = {};
+  var onLoad;
+  var allAdded = false;
+
+  /**
+   * @namespace CanvasEngine.Resources
+   */
+  var Resources = {};
+
+  /**
+   * The ResourceManager manages the different images, sounds, movies and spritesheets used by the Engine.
+   * @class
+   * @inner
+   * @memberOf CanvasEngine
+   */
+  var resourceManager = function(){
+
+    /**
+     * Set the base image path
+     * @param {string} path
+     */
+    this.setImagePath = function(path){
+      imagePath = path;
+    };
+
+    /**
+     * Add a sound to the collection
+     * @todo Sounds
+     * @param {string} name
+     * @param {*} sound
+     */
+    this.addSound = function(name, sound) {
+
+    };
+
+    /**
+     * Add an image to the collection of images
+     *
+     * @param {string} name The name to give the image
+     * @param {string} path The filepath the image lives at
+     * @param {Callbacks~onImageLoad} [load] A method to fire when the image is loaded.
+     */
+    this.addImage = function(name, path, load){
+      var image = new Image();
+      images[name] = image;
+      resourcesLoaded[name] = false;
+      var self = this;
+      var triggerOnLoad = function(){
+        if(self.resourcesAreLoaded() &amp;&amp;
+          resourcesLoaded[name] === true){
+          load.call(image);
+          self.triggerCallback();
+        }
+      };
+
+      image.addEventListener("load", function(){
+        resourcesLoaded[name] = true;
+        triggerOnLoad();
+      });
+      image.addEventListener("load", load);
+
+      image.src = imagePath +"/"+path;
+
+      if(image.complete){
+        if (CanvasEngine.utilities.isFunction(load)){
+          load(image);
+        }
+        triggerOnLoad();
+      }
+    };
+
+    /**
+     * Add a spritesheet to the canvas engine
+     *  A spritesheet contains information about how an image breaks down into a collection of sprites.
+     * @param {string} name The name of the SpriteSheet
+     * @param {string} path The path to the SpriteSheet image
+     * @param {LocalParams~SpriteSheetParams} details The spritesheets details
+     */
+    this.addSpriteSheet = function(name, path, details){
+      spriteSheets[name] = new Resources.SpriteSheet(details);
+      resourcesLoaded[name+"sheet"] = false;
+      this.addImage(name, path, function(imgLoadEvent){
+        spriteSheets[name].processSprites(images[name]);
+        resourcesLoaded[name+"sheet"] = true;
+        CanvasEngine.ResourceManager.triggerCallback();
+      });
+
+    };
+
+    /**
+     * Get a SpriteSheet from storage
+     * @param {string} name
+     * @returns {CanvasEngine.Resources.SpriteSheet}
+     */
+    this.getSpriteSheet = function(name){
+      return spriteSheets[name];
+    };
+
+    /**
+     * Get an image from storage
+     * @param {string} name
+     * @returns {Image}
+     */
+    this.getImage = function(name){
+      return image[name];
+    };
+
+    /**
+     * Get a sound from storage
+     * @param {string} name
+     * @returns {*}
+     */
+    this.getSound = function(name){
+      return sounds[name];
+    };
+
+    /**
+     * Determine if all the resources have finished being loaded.
+     * @returns {boolean}
+     */
+    this.resourcesAreLoaded = function(){
+      if(allAdded) {
+        var resourceKeys = Object.keys(resourcesLoaded);
+        for (var i = 0; i &lt; resourceKeys.length; i++) {
+          if (resourcesLoaded[resourceKeys[i]] === false) {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+
+    /**
+     * Tell the ResourceManager that we aren't going to be adding any more resources
+     *  by the time the current collection finishes loading.
+     */
+    this.finishedAddingResources = function(){
+      allAdded = true;
+    };
+
+    /**
+     * Set the callback to trigger when all the resources are loaded.
+     *
+     * @param {Callbacks~onResourcesLoaded} callback
+     */
+    this.onResourcesLoaded = function(callback){
+      onLoad = callback;
+    };
+
+    /**
+     * Trigger the resources have loaded callback
+     */
+    this.triggerCallback = function(){
+      if(this.resourcesAreLoaded() &amp;&amp; CanvasEngine.utilities.isFunction(onLoad)){
+        onLoad();
+      }
+    };
+
+    /**
+     * Load a collection of resources
+     * This method assumes the resource collection IS the full set of resources
+     *  (at least the full set of resources which are needed for the onResourcesLoaded callback)
+     *
+     * @param {Array.&lt;Object.&lt;string,{name:string, source:string, details: Object}>>} resourceCollection
+     * @param {Callbacks~onResourcesLoaded} resourcesLoadedCallback
+     */
+    this.loadResourceCollection = function(resourceCollection, resourcesLoadedCallback){
+      this.onResourcesLoaded(resourcesLoadedCallback);
+      for(var i =0; i&lt;resourceCollection.length; i++){
+        var type = Object.keys(resourceCollection[i])[0];
+        var data = resourceCollection[i][type];
+        switch(type.toLowerCase()){
+          case "spritesheet":
+            this.addSpriteSheet(data.name,data.source,data.details);
+            break;
+          case "image":
+            this.addImage(data.name,data.source,data.details);
+            break;
+          case "sound":
+            this.addSound(data.name,data.source,data.details);
+            break;
+          default:
+            break;
+        }
+      }
+      this.finishedAddingResources();
+    };
+
+    /**
+     * Add a Resource Type to our collection
+     *
+     * @param {string} name
+     * @param {function} constructor
+     */
+    this.setResourceType=function(name, constructor){
+      Resources[name] = constructor;
+    };
+  };
+
+
+  CanvasEngine.ResourceManager = new resourceManager();
+})(window.CanvasEngine);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas.enhancedContext.html">enhancedContext</a></li><li><a href="CanvasEngine.Components.Image.html">Image</a></li><li><a href="CanvasEngine.Components.KeyPress.html">KeyPress</a></li><li><a href="CanvasEngine.Components.Mouse.html">Mouse</a></li><li><a href="CanvasEngine.Components.Movement.html">Movement</a></li><li><a href="CanvasEngine.Components.PointPlotter.html">PointPlotter</a></li><li><a href="CanvasEngine.Components.Renderer.html">Renderer</a></li><li><a href="CanvasEngine.Components.SpriteSheet.html">SpriteSheet</a></li><li><a href="CanvasEngine.Components.Text.html">Text</a></li><li><a href="CanvasEngine.Components.TileMap.html">TileMap</a></li><li><a href="CanvasEngine.Components.TileMap_TileClick.html">TileClick</a></li><li><a href="CanvasEngine.Components.Timer.html">Timer</a></li><li><a href="CanvasEngine.Entities.AnimatedSprite.html">AnimatedSprite</a></li><li><a href="CanvasEngine.Entities.Animator.html">Animator</a></li><li><a href="CanvasEngine.Entities.Button.html">Button</a></li><li><a href="CanvasEngine.Entities.Entity.html">Entity</a></li><li><a href="CanvasEngine.Entities.Image.html">Image</a></li><li><a href="CanvasEngine.Entities.Line.html">Line</a></li><li><a href="CanvasEngine.Entities.MobileSprite.html">MobileSprite</a></li><li><a href="CanvasEngine.Entities.Rect.html">Rect</a></li><li><a href="CanvasEngine.Entities.Sprite.html">Sprite</a></li><li><a href="CanvasEngine.Entities.TileMap.html">TileMap</a></li><li><a href="CanvasEngine.Resources.SpriteSheet.html">SpriteSheet</a></li><li><a href="CanvasEngine.Screen.html">Screen</a></li><li><a href="CanvasEngine-EntityManager.html">EntityManager</a></li><li><a href="CanvasEngine-EntityManager.baseEntity.html">baseEntity</a></li><li><a href="CanvasEngine-EntityTracker.html">EntityTracker</a></li><li><a href="CanvasEngine-resourceManager.html">resourceManager</a></li></ul><h3>Events</h3><ul><li><a href="keyboard.html#event:keypress">keypress</a></li></ul><h3>Namespaces</h3><ul><li><a href="Callbacks.html">Callbacks</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="CanvasEngine.html">CanvasEngine</a></li><li><a href="CanvasEngine.Components.html">Components</a></li><li><a href="CanvasEngine.Entities.html">Entities</a></li><li><a href="CanvasEngine.Properties.html">Properties</a></li><li><a href="CanvasEngine.Resources.html">Resources</a></li><li><a href="CanvasEngine%250A%250AA%2520collection%2520of%2520utility%2520functions.utilities.html">utilities</a></li><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="GeneralTypes.html">GeneralTypes</a></li><li><a href="keyboard.html">keyboard</a></li><li><a href="LocalParams.html">LocalParams</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jun 02 2016 00:41:14 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

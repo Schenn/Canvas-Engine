@@ -1,11 +1,15 @@
 /**
  * @author Steven Chennault <schenn@gmail.com>
  */
+
 /**
- * @typedef {{
- *  x: number,
- *  y: number
- * }} coords
+ * @namespace GeneralTypes
+ */
+/**
+ * @typedef {Object.<string, number>} GeneralTypes~coords
+ * @property {number} x
+ * @property {number} y
+
  */
 
 
@@ -19,7 +23,7 @@
   /**
    * CanvasEngine contains the system.
    *
-   * @namespace
+   * @namespace CanvasEngine
    *
    */
   var CanvasEngine = {
@@ -27,7 +31,7 @@
 
   /**
    * Add a collection of entities from a json array.
-   *
+   * @memberof CanvasEngine
    * @param {Array} screenMap initialization data for the entities to add.
    * @param {boolean} start Start animating after adding entities.
    */
@@ -42,7 +46,7 @@
   /**
    * Add an array of Entities
    *    (Entity being a class derived from the entity base class)
-   *
+   * @memberof CanvasEngine
    * @param {Array} entities The Entities to add, grouped by z-index
    * @param {boolean} start Start animating after adding entities
    *
@@ -63,6 +67,7 @@
 
   /**
    * Run Forever
+   * @memberof CanvasEngine
    *
    * @private
    */
@@ -82,9 +87,9 @@
    *    tell the renderer component to render
    *  Tell the entity to postRender
    *
-   *
+   * @memberof CanvasEngine
    * @param {number} z The z index to draw
-   * @param {enhancedContext} ctx The EnhancedContext of a canvas
+   * @param {jQuery#enhancedContext} ctx The EnhancedContext of a canvas
    */
   CanvasEngine.drawZ = function(z, ctx){
     if(!paused && CanvasEngine.EntityTracker.entityCount() > 0) {
@@ -105,6 +110,7 @@
 
   /**
    * Clear all entities from the system
+   * @memberof CanvasEngine
    */
   CanvasEngine.clearEntities = function(){
     //noinspection JSUnusedAssignment
@@ -119,10 +125,10 @@
    *
    * Called by the Screen when a mouse interacts with the stack.
    *
-   * @param {coords} coords The click position
+   * @param {GeneralTypes~coords} coords The click position
    * @param {string} interaction the type of mouse interaction
-   * @param {coords} previous The Previous mouse position
-   *
+   * @param {GeneralTypes~coords} [previous] The Previous mouse position
+   * @memberof CanvasEngine
    *
    */
   CanvasEngine.mouse = function(coords, interaction, previous){
@@ -166,6 +172,7 @@
 
   /**
    * Pause the game
+   * @memberof CanvasEngine
    *
    * @param {boolean} forceIt
    */
@@ -179,6 +186,7 @@
 
   /**
    * Pause the engine on a right click.
+   * @memberof CanvasEngine
    *
    */
   CanvasEngine.pauseOnRightClick = function(){
@@ -187,6 +195,7 @@
 
   /**
    * Unpause the engine
+   * @memberof CanvasEngine
    */
   CanvasEngine.unPause = function(){
     $(document).off(".unpause");
@@ -197,6 +206,7 @@
 
   /**
    * Is the engine currently paused?
+   * @memberof CanvasEngine
    * @returns {boolean}
    */
   CanvasEngine.isPaused = function(){
@@ -205,8 +215,9 @@
 
   /**
    * Get all the entities at a given pixel
+   * @memberof CanvasEngine
    *
-   * @param {coords} p pixel coordinate
+   * @param {GeneralTypes~coords} p pixel coordinate
    * @param {number} w width of search area
    * @param {number} h height of search area
    * @param {string} [hasComponent] Require entities to have a specific component.

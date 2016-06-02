@@ -3,12 +3,8 @@
  */
 
 /**
- * @typedef {object} LocalParams~TileMapParams
- * @property {Array} tiles
- * @property {function} onScroll
- * @property {function} onTileClick
- * @property {number} width
- * @property {number} height
+ * @typedef {{tile: *, x: number, y: number, row: number, col: number}} GeneralTypes~Tile
+ *
  */
 (function(CanvasEngine){
   var props = CanvasEngine.EntityManager.properties;
@@ -18,8 +14,14 @@
    * A TileMap Component manages maintaining a collection of values in specific 2-d array positions.
    *  Those values can then be used against other components or data in reference.
    *
-   * @param {LocalParams~TileMapParams} params
+   * @param {object} params
+   * @param {number} params.width
+   * @param {number} params.height
+   * @param {Array} [params.tiles]
+   * @param {function} [params.onScroll]
+   * @param {function} [params.onTileClick]
    * @param {CanvasEngine.Entities.Entity} entity
+   *
    * @constructor
    * @memberOf CanvasEngine.Components
    */
@@ -62,7 +64,7 @@
 
     /**
      * Get the tiles visible inside an area starting from the scrolled-to position
-     * @param {{height: number width: number}} area
+     * @param {{height: number, width: number}} area
      * @returns {Array}
      */
     this.getVisibleTiles = function(area){

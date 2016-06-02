@@ -1,7 +1,5 @@
 /**
- * @author Steven Chennault <schenn@gmail.com>
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
+ * @param {external:jQuery} $
  */
 (function($){
 
@@ -15,8 +13,10 @@
 
   /**
    * Enlarge a canvas or image to a size relative to it's parent container
+   * @memberof external:jQuery.fn
+   * @alias maximize
    *
-   * @param modifier {number} A percentage value to derive the relative size. Default 100%
+   * @param {number} modifier A percentage value to derive the relative size. Default 100%
    */
   $.fn.maximize = function(modifier){
     // Divide the modifier by 100, if there is no modifier set it to the default

@@ -8,7 +8,7 @@
  *  offsetY: number,
  *  cancelBubble: boolean,
  *  stopPropagation: function
- * }} mouseEventParams
+ * }} LocalParams~mouseEventParams
  */
 
 /**
@@ -21,7 +21,7 @@
   /**
    * The Screen class manages the individual canvases of the Engine
    *
-   * @constructor
+   * @class
    * @memberOf CanvasEngine
    */
   var Screen = function(){
@@ -73,7 +73,6 @@
       });
     };
 
-    //noinspection JSUnusedGlobalSymbols
     /**
      * Set the Screen Resolution.
      *
@@ -138,7 +137,7 @@
 
     /**
      * Clear an entity from the game screen.
-     * @param {CanvasEngine.Entities.Entity} entity
+     * @param {CanvasEngine.Entities#Entity} entity
      */
     this.clear = function(entity){
       var ctx = canvases[entity.z_index].getEnhancedContext();
@@ -174,7 +173,7 @@
     /**
      * When a screen is clicked, collect the click coordinate and pass it to the CanvasEngine
      *
-     * @param {mouseEventParams} e The click event
+     * @param {LocalParams~mouseEventParams} e The click event
      *
      */
     this.onClick = function(e){
@@ -190,7 +189,7 @@
     /**
      * When the mouse is moved over the canvas
      *
-     * @param {mouseEventParams} e
+     * @param {LocalParams~mouseEventParams} e
      */
     this.onMouseMove = function(e){
       e.stopPropagation();
@@ -206,7 +205,7 @@
     /**
      * When a mouse button is pressed over the canvas
      *
-     * @param {mouseEventParams} e
+     * @param {LocalParams~mouseEventParams} e
      */
     this.onMouseDown = function(e){
       e.stopPropagation();
@@ -221,7 +220,7 @@
     /**
      * When a mouse button is released over the canvas
      *
-     * @param {mouseEventParams} e
+     * @param {LocalParams~mouseEventParams} e
      */
     this.onMouseUp = function(e){
       e.stopPropagation();

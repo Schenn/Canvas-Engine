@@ -1,9 +1,13 @@
 /**
  * @author Steven Chennault <schenn@gmail.com>
  */
+/**
+ * @callback Callbacks~onImageLoad
+ */
+/**
+ * @callback Callbacks~onResourcesLoaded
+ */
 (function(CanvasEngine){
-  var utils = CanvasEngine.utilities;
-
   var sounds = {}, images={}, spriteSheets = {}, imagePath = "";
   var resourcesLoaded = {};
   var onLoad;
@@ -45,7 +49,7 @@
      *
      * @param {string} name The name to give the image
      * @param {string} path The filepath the image lives at
-     * @param {function} [load] A method to fire when the image is loaded.
+     * @param {Callbacks~onImageLoad} [load] A method to fire when the image is loaded.
      */
     this.addImage = function(name, path, load){
       var image = new Image();
@@ -148,7 +152,7 @@
     /**
      * Set the callback to trigger when all the resources are loaded.
      *
-     * @param {function} callback
+     * @param {Callbacks~onResourcesLoaded} callback
      */
     this.onResourcesLoaded = function(callback){
       onLoad = callback;
@@ -168,8 +172,8 @@
      * This method assumes the resource collection IS the full set of resources
      *  (at least the full set of resources which are needed for the onResourcesLoaded callback)
      *
-     * @param {Array} resourceCollection
-     * @param {function} resourcesLoadedCallback
+     * @param {Array.<Object.<string,{name:string, source:string, details: Object}>>} resourceCollection
+     * @param {Callbacks~onResourcesLoaded} resourcesLoadedCallback
      */
     this.loadResourceCollection = function(resourceCollection, resourcesLoadedCallback){
       this.onResourcesLoaded(resourcesLoadedCallback);

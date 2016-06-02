@@ -11,20 +11,29 @@
  * @property {number} which
  */
 
+/**
+ * @callback Callbacks~onKeyPress
+ * @this CanvasEngine.Entities.Entity
+ */
 (function (CanvasEngine) {
 
   /**
    * KeyPress listens for key presses and triggers a function call when they occur
-   *
-   * @param {object} params { key=>method }
+   * @see {CanvasEngine.EntityManager.addComponent} for more information.
+   * @param {Object.<string, Callbacks~onKeyPress>} params Key Callbacks
    * @param {CanvasEngine.Entities.Entity} entity
-   * @memberOf CanvasEngine.Components
+   * @memberof CanvasEngine.Components
    * @class
    */
   var KeyPress = function (params, entity) {
 
     var keyCallbacks = {};
-    var self = this;
+
+    var onKeyDown = function(key){
+      if(!CanvasEngine.isPaused() && CanvasEngine.utilities.isFunction(keyCallbacks[key])) {
+        keyCallbacks[key].call(entity);
+      }
+    };
 
     /**
      * @returns {CanvasEngine.Entities.Entity}
@@ -37,52 +46,44 @@
      * Add a callback to a key
      *
      * @param {string} key
-     * @param {function} callback
+     * @param {Callbacks~KeyPress} callback
      */
     this.onKey = function(key, callback){
       keyCallbacks[key] = callback;
     };
 
     /**
-     * @param {string} key
+     * Add a collection of key->callbacks
+     *
+     * @param {Object.<string, Callbacks~onKeyPress>} keys
      */
-    this.onKeyDown = function(key){
-      if(!CanvasEngine.isPaused() && CanvasEngine.utilities.isFunction(keyCallbacks[key])) {
-        keyCallbacks[key].call(entity);
+    this.onKeys = function(keys){
+      $keys = Object.keys(keys);
+      for(var i =0; i < $keys.length; i++){
+        this.onKey($keys[i], keys[$keys[i]])
       }
-    };
-
-    $.each(params, function(key, callback){
-      self.onKey(key, callback);
-    });
-
-    /**
-     * @listens keyboard#keypress
-     */
-    var onKeyPress = function(event){
-      var keyCode = event.keyCode || event.which;
-      self.onKeyDown(String.fromCharCode(keyCode));
     };
 
     /**
      * @fires keyboard#keypress
      */
-    $(document).on("keypress", onKeyPress);
-  };
-
-  /**
-   * Create a new KeyPress
-   *
-   * @param {object} params
-   * @param {CanvasEngine.Entities.Entity} entity
-   * @returns {CanvasEngine.Components.KeyPress}
-   */
-  var construct = function(params, entity){
-    return new KeyPress(params, entity);
+    $(document).on("keypress",
+      /**
+       * @listens keyboard#keypress
+       */
+      function(event){
+        var keyCode = event.keyCode || event.which;
+        onKeyDown(String.fromCharCode(keyCode));
+      }
+    );
   };
 
   /**
    * Add the KeyPress component to the CanvasEngine storage.
    */
-  CanvasEngine.EntityManager.addComponent("KeyPress", construct, true);
+  CanvasEngine.EntityManager.addComponent("KeyPress",
+    function(params, entity){
+      return new KeyPress(params, entity);
+    }, true
+  );
 })(window.CanvasEngine);

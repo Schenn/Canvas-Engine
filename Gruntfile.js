@@ -67,7 +67,24 @@ module.exports = function(grunt) {
         files: ['<%= app %>/**/*'],
         tasks: ['jshint', 'uglify']
       }
+    },
+    jsdoc:{
+      dist: {
+        src: ['<%= cengine %>/polyfills/**/*.js',
+          '<%= cengine %>/jqueryPlugins/**/*.js',
+          '<%= cengine %>/*.js',
+          '<%= cengine %>/engineParts/*.js',
+          '<%= cengine %>/resources/*.js',
+          '<%= cengine %>/entities/*.js',
+          '<%= cengine %>/components/*.js'
+        ],
+        options: {
+          destination: "<%= cengine %>/doc",
+          pedantic: true
+        }
+      }
     }
+
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -75,6 +92,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-bower-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
   // Default task(s).
   grunt.registerTask('default', ['watch']);

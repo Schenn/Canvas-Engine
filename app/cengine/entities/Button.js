@@ -88,7 +88,7 @@
       EM.attachComponent(Button, "Renderer", $.extend({}, { fromCenter: true,
         clearInfo: function(ctx){
           // Return the background's clearInfo
-          return background.getFromComponent("Renderer", "clearInfo", ctx);
+          return background.getFromComponent("Renderer", "ClearInfo", ctx);
         },
         draw: function(ctx){
           // Resize the background based on the height and width of the text, adjusted by the padding params.

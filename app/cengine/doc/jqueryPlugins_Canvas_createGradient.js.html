@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: jqueryPlugins/Canvas/createGradient.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: jqueryPlugins/Canvas/createGradient.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @param {external:jQuery} $
+ */
+(function($){
+  /**
+   * Generates a CanvasGradient
+   *
+   * @param {object} args
+   * @param {number} args.x1
+   * @param {number} args.y1
+   * @param {number} args.x2
+   * @param {number} args.y2
+   * @param {...string} args.c1  // Each Color (c) gets its own index (args.c1, args.c2, args.c3)
+   * @param {...number} args.s1  // Each Color Stop (s) gets its own index which must equal the color index.
+   * @memberof external:jQuery.fn
+   * @alias createGradient
+   * @returns {CanvasGradient}
+   */
+  $.fn.createGradient = function(args) {
+    if (!this[0].getContext) {return null;}
+    var ctx = this[0].getContext('2d'),
+      params = $.extend({}, args),
+      gradient, percent,
+      stops = 0,
+      i = 1;
+
+    // Create radial gradient if chosen
+    if (params.r1 !== null || params.r2 !== null) {
+      gradient = ctx.createRadialGradient(params.x1, params.y1, params.r1, params.x2, params.y2, params.r2);
+    } else {
+      gradient = ctx.createLinearGradient(params.x1, params.y1, params.x2, params.y2);
+    }
+
+    // Count number of color stops
+    while (typeof(params['c' + i]) !== undefined) {
+      stops += 1;
+      i += 1;
+    }
+
+    // Calculate color stop percentages if absent
+    for (i=1; i&lt;=stops; i+=1) {
+      percent = Math.round(100 / (stops-1) * (i-1)) / 100;
+      if (params['s' + i] === undefined) {
+        params['s' + i] = percent;
+      }
+      gradient.addColorStop(params['s' + i], params['c' + i]);
+    }
+    return gradient;
+  };
+})(jQuery);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas.enhancedContext.html">enhancedContext</a></li><li><a href="CanvasEngine.Components.Image.html">Image</a></li><li><a href="CanvasEngine.Components.KeyPress.html">KeyPress</a></li><li><a href="CanvasEngine.Components.Mouse.html">Mouse</a></li><li><a href="CanvasEngine.Components.Movement.html">Movement</a></li><li><a href="CanvasEngine.Components.PointPlotter.html">PointPlotter</a></li><li><a href="CanvasEngine.Components.Renderer.html">Renderer</a></li><li><a href="CanvasEngine.Components.SpriteSheet.html">SpriteSheet</a></li><li><a href="CanvasEngine.Components.Text.html">Text</a></li><li><a href="CanvasEngine.Components.TileMap.html">TileMap</a></li><li><a href="CanvasEngine.Components.TileMap_TileClick.html">TileClick</a></li><li><a href="CanvasEngine.Components.Timer.html">Timer</a></li><li><a href="CanvasEngine.Entities.AnimatedSprite.html">AnimatedSprite</a></li><li><a href="CanvasEngine.Entities.Animator.html">Animator</a></li><li><a href="CanvasEngine.Entities.Button.html">Button</a></li><li><a href="CanvasEngine.Entities.Entity.html">Entity</a></li><li><a href="CanvasEngine.Entities.Image.html">Image</a></li><li><a href="CanvasEngine.Entities.Line.html">Line</a></li><li><a href="CanvasEngine.Entities.MobileSprite.html">MobileSprite</a></li><li><a href="CanvasEngine.Entities.Rect.html">Rect</a></li><li><a href="CanvasEngine.Entities.Sprite.html">Sprite</a></li><li><a href="CanvasEngine.Entities.TileMap.html">TileMap</a></li><li><a href="CanvasEngine.Resources.SpriteSheet.html">SpriteSheet</a></li><li><a href="CanvasEngine.Screen.html">Screen</a></li><li><a href="CanvasEngine-EntityManager.html">EntityManager</a></li><li><a href="CanvasEngine-EntityManager.baseEntity.html">baseEntity</a></li><li><a href="CanvasEngine-EntityTracker.html">EntityTracker</a></li><li><a href="CanvasEngine-resourceManager.html">resourceManager</a></li></ul><h3>Events</h3><ul><li><a href="keyboard.html#event:keypress">keypress</a></li></ul><h3>Namespaces</h3><ul><li><a href="Callbacks.html">Callbacks</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="CanvasEngine.html">CanvasEngine</a></li><li><a href="CanvasEngine.Components.html">Components</a></li><li><a href="CanvasEngine.Entities.html">Entities</a></li><li><a href="CanvasEngine.Properties.html">Properties</a></li><li><a href="CanvasEngine.Resources.html">Resources</a></li><li><a href="CanvasEngine%250A%250AA%2520collection%2520of%2520utility%2520functions.utilities.html">utilities</a></li><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="GeneralTypes.html">GeneralTypes</a></li><li><a href="keyboard.html">keyboard</a></li><li><a href="LocalParams.html">LocalParams</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jun 02 2016 00:41:14 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

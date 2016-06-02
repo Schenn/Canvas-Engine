@@ -1,13 +1,18 @@
 /**
- * @author Steven Chennault <schenn@gmail.com>
- * @external "jQuery.fn"
- * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
+ * @param {external:jQuery} $
+ * @extends $
  */
 (function($){
   /**
    * Create a Canvas Pattern
    *
-   * @param args
+   * @param {object} args
+   * @param {Image | string} args.source
+   * @param {string} args.repeat
+   * @param {function} [args.load]
+   * @memberof external:jQuery.fn
+   * @alias pattern
+   * @function
    * @returns {CanvasPattern}
    */
   $.fn.pattern = function(args) {
