@@ -80,6 +80,8 @@ module.exports = function(grunt) {
         ],
         options: {
           destination: "<%= cengine %>/doc",
+          template: "node_modules/ink-docstrap/template",
+          configure: "node_modules/ink-docstrap/template/jsdoc.conf.json",
           pedantic: true
         }
       }
