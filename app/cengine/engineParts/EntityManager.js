@@ -5,6 +5,12 @@
  * @namespace LocalParams
  */
 /**
+ * @namespace EntityParams
+ */
+/**
+ * @namespace ComponentParams
+ */
+/**
  * @namespace Callbacks
  */
 /**

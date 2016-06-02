@@ -1,12 +1,24 @@
 /**
  * @todo Adjust y for baseline
  */
+/**
+ * @typedef {object} EntityParams~Label
+ * @property {string} [fillStyle="#fff"]
+ * @see {ComponentParams~Renderer}
+ * @see {ComponentParams~Text}
+ */
 (function(CanvasEngine){
   var EM = CanvasEngine.EntityManager;
-  var utilities = CanvasEngine.utilities;
 
   // Tell the EntityManager how to make a LABEL entity
-  EM.setMake("LABEL", function(entity, params) {
+  EM.setMake("LABEL",
+    /**
+     *
+     * @param {CanvasEngine.Entities.Entity} entity
+     * @param {EntityParams~Label} params
+     * @returns {CanvasEngine.Entities.Label}
+     */
+    function(entity, params) {
 
     // Add a renderer component
     EM.attachComponent(entity, "Renderer", $.extend({}, {

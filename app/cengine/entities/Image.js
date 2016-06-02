@@ -21,6 +21,8 @@
      * @memberOf CanvasEngine.Entities
      * @alias Image
      * @augments CanvasEngine.Entities.Entity
+     * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Image
+     * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Renderer
      */
     var img = $.extend(true, {}, entity);
 

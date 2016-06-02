@@ -636,7 +636,7 @@
      * @param {number} [textParams.opacity]
      * @param {string} [textParams.compositing]
      * @inner
-     * @returns {Canvas#enhancedContext}
+     * @returns {Canvas.enhancedContext}
      */
     this.drawText = function(textParams){
 
@@ -763,7 +763,6 @@
     };
     /**
      * Measure the width of a line of text.
-     * @memberof! enhancedContext
      * @param {object} params
      * @param {string} params.font
      * @param {string} params.text
@@ -776,7 +775,6 @@
 
     /**
      * Get the pixel data of a given position OR if the given position is transparent
-     * @memberof! enhancedContext
      *
      * @param {number} x The x location of the pixel
      * @param {number} y The y location of the pixel

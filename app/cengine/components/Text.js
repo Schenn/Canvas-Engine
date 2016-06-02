@@ -1,21 +1,24 @@
 /**
  * @author Steven Chennault <schenn@gmail.com>
  */
+/**
+ * @typedef {object} ComponentParams~Text
+ * @property {string} [params.align]
+ * @property {string} [params.baseline]
+ * @property {string} [params.font]
+ * @property {string} [params.fontWeight]
+ * @property {string} [params.fontSize]
+ * @property {string} [params.fontFamily]
+ * @property {Callbacks~onPropertyChanged} [params.callback]
+ * @property {string} params.text
+ */
 (function(CanvasEngine) {
   var props = CanvasEngine.EntityManager.properties;
 
   /**
    * A Text Component handles the manipulation of text and its font.
    *
-   * @param {object} params
-   * @param {string} [params.align]
-   * @param {string} [params.baseline]
-   * @param {string} [params.font]
-   * @param {string} [params.fontWeight]
-   * @param {string} [params.fontSize]
-   * @param {string} [params.fontFamily]
-   * @param {Callbacks~onPropertyChanged} [params.callback]
-   * @param {string} params.text
+   * @param {ComponentParams~Text} params
    *
    * @param {CanvasEngine.Entities.Entity} entity
    *

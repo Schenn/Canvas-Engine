@@ -2,13 +2,14 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 /**
- * @typedef {object} LocalParams~ButtonParams
- * @property {object} background
- * @property {object} [hover]
+ * @typedef {object} EntityParams~ButtonParams
+ * @property {EntityParams~Rect | EntityParams~Sprite | EntityParams~Image } background
+ * @property {EntityParams~Rect | EntityParams~Sprite | EntityParams~Image } [hover]
  * @property {number} padding
- * @property {string} fillStyle
  * @property {number} x
  * @property {number} y
+ * @property {string} fillStyle
+ * @see {ComponentParams~Text}
  */
 (function (CanvasEngine) {
 
@@ -19,12 +20,20 @@
   EM.setMake("Button",
     /**
      * @param {CanvasEngine.Entities.Entity} entity
-     * @param {LocalParams~ButtonParams} params
+     * @param {EntityParams~ButtonParams} params
      * @returns {CanvasEngine.Entities.Button}
      */
     function (entity, params) {
 
+      /**
+       * @inner
+       * @type {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect }
+       */
       var background;
+      /**
+       * @inner
+       * @type {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect }
+       */
       var hover;
 
       var isHovering;
@@ -51,11 +60,21 @@
        * @class
        * @augments CanvasEngine.Entities.Entity
        * @memberOf CanvasEngine.Entities
+       * @borrows CanvasEngine.Components.Mouse as CanvasEngine.Entities.Button#components~HoverMouse
+       * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Button#components~Renderer
        */
       var Button = $.extend(true, {}, {
+        /**
+         * Get the background object
+         * @returns {*}
+         */
         getBackground: function(){
           return background;
         },
+        /**
+         * Set the background object
+         * @param {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect } newBg
+         */
         setBackground: function(newBg){
           background = newBg;
         }
@@ -86,10 +105,21 @@
       );
 
       EM.attachComponent(Button, "Renderer", $.extend({}, { fromCenter: true,
+        /**
+         * Use the background object's clearInfo.
+         * @param {Canvas.enhancedContext} ctx
+         * @this CanvasEngine.Components.Renderer
+         * @returns {CanvasEngine.Entities.Button~background#components~Renderer.clearInfo}
+         */
         clearInfo: function(ctx){
           // Return the background's clearInfo
-          return background.getFromComponent("Renderer", "ClearInfo", ctx);
+          return background.getFromComponent("Renderer", "clearInfo", ctx);
         },
+        /**
+         * Draw the button. Starting with the background or hover state background, then the text.
+         * @this CanvasEngine.Components.Renderer
+         * @param {Canvas.enhancedContext} ctx
+         */
         draw: function(ctx){
           // Resize the background based on the height and width of the text, adjusted by the padding params.
           var text = Button.getFromComponent("Text","asObject");
@@ -103,47 +133,36 @@
           size.width += (params.padding * 2);
           size.height += (params.padding * 2);
 
+          var target;
+
           if(isHovering && utilities.exists(hover)){
-            hover.messageToComponent(
-              "Renderer", "setPosition", {x: this.x}
-            );
+            target = hover;
 
-            hover.messageToComponent(
-              "Renderer", "setPosition", {y: this.y}
-            );
-
-            hover.messageToComponent(
-              "Renderer",
-              "resize",
-              size
-            );
-
-            // Draw the background
-            hover.messageToComponent("Renderer", "render", ctx);
           } else {
-            background.messageToComponent(
-              "Renderer", "setPosition", {x: this.x}
-            );
-
-            background.messageToComponent(
-              "Renderer", "setPosition", {y: this.y}
-            );
-
-            background.messageToComponent(
-              "Renderer",
-              "resize",
-              size
-            );
-
-            // Draw the background
-            background.messageToComponent("Renderer", "render", ctx);
+            target = background;
           }
+          target.messageToComponent(
+            "Renderer", "setPosition", {x: this.x}
+          );
+
+          target.messageToComponent(
+            "Renderer", "setPosition", {y: this.y}
+          );
+
+          target.messageToComponent(
+            "Renderer",
+            "resize",
+            size
+          );
+
+          // Draw the background
+          target.messageToComponent("Renderer", "render", ctx);
 
 
           this.resize(size);
 
           // Draw the text
-          ctx.setDefaults(this);
+          ctx.setDefaults(this.asObject());
           ctx.drawText($.extend({}, this, Button.getFromComponent("Text", "asObject")));
         }
       },{x: params.x, y: params.y, fillStyle: params.fillStyle}));

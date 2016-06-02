@@ -10,6 +10,46 @@
  * @callback Callbacks~Clear
  * @param {jQuery.enhancedContext} ctx
  */
+/**
+ * @typedef {object} ComponentParams~Renderer
+ * @property {Callbacks~Draw} draw - The actual bit that does the rendering. @see {CanvasEngine.Entities}.
+ * @property {number} [angle=0]
+ * @property {boolean} [ccw=false]
+ * @property {boolean} [closed=false]
+ * @property {string} [compositing='source-over']
+ * @property {number} [cornerRadius=0]
+ * @property {number} [end=0]
+ * @property {string} [fillStyle="#000"]
+ * @property {boolean} [fromCenter=false]
+ * @property {number} [height=0]
+ * @property {boolean} [inDegrees=true]
+ * @property {boolean} [mask=false]
+ * @property {number} [opacity=1]
+ * @property {number} [projection=0]
+ * @property {?number} [r1=null]
+ * @property {?number} [r2=null]
+ * @property {number} [radius=0]
+ * @property {string} [repeat="repeat"]
+ * @property {boolean} [rounded=false]
+ * @property {number} [scaleX=1]
+ * @property {number} [scaleY=1]
+ * @property {number} [shadowBlur=3]
+ * @property {string} [shadowColor='transparent']
+ * @property {number} [shadowX=0]
+ * @property {number} [shadowY=0]
+ * @property {number} [sides=3]
+ * @property {number} [start=0]
+ * @property {string} [strokeCap='butt']
+ * @property {string} [strokeJoin='miter']
+ * @property {string} [strokeStyle='transparent']
+ * @property {number} [strokeWidth=1]
+ * @property {number} [width=0]
+ * @property {number} [x=0]
+ * @property {number} [y=0]
+ * @property {?Image} [source=null]
+ * @property {GeneralTypes~ClearInfo | Callbacks~ClearInfo} [clearInfo = Callbacks~ClearInfo]
+ * @property {?Callbacks~Clear} [clear=null]
+ */
 (function(CanvasEngine){
 
   var props = CanvasEngine.EntityManager.properties;
@@ -26,45 +66,7 @@
    *
    * @todo Allow the Renderer to use gradients and patterns
    *
-   * @param {object} params The container of property values.
-   *
-   * @param {Callbacks~Draw} params.draw - The actual bit that does the rendering. @see {CanvasEngine.Entities}.
-   * @param {number} [params.angle]
-   * @param {boolean} [params.ccw]
-   * @param {boolean} [params.closed]
-   * @param {string} [params.compositing]
-   * @param {number} [params.cornerRadius]
-   * @param {number} [params.end]
-   * @param {string} [params.fillStyle]
-   * @param {boolean} [params.fromCenter]
-   * @param {number} [params.height]
-   * @param {boolean} [params.inDegrees]
-   * @param {boolean} [params.mask]
-   * @param {number} [params.opacity]
-   * @param {number} [params.projection]
-   * @param {number} [params.r1]
-   * @param {number} [params.r2]
-   * @param {number} [params.radius]
-   * @param {string} [params.repeat]
-   * @param {boolean} [params.rounded]
-   * @param {number} [params.scaleX]
-   * @param {number} [params.scaleY]
-   * @param {number} [params.shadowBlur]
-   * @param {string} [params.shadowColor]
-   * @param {number} [params.shadowX]
-   * @param {number} [params.shadowY]
-   * @param {number} [params.sides]
-   * @param {number} [params.start]
-   * @param {string} [params.strokeCap]
-   * @param {string} [params.strokeJoin]
-   * @param {string} [params.strokeStyle]
-   * @param {number} [params.strokeWidth]
-   * @param {number} [params.width]
-   * @param {number} [params.x]
-   * @param {number} [params.y]
-   * @param {Image} [params.source]
-   * @param {GeneralTypes~ClearInfo | Callbacks~ClearInfo} [params.clearInfo]
-   * @param {Callbacks~Clear} [params.clear]
+   * @param {ComponentParams~Renderer} params The container of property values.
    * @param {CanvasEngine.Entities.Entity} entity The entity to attach the Renderer Component to
    *
    */
@@ -345,7 +347,7 @@
      * Set the defaults and call the draw method against a context.
      *    When a renderer is drawn, it stores a 'shadow' of the render for clearing later.
      *
-     * @param {jQuery#enhancedContext} ctx EnhancedContext
+     * @param {Canvas.enhancedContext} ctx EnhancedContext
      */
     this.render = function(ctx){
       ctx.setDefaults($.extend({},this));
@@ -356,7 +358,7 @@
 
     /**
      * Clear the previous render's 'shadow' from a context.
-     * @param {enhancedContext} ctx
+     * @param {Canvas.enhancedContext} ctx
      */
     if((CanvasEngine.utilities.isFunction(params.clear))){
       this.clear = params.clear;

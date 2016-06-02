@@ -3,7 +3,7 @@
  */
 /**
  * @typedef {object} LocalParams~AnimatedSpriteParams
- * @property {object} animations
+ * @property {object.<string, LocalParams~AnimatorParams>} animations
  */
 (function(CanvasEngine) {
   var EM = CanvasEngine.EntityManager;
@@ -28,6 +28,14 @@
        * @augments CanvasEngine.Entities.Sprite
        */
       var AnimatedSprite = $.extend(true, {}, {
+        /**
+         * @borrows CanvasEngine.Entities.Animator as AnimatedSprite#subEntities~AnimationName
+         */
+
+        /**
+         * @memberof AnimatedSprite
+         * @param {string} animation
+         */
         setCurrentAnimation : function(animation){
           if(utilities.exists(animations[animation])){
             this.messageToSubEntity(currentAnimation, "disable");
@@ -35,6 +43,11 @@
             this.messageToSubEntity(currentAnimation, "enable");
           }
         },
+        /**
+         * @memberof AnimatedSprite
+         * @param {string} name
+         * @param {LocalParams~AnimatorParams} animation
+         */
         addAnimation : function(name, animation){
           var animator =EM.create("Animator",
             $.extend({}, {

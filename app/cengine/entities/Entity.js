@@ -24,13 +24,36 @@
    *
    */
   function Entity(params){
+    /**
+     * @link{CanvasEngine.Components} provide their own self-contained functionality and are used by their parent
+     *  entity to perform tasks.
+     *
+     * @inner
+     * @type {Object.<string, object>}
+     */
     var components = {};
+    /**
+     * subEntities are regular @link{CanvasEngine.Entities} which belong to another.
+     *
+     * @inner
+     * @type {Object.<string,object>}
+     */
     var subEntities = {};
 
     // Fixed Public Properties
     // The z_index and name cannot be changed.
     Object.defineProperties(this, {
+      /**
+       * @type number
+       * @instance
+       * @memberof Entity
+       */
       z_index:EM.properties.lockedProperty(params.z_index || 0),
+      /**
+       * @type string
+       * @instance
+       * @memberof Entity
+       */
       name:EM.properties.lockedProperty(params.name || utils.randName())
     });
 
@@ -42,7 +65,7 @@
      * Attach a component to this entity;
      *
      * @param {string} name the name of the component
-     * @param {object} component the instantiated component
+     * @param {object} component the instantiated component @see{CanvasEngine.Components}
      */
     this.attachComponent = function(name, component){
       if(!this.hasComponent(name)) {
@@ -57,10 +80,14 @@
      *  Warning: BroadcastToComponent iterates over subEntities.
      *    If you want to disconnect an inner entity from outside messages, don't attach it as a sub-entity.
      *
-     * @param {CanvasEngine.Entities.Entity} subEntity
+     * @param {object} subEntity @see{CanvasEngine.Entities}
      */
     this.attachSubEntity = function(subEntity){
-      subEntities[subEntity.name] = subEntity;
+      if(EM.isEntity(subEntity)) {
+        subEntities[subEntity.name] = subEntity;
+      } else {
+        console.log("subEntity is not an entity:"+subEntity);
+      }
     };
 
     /**

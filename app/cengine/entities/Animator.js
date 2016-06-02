@@ -50,18 +50,27 @@
        * @class
        * @memberOf CanvasEngine.Entities
        * @augments CanvasEngine.Entities.Entity
+       * @borrows CanvasEngine.Components.Timer as CanvasEngine.Entities.Animator#components~Timer
        */
       var Animator = $.extend(true, {}, {
+        /**
+         * Disable the Animator
+         */
         disable: function(){
           this.messageToComponent("Timer", "disable");
         },
+        /**
+         * Enable the Animator
+         */
         enable: function(){
           this.messageToComponent("Timer", "disable");
         }
       }, entity);
 
       //Add a Timer Component
-      EM.attachComponent(Animator,"Timer", {duration: duration, onElapsed: function(){
+
+      EM.attachComponent(Animator,"Timer",
+        {duration: duration, onElapsed: function(){
         currentFrame++;
         if(currentFrame > frameCount-1){
           currentFrame = 0;
