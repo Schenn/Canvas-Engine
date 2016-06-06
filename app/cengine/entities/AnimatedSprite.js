@@ -11,6 +11,8 @@
 
   /**
    * Tell the EntityManager how to make an AnimatedSprite from a SPRITE entity
+   *
+   * @see CanvasEngine~EntityManager.create
    */
   EM.setMake("ASPRITE",
     /**
@@ -26,14 +28,13 @@
        * @memberOf CanvasEngine.Entities
        * @alias AnimatedSprite
        * @augments CanvasEngine.Entities.Sprite
+       * @borrows CanvasEngine.Entities.Animator as AnimatedSprite#subEntities~AnimationName
        */
       var AnimatedSprite = $.extend(true, {}, {
-        /**
-         * @borrows CanvasEngine.Entities.Animator as AnimatedSprite#subEntities~AnimationName
-         */
+
 
         /**
-         * @memberof AnimatedSprite
+         * @memberof CanvasEngine.Entities.AnimatedSprite
          * @param {string} animation
          */
         setCurrentAnimation : function(animation){
@@ -44,7 +45,7 @@
           }
         },
         /**
-         * @memberof AnimatedSprite
+         * @memberof CanvasEngine.Entities.AnimatedSprite
          * @param {string} name
          * @param {LocalParams~AnimatorParams} animation
          */

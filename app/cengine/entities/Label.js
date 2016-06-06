@@ -20,8 +20,17 @@
      */
     function(entity, params) {
 
+      /**
+       * @class
+       * @alias Label
+       * @memberof CanvasEngine.Entities
+       * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Label#components~Renderer
+       * @borrows CanvasEngine.Components.Text as CanvasEngine.Entities.Label#components~Text
+       */
+      var label = $.extend({}, entity);
+
     // Add a renderer component
-    EM.attachComponent(entity, "Renderer", $.extend({}, {
+    EM.attachComponent(label, "Renderer", $.extend({}, {
       fillStyle: "#fff",
       // Clearing a label requires a bit of fancy footwork as labels have two additional offset options (alignment, baseline)
       clearInfo: function(ctx){
@@ -30,7 +39,7 @@
           _x = this.x-1,
           _y = this.y-1;
 
-        var text = entity.getFromComponent("Text","asObject");
+        var text = label.getFromComponent("Text","asObject");
         // 2 pixels on the left and right are added to account for letters that extend out a pixel or so.
         width = (ctx.measureText({font: text.font, text:text.text}).width)+4;
         //noinspection JSSuspiciousNameCombination
@@ -68,18 +77,18 @@
         });
       },
       draw: function(ctx){
-        ctx.drawText($.extend({}, this, entity.getFromComponent("Text", "asObject")));
+        ctx.drawText($.extend({}, this, label.getFromComponent("Text", "asObject")));
       }
     }, params));
 
     // Start by adding a text component
-    EM.attachComponent(entity, "Text", $.extend({}, {
+    EM.attachComponent(label, "Text", $.extend({}, {
       callback: function(){
-        entity.messageToComponent("Renderer", "markDirty");
+        label.messageToComponent("Renderer", "markDirty");
       }
     },params));
 
 
-    return entity;
+    return label;
   });
 })(window.CanvasEngine);

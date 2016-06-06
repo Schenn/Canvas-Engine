@@ -3,8 +3,20 @@
  */
 
 /**
- * @typedef {{tile: *, x: number, y: number, row: number, col: number}} GeneralTypes~Tile
+ * @typedef {object} GeneralTypes~Tile
+ * @property {*} tile
+ * @property {number} x
+ * @property {number} y
+ * @property {number} row
+ * @property {number} col
  *
+ */
+/**
+ * @callback Callbacks~onScroll
+ */
+/**
+ * @callback Callbacks~onTileClick
+ * @this {GeneralTypes~Tile}
  */
 (function(CanvasEngine){
   var props = CanvasEngine.EntityManager.properties;
@@ -18,8 +30,8 @@
    * @param {number} params.width
    * @param {number} params.height
    * @param {Array} [params.tiles]
-   * @param {function} [params.onScroll]
-   * @param {function} [params.onTileClick]
+   * @param {Callbacks~onScroll} [params.onScroll]
+   * @param {Callbacks~onTileClick} [params.onTileClick]
    * @param {CanvasEngine.Entities.Entity} entity
    *
    * @constructor
@@ -124,7 +136,7 @@
      *  In other words: The 'this' in your method will be the return value for pixelToTile
      *
      * @param {coords} coord
-     * @constructor
+     *
      */
     this.TileClick = function(coord){
       if(onTileClick !== null){

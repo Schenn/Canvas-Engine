@@ -3,6 +3,8 @@
  */
 /**
  * @typedef {Object.<string, number>} GeneralTypes~CoordinateCollection
+ * @property {number} ...x
+ * @property {number} ...y
  */
 (function(CanvasEngine){
   var props = CanvasEngine.EntityManager.properties;
@@ -35,6 +37,7 @@
     /**
      * Plot out the coordinates as a property on the coordinateObj
      * @param {GeneralTypes~coords[]} coords
+     * @memberof CanvasEngine.Components.PointPlotter
      */
     this.plot = function(coords){
       coordinateArray = coords;

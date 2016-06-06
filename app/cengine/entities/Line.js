@@ -20,7 +20,7 @@
     /**
      * @param {CanvasEngine.Entities.Entity} entity
      * @param {LocalParams~LineParams} params
-     * @returns {*}
+     * @returns {CanvasEngine.Entities.Line}
      */
     function(entity, params){
 
@@ -28,8 +28,17 @@
        * @class
        * @memberOf CanvasEngine.Entities
        * @augments CanvasEngine.Entities.Entity
+       * @borrows CanvasEngine.Components.PointPlotter as CanvasEngine.Entities.Line#components~PointPlotter
+       * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Line#components~Renderer
        */
-      var Line = $.extend(true, {}, {plot: function(coords){
+      var Line = $.extend(true, {}, {
+        /**
+         * Plot a set of coordinates
+         * @memberof CanvasEngine.Entities.Line
+         * @param {GeneralTypes~coords} coords
+         * @instance
+         */
+        plot: function(coords){
         this.messageToComponent("PointPlotter", "plot", coords);
       }}, entity);
 

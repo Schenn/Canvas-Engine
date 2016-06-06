@@ -60,7 +60,7 @@
     this.onKeys = function(keys){
       $keys = Object.keys(keys);
       for(var i =0; i < $keys.length; i++){
-        this.onKey($keys[i], keys[$keys[i]])
+        this.onKey($keys[i], keys[$keys[i]]);
       }
     };
 

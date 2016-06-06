@@ -27,6 +27,8 @@
        * @class
        * @memberOf CanvasEngine.Entities
        * @augments CanvasEngine.Entities.AnimatedSprite
+       * @borrows CanvasEngine.Components.Movement as CanvasEngine.Entities.MobileSprite#components~Movement
+       * @borrows CanvasEngine.Components.Timer as CanvasEngine.Entities.MobileSprite#components~movementTimer
        */
       var MobileSprite = $.extend(true, {}, {
         onMovement: (utilities.isFunction(params.onMovement)) ? params.onMovement.bind(this) : null,

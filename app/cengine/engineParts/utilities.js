@@ -1,16 +1,18 @@
 (function(CanvasEngine){
   /**
+   * A collection of utility functions
+   *
    * @namespace utilities
    * @memberof CanvasEngine
+   * @inner
    *
-   * A collection of utility functions
    */
   var utilities = {};
 
   /**
    * Does a value actually exist?
    * @param {*} val
-   * @memberof utilities
+   * @memberof CanvasEngine~utilities
    * @returns {boolean}
    */
   utilities.exists=function(val){
@@ -21,7 +23,7 @@
    * Return A value or another
    * @param {*} potential The potential value
    * @param {*} def The default value if no potential
-   * @memberof utilities
+   * @memberof CanvasEngine~utilities
    * @returns {*}
    */
   utilities.orDefault = function(potential, def){
@@ -31,7 +33,7 @@
   /**
    * Is the given value a function?
    * @param {*} prop
-   * @memberof utilities
+   * @memberof CanvasEngine~utilities
    * @returns {boolean}
    */
   utilities.isFunction = function(prop){
@@ -41,7 +43,7 @@
   /**
    * Is the given value an Array?
    * @param {*} prop
-   * @memberof utilities
+   * @memberof CanvasEngine~utilities
    * @returns {boolean}
    */
   utilities.isArray = function(prop){
@@ -53,7 +55,7 @@
    *    Deleting a position from an array doesn't also remove the index.
    *
    * @param {Array} cleanMe The array to clean up
-   * @memberof utilities
+   * @memberof CanvasEngine~utilities
    * @returns {Array}
    */
   utilities.cleanArray = function(cleanMe){
@@ -69,7 +71,7 @@
   /**
    * Generate a random string to name something
    *
-   * @memberof utilities
+   * @memberof CanvasEngine~utilities
    * @returns {string}
    */
   utilities.randName = function () {
@@ -94,7 +96,7 @@
 
   /**
    * Parse a json value into an array of data.
-   * @memberof utilities
+   * @memberof CanvasEngine~utilities
    * @param {string | Array} screenMap
    * @returns {Array}
    */
@@ -114,7 +116,7 @@
    * Set the properties on a thing when you don't know which properties to set and you have a lot of them.
    * @param {object} thing The thing to set the properties on
    * @param {object} params The properties to set and their data.
-   * @memberof utilities
+   * @memberof CanvasEngine~utilities
    */
   utilities.setProperties = function(thing, params){
     // Only set parameters that matter to the Component.

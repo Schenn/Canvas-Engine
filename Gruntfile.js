@@ -54,18 +54,26 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      cengine: ['<%= cengine %>']
+      cengine: ['<%= cengine %>'],
+      options:{
+        ignores: ["<%=cengine %>/doc"]
+      }
     },
     watch: {
       options: {
         livereload:{
           options: {livereload: true},
-          files: ["<%= app %>/**/*", 'index.html', 'js/*', 'Gruntfile.js']
+          files: ['index.html', 'js/*', 'Gruntfile.js']
         }
       },
       lintAndCompile: {
-        files: ['<%= app %>/**/*'],
-        tasks: ['jshint', 'uglify']
+        files: ["<%= cengine %>/components/*",
+          "<%= cengine %>/engineParts/*",
+          "<%= cengine %>/entities/*",
+          "<%= cengine %>/resources/*",
+          "<%= cengine %>/*.js"
+          ],
+        tasks: ['jshint', 'uglify', "jsdoc"]
       }
     },
     jsdoc:{
@@ -98,6 +106,8 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('default', ['watch']);
+
+
 
   grunt.registerTask('buildlib', ['bower_concat','uglify:libraries']);
 

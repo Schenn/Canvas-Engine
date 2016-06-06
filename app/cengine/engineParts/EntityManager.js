@@ -125,6 +125,8 @@
 
     /**
      * The different types of object properties
+     * @memberof CanvasEngine~EntityManager
+     * @property Properties
      * @type {{lockedProperty: CanvasEngine.Properties.lockedProperty, defaultProperty: CanvasEngine.Properties.defaultProperty}}
      */
     this.properties = {
@@ -134,6 +136,7 @@
 
     /**
      * Set the function which produces the base Entity class
+     * @memberof CanvasEngine~EntityManager
      * @param {function} generateFunc
      */
     this.setBaseEntityGenerator = function(generateFunc){
@@ -143,6 +146,7 @@
 
     /**
      * Is the given object an "Entity" class?
+     * @memberof CanvasEngine~EntityManager
      * @param {CanvasEngine.Entities.Entity} ent
      * @returns {boolean}
      */
@@ -153,10 +157,13 @@
     /**
      * Create an entity
      *
+     * Use a "Make" method to generate the requested Entity with the given params.
+     *
      * @param {string} type the type of entity to create
      * @param {LocalParams~CreateParams} params The data needed to create that entity and its components
      *
-     * @returns {Entity} The requested Entity after being 'made' with its make function
+     * @memberof CanvasEngine~EntityManager
+     * @returns {CanvasEngine.Entities.Entity} The requested Entity after being 'made' with its make function
      */
     this.create = function(type, params){
 
@@ -227,6 +234,8 @@
      * The make function provides instructions on how to take a base entity and transform it into a desired object.
      *  The make function should return the completed entity.
      *
+     * @memberof CanvasEngine~EntityManager
+     *
      * @param {string} name The 'type' of the entity that this function constructs
      * @param {function} func The Make function
      * @param {string} [from] The name of the entity that this entity extends from.
@@ -249,6 +258,7 @@
      *
      * The component function should construct a given component
      *
+     * @memberof CanvasEngine~EntityManager
      * @param {string} name The name of the component
      * @param {function} func The constructor function
      * @param {boolean} [notUnique] If can be attached multiple times to the same entity.
@@ -270,6 +280,7 @@
      *
      * Attach a component or components to a given entity.
      *
+     * @memberof CanvasEngine~EntityManager
      * @param {CanvasEngine.Entities.Entity} entity The entity to attach components to.
      * @param {string | Object.<string, Object> | Object.<string, string> } component The components to add.
      * @param {Object} [params] The arguments for the components. Optional if you use the Object.<string, Object> argument.
@@ -311,6 +322,7 @@
     /**
      * Convert an array of json data to an array of Entities
      *
+     * @memberof CanvasEngine~EntityManager
      * @param {Array} screenMap The array of entities
      * @return {Array}
      */

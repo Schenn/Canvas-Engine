@@ -62,17 +62,20 @@
        * @memberOf CanvasEngine.Entities
        * @borrows CanvasEngine.Components.Mouse as CanvasEngine.Entities.Button#components~HoverMouse
        * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Button#components~Renderer
+       * @borrows CanvasEngine.Components.Text as CanvasEngine.Entities.Button#components~Text
        */
       var Button = $.extend(true, {}, {
         /**
          * Get the background object
-         * @returns {*}
+         * @memberof Button
+         * @returns {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect }
          */
         getBackground: function(){
           return background;
         },
         /**
          * Set the background object
+         * @memberof Button
          * @param {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect } newBg
          */
         setBackground: function(newBg){
@@ -108,7 +111,7 @@
         /**
          * Use the background object's clearInfo.
          * @param {Canvas.enhancedContext} ctx
-         * @this CanvasEngine.Components.Renderer
+         * @memberof CanvasEngine.Entities.Button
          * @returns {CanvasEngine.Entities.Button~background#components~Renderer.clearInfo}
          */
         clearInfo: function(ctx){
@@ -117,7 +120,7 @@
         },
         /**
          * Draw the button. Starting with the background or hover state background, then the text.
-         * @this CanvasEngine.Components.Renderer
+         * @memberof CanvasEngine.Entities.Button
          * @param {Canvas.enhancedContext} ctx
          */
         draw: function(ctx){

@@ -3,12 +3,11 @@
  */
 
 /**
- * @typedef {{
- *  x: number,
- *  y: number,
- *  height: number,
- *  width: number
- * }} GeneralTypes~Sprite
+ * @typedef {object} GeneralTypes~Sprite
+ * @property {number} x
+ * @property {number} y
+ * @property {number} height
+ * @property {number} width
  */
 
 (function(CanvasEngine){

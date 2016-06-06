@@ -25,6 +25,7 @@
        * @class
        * @augments CanvasEngine.Entities.Entity
        * @memberOf CanvasEngine.Entities
+       * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Rect#components~Renderer
        */
       var Rect = $.extend(true, {}, entity);
 

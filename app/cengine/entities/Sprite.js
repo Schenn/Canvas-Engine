@@ -26,12 +26,17 @@
        * @memberOf CanvasEngine.Entities
        * @augments CanvasEngine.Entities.Image
        * @alias Sprite
+       * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Sprite#components~Renderer
+       * @borrows CanvasEngine.Components.SpriteSheet as CanvasEngine.Entities.Sprite#components~SpriteSheetName
+       * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Sprite#components~ImageName
+       *
        */
       var sprite = $.extend(true,{}, {
         /**
          * Set the current sprite
          * @param {string | number} name
-         * @memberof Sprite
+         * @instance
+         * @memberof CanvasEngine.Entities.Sprite
          */
         setSprite: function(name){
           currentSpriteName = name;
@@ -44,7 +49,8 @@
         /**
          * Set the current spritesheet
          * @param {string} sheetName
-         * @memberof Sprite
+         * @instance
+         * @memberof CanvasEngine.Entities.Sprite
          */
         setCurrentSheet: function(sheetName){
           currentSheet = sheetName;
