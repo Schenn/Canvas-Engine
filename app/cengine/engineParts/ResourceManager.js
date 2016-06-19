@@ -23,6 +23,7 @@
    * @class
    * @inner
    * @memberOf CanvasEngine
+   * @static
    */
   var resourceManager = function(){
 

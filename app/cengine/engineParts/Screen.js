@@ -23,6 +23,7 @@
    *
    * @class
    * @memberOf CanvasEngine
+   * @static
    */
   var Screen = function(){
     var canvases = [];

@@ -55,7 +55,8 @@
       var Animator = $.extend(true, {}, {
         /**
          * Disable the Animator
-         * @memberof cAnimator
+         * @memberof CanvasEngine.Entities.Animator
+         * @instance
          */
         disable: function(){
           this.messageToComponent("Timer", "disable");
@@ -63,6 +64,7 @@
         /**
          * Enable the Animator
          * @memberof CanvasEngine.Entities.Animator
+         * @instance
          */
         enable: function(){
           this.messageToComponent("Timer", "disable");

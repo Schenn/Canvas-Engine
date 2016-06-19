@@ -29,6 +29,11 @@
  * @property {Callbacks~onMouse | Callbacks~onMouse[]} [onMouseMove] - The callback method(s) your entity will trigger when the mouse is moving over it.
  *
  */
+/**
+ * @typedef {object} EntityManager~PropertyWrapper
+ * @property {CanvasEngine.Properties.defaultProperty} defaultProperty
+ * @property {CanvasEngine.Properties.lockedProperty} lockedProperty
+ */
 
 /**
  * @callback Callbacks~onPropertyChanged
@@ -63,7 +68,7 @@
    *    A locked property cannot be changed once set.
    *
    * @param {*} val The value to set the property to.
-   * @memberof Properties
+   * @memberof CanvasEngine.Properties
    * @returns {{enumerable: boolean, writable: boolean, configurable: boolean, value: *}}
    */
   function lockedProperty(val){
@@ -78,7 +83,7 @@
   /**
    * A "Default" object property.
    *
-   * @memberof Properties
+   * @memberof CanvasEngine.Properties
    * @param {*} privateVar The private variable to reference for getting and setting a value.
    * @param {function} callback Called when the value is changed. The new value is passed as an argument into the function.
    * @returns {{enumerable: boolean, configurable: boolean, get: get, set: set}}
@@ -113,6 +118,7 @@
    * @memberof CanvasEngine
    * @inner
    * @borrows CanvasEngine.Entities.Entity as baseEntity
+   * @static
    */
   var EntityManager = function(){
     var baseEntityGenerator;
@@ -126,8 +132,7 @@
     /**
      * The different types of object properties
      * @memberof CanvasEngine~EntityManager
-     * @property Properties
-     * @type {{lockedProperty: CanvasEngine.Properties.lockedProperty, defaultProperty: CanvasEngine.Properties.defaultProperty}}
+     * @type {EntityManager~PropertyWrapper}
      */
     this.properties = {
       lockedProperty: lockedProperty,
@@ -151,7 +156,19 @@
      * @returns {boolean}
      */
     this.isEntity = function(ent){
-      return baseEntity instanceof ent;
+
+      var entProps =Object.getOwnPropertyNames(baseEntity);
+      var entHasProps = true;
+
+      for(var i = 0; i < entProps.length; i++){
+        var key = entProps[i];
+        if(!ent.hasOwnProperty(key)){
+          entHasProps = false;
+          break;
+        }
+      }
+
+      return entHasProps;
     };
 
     /**

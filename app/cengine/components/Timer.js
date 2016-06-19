@@ -52,6 +52,7 @@
 
     /**
      * Get the current last updated time in milliseconds
+     * @returns {number}
      */
     this.getMS = function () {
       return (date.getTime());
@@ -59,13 +60,15 @@
 
     /**
      * Get the current last updated time in seconds
+     * return {number}
      */
     this.getS = function () {
       return (Math.round(date.getTime / 1000));
     };
 
     /**
-     * Get the time since the last update request
+     * Get the time since the last update request in fractions of a second
+     * return {number}
      */
     this.deltaTime = function () {
       return ((date.getTime() - delta.getTime()) / 1000);

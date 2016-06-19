@@ -9,6 +9,7 @@
    * @class
    * @memberOf CanvasEngine
    * @inner
+   * @static
    */
   var EntityTracker = function(){
     var entities = {};

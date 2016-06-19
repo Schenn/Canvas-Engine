@@ -67,7 +67,7 @@
       var Button = $.extend(true, {}, {
         /**
          * Get the background object
-         * @memberof Button
+         * @memberof CanvasEngine.Entities.Button
          * @returns {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect }
          */
         getBackground: function(){
@@ -75,7 +75,7 @@
         },
         /**
          * Set the background object
-         * @memberof Button
+         * @memberof CanvasEngine.Entities.Button
          * @param {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect } newBg
          */
         setBackground: function(newBg){
