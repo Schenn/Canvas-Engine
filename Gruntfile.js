@@ -43,6 +43,7 @@ module.exports = function(grunt) {
         },
         files: {
           'js/cengine.min.js': [
+            '<%= cengine %>/polyfills/**/*.js',
             '<%= cengine %>/jqueryPlugins/**/*.js',
             '<%= cengine %>/*.js',
             '<%= cengine %>/engineParts/*.js',
@@ -50,35 +51,50 @@ module.exports = function(grunt) {
             '<%= cengine %>/entities/*.js',
             '<%= cengine %>/components/*.js' ]
         }
-      },
-      jqPlugins: {
-        options: {
-          mangle: true,
-          compress: true,
-          screwIE8: true,
-          sourceMap: true
-        },
-        files: {
-          'js/plugins.min.js': ['<%= plugins %>/**/*.js']
-        }
       }
     },
     jshint: {
       cengine: ['<%= cengine %>'],
-      plugins: ['<%= plugins %>']
+      options:{
+        ignores: ["<%=cengine %>/doc"]
+      }
     },
     watch: {
       options: {
         livereload:{
           options: {livereload: true},
-          files: ["<%= app %>/**/*", 'index.html', 'js/*', 'Gruntfile.js']
+          files: ['index.html', 'js/*', 'Gruntfile.js']
         }
       },
       lintAndCompile: {
-        files: ['<%= app %>/**/*'],
-        tasks: ['jshint', 'uglify']
+        files: ["<%= cengine %>/components/*",
+          "<%= cengine %>/engineParts/*",
+          "<%= cengine %>/entities/*",
+          "<%= cengine %>/resources/*",
+          "<%= cengine %>/*.js"
+          ],
+        tasks: ['jshint', 'uglify', "jsdoc"]
+      }
+    },
+    jsdoc:{
+      dist: {
+        src: ['<%= cengine %>/polyfills/**/*.js',
+          '<%= cengine %>/jqueryPlugins/**/*.js',
+          '<%= cengine %>/*.js',
+          '<%= cengine %>/engineParts/*.js',
+          '<%= cengine %>/resources/*.js',
+          '<%= cengine %>/entities/*.js',
+          '<%= cengine %>/components/*.js'
+        ],
+        options: {
+          destination: "<%= cengine %>/doc",
+          template: "node_modules/ink-docstrap/template",
+          configure: "node_modules/ink-docstrap/template/jsdoc.conf.json",
+          pedantic: true
+        }
       }
     }
+
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -86,9 +102,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-bower-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
   // Default task(s).
   grunt.registerTask('default', ['watch']);
+
+
 
   grunt.registerTask('buildlib', ['bower_concat','uglify:libraries']);
 
@@ -102,7 +121,7 @@ module.exports = function(grunt) {
     grunt.task.run('buildlib');
   });
 
-  grunt.registerTask('compile', ['jshint', 'uglify:jqPlugins', 'uglify:cengine']);
+  grunt.registerTask('compile', ['jshint', 'uglify:cengine']);
 
   grunt.event.on('lintAndCompile', function(action, filepath) {
     grunt.config('jshint.compiledJS.src', filepath);

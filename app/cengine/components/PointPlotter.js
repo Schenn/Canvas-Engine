@@ -1,25 +1,43 @@
 /**
- * Created by schenn on 4/17/16.
+ * @author Steven Chennault <schenn@gmail.com>
  */
-(function(){
+/**
+ * @typedef {Object.<string, number>} GeneralTypes~CoordinateCollection
+ * @property {number} ...x
+ * @property {number} ...y
+ */
+(function(CanvasEngine){
   var props = CanvasEngine.EntityManager.properties;
 
   /**
    * The PointPlotter component manages an array of coordinates (points)
    *
-   * @param params
-   * @param entity
+   * @constructor
+   * @property {GeneralTypes~coords} PointPlotter.coords
+   * @memberof! CanvasEngine.Components
+   *
+   * @param {Object} params
+   * @param {GeneralTypes~coords[]} params.coords
+   * @param {Callbacks~onPropertyChanged} [params.callback]
+   * @param {CanvasEngine.Entities.Entity} entity
+   *
    */
-  var pointPlotter = function(params, entity){
+  var PointPlotter = function(params, entity){
 
     var coordinateArray=[];
+    /**
+     * @inner
+     * @type {GeneralTypes~CoordinateCollection}
+     * @memberof CanvasEngine.Components.PointPlotter
+     */
     var coordinateObj = {};
 
     Object.defineProperty(this,"coords",props.defaultProperty(coordinateObj));
 
     /**
      * Plot out the coordinates as a property on the coordinateObj
-     * @param coords
+     * @param {GeneralTypes~coords[]} coords
+     * @memberof CanvasEngine.Components.PointPlotter
      */
     this.plot = function(coords){
       coordinateArray = coords;
@@ -77,22 +95,45 @@
       this.plot(params.coords);
     }
 
+    /**
+     * @returns {CanvasEngine.Entities.Entity}
+     */
     this.getEntity = function(){
       return entity;
     };
 
+    /**
+     * Get the Coordinate collection as an Array
+     * @returns {GeneralTypes~coords[]}
+     */
     this.getCoordinatesAsArray = function(){
       return coordinateArray;
     };
 
+    /**
+     * Get the Coordinate collection as an Object
+     *
+     *  - Note: Making changes to the values on this object will trigger the @see{Callback~onPropertyChanged} callback
+     *
+     * @returns {GeneralTypes~CoordinateCollection}
+     */
     this.getCoordinatesAsObject = function(){
       return coordinateObj;
     };
 
   };
 
-  // Add the PointPlotter component to CanvasEngins storage
-  CanvasEngine.EntityManager.addComponent("PointPlotter", function(params, entity){
-    return new pointPlotter(params, entity);
+  // Add the PointPlotter component to CanvasEngine storage
+  CanvasEngine.EntityManager.addComponent("PointPlotter",
+    /**
+     * @construct
+     * @memberOf CanvasEngine.Components.PointPlotter
+     * @param {object} params
+     * @property {GeneralTypes~coords[]} params.coords
+     * @property {Callbacks~onPropertyChanged} [params.callback]
+     * @param {CanvasEngine.Entities.Entity} entity
+     */
+    function(params, entity){
+    return new PointPlotter(params, entity);
   }, true);
-})();
+})(window.CanvasEngine);

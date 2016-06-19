@@ -1,5 +1,6 @@
 /**
  * Created by schenn on 3/25/16.
+ * @todo Convert into a Resource
  */
 var Gradient = function(name, coords, colors){
   this.name = name;

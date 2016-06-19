@@ -1,57 +1,82 @@
-(function() {
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+/**
+ * @typedef {object} LocalParams~AnimatedSpriteParams
+ * @property {object.<string, LocalParams~AnimatorParams>} animations
+ */
+(function(CanvasEngine) {
   var EM = CanvasEngine.EntityManager;
   var utilities = CanvasEngine.utilities;
 
   /**
-   * Tell the EntityManager how to make an ASPRITE from a SPRITE entity
+   * Tell the EntityManager how to make an AnimatedSprite from a SPRITE entity
+   *
+   * @see CanvasEngine~EntityManager.create
    */
-  EM.setMake("ASPRITE", function (entity, params) {
+  EM.setMake("ASPRITE",
+    /**
+     * @param {CanvasEngine.Entities.Sprite} entity
+     * @param {LocalParams~AnimatedSpriteParams} params
+     * @returns {CanvasEngine.Entities.AnimatedSprite}
+     */
+  function (entity, params) {
     var animations={}, currentAnimation = "default";
 
-    /**
-     * Add a method for moving through different types of animations.
-     * @param animation
-     */
-    entity.setCurrentAnimation = function(animation){
-      if(utilities.exists(animations[animation])){
-        entity.messageToSubEntity(currentAnimation, "disable");
-        currentAnimation = animation;
-        entity.messageToSubEntity(currentAnimation, "enable");
-      }
-    };
+      /**
+       * @class
+       * @memberOf CanvasEngine.Entities
+       * @alias AnimatedSprite
+       * @augments CanvasEngine.Entities.Sprite
+       * @borrows CanvasEngine.Entities.Animator as AnimatedSprite#subEntities~AnimationName
+       */
+      var AnimatedSprite = $.extend(true, {}, {
 
-    /**
-     * Add an animator to the entity.
-     *
-     * @param name
-     * @param animation
-     */
-    entity.addAnimation = function(name, animation){
-      var animator =EM.create("Animator",
-        $.extend({}, {
-          name: name,
-          // When the sprite's frame has changed, tell the entity to set the sprite to the next frame.
-          onFrameChange: function(nextFrame){
-            if(currentAnimation === name){
-              entity.setSprite(nextFrame);
-            }
+
+        /**
+         * @memberof CanvasEngine.Entities.AnimatedSprite
+         * @param {string} animation
+         */
+        setCurrentAnimation : function(animation){
+          if(utilities.exists(animations[animation])){
+            this.messageToSubEntity(currentAnimation, "disable");
+            currentAnimation = animation;
+            this.messageToSubEntity(currentAnimation, "enable");
           }
         },
-        animation));
-      if(name !== "default") {
-        animator.disable();
-      }
-      animations[name] = true;
+        /**
+         * @memberof CanvasEngine.Entities.AnimatedSprite
+         * @param {string} name
+         * @param {LocalParams~AnimatorParams} animation
+         */
+        addAnimation : function(name, animation){
+          var animator =EM.create("Animator",
+            $.extend({}, {
+                name: name,
+                // When the sprite's frame has changed, tell the entity to set the sprite to the next frame.
+                onFrameChange: function(nextFrame){
+                  if(currentAnimation === name){
+                    AnimatedSprite.setSprite(nextFrame);
+                  }
+                }
+              },
+              animation));
+          if(name !== "default") {
+            animator.disable();
+          }
+          animations[name] = true;
 
-      entity.attachSubEntity(animator);
-    };
+          this.attachSubEntity(animator);
+        }
+      }, entity);
+
 
     $.each(params.animations, function(name, animation){
-      entity.addAnimation(name, animation);
+      AnimatedSprite.addAnimation(name, animation);
     });
 
-    return entity;
+    return AnimatedSprite;
   }, "SPRITE");
 
 
-})();
+})(window.CanvasEngine);

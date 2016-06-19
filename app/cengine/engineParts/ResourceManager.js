@@ -1,20 +1,35 @@
-(function(){
-  var utils = CanvasEngine.utilities;
-
+/**
+ * @author Steven Chennault <schenn@gmail.com>
+ */
+/**
+ * @callback Callbacks~onImageLoad
+ */
+/**
+ * @callback Callbacks~onResourcesLoaded
+ */
+(function(CanvasEngine){
   var sounds = {}, images={}, spriteSheets = {}, imagePath = "";
   var resourcesLoaded = {};
   var onLoad;
   var allAdded = false;
 
   /**
+   * @namespace CanvasEngine.Resources
+   */
+  var Resources = {};
+
+  /**
    * The ResourceManager manages the different images, sounds, movies and spritesheets used by the Engine.
+   * @class
+   * @inner
+   * @memberOf CanvasEngine
+   * @static
    */
   var resourceManager = function(){
-    this.Resources = {};
 
     /**
      * Set the base image path
-     * @param path
+     * @param {string} path
      */
     this.setImagePath = function(path){
       imagePath = path;
@@ -22,9 +37,9 @@
 
     /**
      * Add a sound to the collection
-     * @todo
-     * @param name
-     * @param sound
+     * @todo Sounds
+     * @param {string} name
+     * @param {*} sound
      */
     this.addSound = function(name, sound) {
 
@@ -33,9 +48,9 @@
     /**
      * Add an image to the collection of images
      *
-     * @param name The name to give the image
-     * @param path The filepath the image lives at
-     * @param load A method to fire when the image is loaded.
+     * @param {string} name The name to give the image
+     * @param {string} path The filepath the image lives at
+     * @param {Callbacks~onImageLoad} [load] A method to fire when the image is loaded.
      */
     this.addImage = function(name, path, load){
       var image = new Image();
@@ -45,7 +60,7 @@
       var triggerOnLoad = function(){
         if(self.resourcesAreLoaded() &&
           resourcesLoaded[name] === true){
-
+          load.call(image);
           self.triggerCallback();
         }
       };
@@ -69,12 +84,12 @@
     /**
      * Add a spritesheet to the canvas engine
      *  A spritesheet contains information about how an image breaks down into a collection of sprites.
-     * @param name The name of the spritesheet
-     * @param path The path to the spritesheet image
-     * @param details The spritesheet's sprite details
+     * @param {string} name The name of the SpriteSheet
+     * @param {string} path The path to the SpriteSheet image
+     * @param {LocalParams~SpriteSheetParams} details The spritesheets details
      */
     this.addSpriteSheet = function(name, path, details){
-      spriteSheets[name] = new this.Resources.SpriteSheet(details);
+      spriteSheets[name] = new Resources.SpriteSheet(details);
       resourcesLoaded[name+"sheet"] = false;
       this.addImage(name, path, function(imgLoadEvent){
         spriteSheets[name].processSprites(images[name]);
@@ -85,9 +100,9 @@
     };
 
     /**
-     * Get a spritesheet from storage
-     * @param name
-     * @returns {SpriteSheet}
+     * Get a SpriteSheet from storage
+     * @param {string} name
+     * @returns {CanvasEngine.Resources.SpriteSheet}
      */
     this.getSpriteSheet = function(name){
       return spriteSheets[name];
@@ -95,7 +110,7 @@
 
     /**
      * Get an image from storage
-     * @param name
+     * @param {string} name
      * @returns {Image}
      */
     this.getImage = function(name){
@@ -104,7 +119,7 @@
 
     /**
      * Get a sound from storage
-     * @param name
+     * @param {string} name
      * @returns {*}
      */
     this.getSound = function(name){
@@ -128,17 +143,17 @@
     };
 
     /**
-     * Tell the resourcemanager that we aren't going to
-     *    be adding any more resources before the current collection finishes loading.
+     * Tell the ResourceManager that we aren't going to be adding any more resources
+     *  by the time the current collection finishes loading.
      */
     this.finishedAddingResources = function(){
       allAdded = true;
     };
 
     /**
-     * Set the function to call when all the resources are loaded.
+     * Set the callback to trigger when all the resources are loaded.
      *
-     * @param callback
+     * @param {Callbacks~onResourcesLoaded} callback
      */
     this.onResourcesLoaded = function(callback){
       onLoad = callback;
@@ -158,8 +173,8 @@
      * This method assumes the resource collection IS the full set of resources
      *  (at least the full set of resources which are needed for the onResourcesLoaded callback)
      *
-     * @param resourceCollection
-     * @param resourcesLoadedCallback
+     * @param {Array.<Object.<string,{name:string, source:string, details: Object}>>} resourceCollection
+     * @param {Callbacks~onResourcesLoaded} resourcesLoadedCallback
      */
     this.loadResourceCollection = function(resourceCollection, resourcesLoadedCallback){
       this.onResourcesLoaded(resourcesLoadedCallback);
@@ -182,8 +197,18 @@
       }
       this.finishedAddingResources();
     };
+
+    /**
+     * Add a Resource Type to our collection
+     *
+     * @param {string} name
+     * @param {function} constructor
+     */
+    this.setResourceType=function(name, constructor){
+      Resources[name] = constructor;
+    };
   };
 
 
   CanvasEngine.ResourceManager = new resourceManager();
-})();
+})(window.CanvasEngine);
