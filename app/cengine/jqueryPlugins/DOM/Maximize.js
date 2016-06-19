@@ -13,6 +13,10 @@
 
   /**
    * Enlarge a canvas or image to a size relative to it's parent container
+   * @example
+   *  // make 50% of parent container
+   * $('canvas').maximize(50);
+   *
    * @memberof external:jQuery.fn
    * @alias maximize
    *
@@ -21,8 +25,10 @@
   $.fn.maximize = function(modifier){
     // Divide the modifier by 100, if there is no modifier set it to the default
     mod = typeof(modifier) != 'undefined' ? modifier / 100 : mod;
-    var height = parseInt(this.parent().height()) * mod;
-    var width = parseInt(this.parent().width()) * mod;
-    this.attr("height", height).attr("width", width);
+    this.attr("height",
+      Math.ceil(this.parent().height() * mod)
+    ).attr("width",
+      Math.ceil(this.parent().width() * mod)
+    );
   };
 })(jQuery);
