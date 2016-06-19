@@ -29,18 +29,20 @@
           // for each col in row
           for(var x=0; x < tiles[y].length; x++){
             var spriteName = tiles[y][x];
-            var tile = entity.getFromComponent("SpriteSheet", "getSprite", spriteName);
+            if(spriteName !== null) {
+              var tile = entity.getFromComponent("SpriteSheet", "getSprite", spriteName);
 
-            var imgSource = entity.getFromComponent("SpriteSheet", "source");
-            var output =$.extend({},{
-              x: x * tileSize.width,
-              y: y * tileSize.height,
-              source: imgSource,
-              sx: tile.x, sy: tile.y,
-              sHeight: tile.height, sWidth: tile.width,
-              height: tileSize.height, width: tileSize.width
-            });
-            ctx.drawImage(output);
+              var imgSource = entity.getFromComponent("SpriteSheet", "source");
+              var output = $.extend({}, {
+                x: x * tileSize.width,
+                y: y * tileSize.height,
+                source: imgSource,
+                sx: tile.x, sy: tile.y,
+                sHeight: tile.height, sWidth: tile.width,
+                height: tileSize.height, width: tileSize.width
+              });
+              ctx.drawImage(output);
+            }
           }
         }
       },
