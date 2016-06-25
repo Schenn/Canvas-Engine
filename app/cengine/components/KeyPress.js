@@ -15,54 +15,27 @@
  * @callback Callbacks~onKeyPress
  * @this CanvasEngine.Entities.Entity
  */
-(function (CanvasEngine) {
 
-  /**
-   * KeyPress listens for key presses and triggers a function call when they occur
-   * @see {CanvasEngine.EntityManager.addComponent} for more information.
-   * @param {Object.<string, Callbacks~onKeyPress>} params Key Callbacks
-   * @param {CanvasEngine.Entities.Entity} entity
-   * @memberof CanvasEngine.Components
-   * @class
-   */
-  var KeyPress = function (params, entity) {
+import Component from "Component.js"
+import * as utilities from "../engineParts/utilities"
+import $ from 'jQuery'
 
-    var keyCallbacks = {};
+let keyCallbacks = Symbol("KeyCallbacks");
 
-    var onKeyDown = function(key){
-      if(!CanvasEngine.isPaused() && CanvasEngine.utilities.isFunction(keyCallbacks[key])) {
-        keyCallbacks[key].call(entity);
-      }
-    };
+/**
+ * KeyPress listens for key presses and triggers a function call when they occur
+ * @class KeyPress
+ * @memberof CanvasEngine.Components
+ * @param {Object.<string, Callbacks~onKeyPress>} params Key Callbacks
+ * @param {CanvasEngine.Entities.Entity} entity
+ *
+ */
+class KeyPress extends Component{
+  constructor(params, entity){
+    super(entity);
+    this[keyCallbacks] = {};
 
-    /**
-     * @returns {CanvasEngine.Entities.Entity}
-     */
-    this.getEntity = function () {
-      return entity;
-    };
-
-    /**
-     * Add a callback to a key
-     *
-     * @param {string} key
-     * @param {Callbacks~KeyPress} callback
-     */
-    this.onKey = function(key, callback){
-      keyCallbacks[key] = callback;
-    };
-
-    /**
-     * Add a collection of key->callbacks
-     *
-     * @param {Object.<string, Callbacks~onKeyPress>} keys
-     */
-    this.onKeys = function(keys){
-      $keys = Object.keys(keys);
-      for(var i =0; i < $keys.length; i++){
-        this.onKey($keys[i], keys[$keys[i]]);
-      }
-    };
+    this.onKeys(params.keys);
 
     /**
      * @fires keyboard#keypress
@@ -73,17 +46,38 @@
        */
       function(event){
         var keyCode = event.keyCode || event.which;
-        onKeyDown(String.fromCharCode(keyCode));
+        this.onKeyDown(String.fromCharCode(keyCode));
       }
     );
-  };
+  }
+
+  onKeyDown(key){
+    if(utilities.isFunction(this[keyCallbacks][key])){
+      keyCallbacks[key].call(this.Entity);
+    }
+  }
 
   /**
-   * Add the KeyPress component to the CanvasEngine storage.
+   * Add a callback to a key
+   *
+   * @param {string} key
+   * @param {Callbacks~onKeyPress} callback
    */
-  CanvasEngine.EntityManager.addComponent("KeyPress",
-    function(params, entity){
-      return new KeyPress(params, entity);
-    }, true
-  );
-})(window.CanvasEngine);
+  onKey(key, callback){
+    this[keyCallbacks][key] = callback;
+  }
+
+  /**
+   * Add a collection of key->callbacks
+   *
+   * @param {Object.<string, Callbacks~onKeyPress>} keys
+   */
+  onKeys(keys){
+    for(let key of Object.keys(keys)){
+      this.onKey(key,keys[key]);
+    }
+  }
+
+}
+
+export default KeyPress;

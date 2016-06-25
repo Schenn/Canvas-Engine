@@ -12,87 +12,76 @@
  * @property {Callbacks~onPropertyChanged} [params.callback]
  * @property {string} params.text
  */
-(function(CanvasEngine) {
-  var props = CanvasEngine.EntityManager.properties;
 
-  /**
-   * A Text Component handles the manipulation of text and its font.
-   *
-   * @param {ComponentParams~Text} params
-   *
-   * @param {CanvasEngine.Entities.Entity} entity
-   *
-   * @constructor
-   * @property {string} Text.align
-   * @property {string} Text.baseline
-   * @property {string} Text.font
-   * @property {string} Text.fontWeight
-   * @property {string} Text.fontSize
-   * @property {string} Text.fontFamily
-   * @property {string} Text.text
-   * @memberOf CanvasEngine.Components
-   */
-  var Text = function(params, entity){
-    var align = "center",
+import Component from "Component.js"
+import properties from "../engineParts/propertyDefinitions.js"
+import * as utilities from "../engineParts/utilities.js"
+
+/**
+ * A Text Component handles the manipulation of text and its font.
+ *
+ * @class Text
+ * @memberOf CanvasEngine.Components
+ *
+ * @property {string} align
+ * @property {string} baseline
+ * @property {string} font
+ * @property {string} fontWeight
+ * @property {string} fontSize
+ * @property {string} fontFamily
+ * @property {string} text
+ * @param {ComponentParams~Text} params
+ * @param {CanvasEngine.Entities.Entity} entity
+ */
+class Text extends Component {
+  constructor(params, entity) {
+    super(entity, params.callback);
+    var { align = "center",
       baseline = "middle",
       fontWeight = "normal",
       fontSize = "12pt",
       fontFamily = "sans-serif",
-      txt = "";
+      text = ""} = params;
 
-    Object.defineProperties(this, {
-      "align":props.defaultProperty(align, params.callback),
-      "baseline":props.defaultProperty(baseline,params.callback),
-      "text":props.defaultProperty(txt,params.callback),
-      "fontWeight":props.defaultProperty(fontWeight, params.callback),
-      "fontSize":props.defaultProperty(fontSize, params.callback),
-      "fontFamily":props.defaultProperty(fontFamily, params.callback),
-      // Font is special, it is the combination of weight, size and family
-      "font": {
-        enumerable: true,
-        configurable: false,
-        get: function(){return fontWeight + " " + fontSize + " " + fontFamily;},
-        set: function(newFont){
-          // Find a font weight in the new font if one was provided, if not keep the original value
-          var weightMatches = newFont.match(/(\d00|bold\D*|lighter|normal)/);
-          fontWeight = (weightMatches !== null) ? weightMatches[0] : fontWeight;
+    this.setProperty("align", align);
+    this.setProperty("baseline", baseline);
+    this.setProperty("fontWeight", fontWeight);
+    this.setProperty("fontSize", fontSize);
+    this.setProperty("fontFamily", fontFamily);
+    this.setProperty("text", text);
 
-          var sizeMatches = newFont.match(/(\d+(px)|\d+(em)|\d+(pt))/);
-          fontSize = (sizeMatches !== null) ? sizeMatches[0] : fontSize;
+  }
 
-          fontFamily = newFont.replace(fontWeight, "").replace(fontSize, "").trim();
-          params.callback();
-        }
-      }
-    });
+  get font() {
+    return this.fontWeight + " " + this.fontSize + " " + this.fontFamily;
+  }
 
-    /**
-     * @returns {CanvasEngine.Entities.Entity}
-     */
-    this.getEntity = function(){
-      return entity;
-    };
+  set font(newFont){
+    // Find a font weight in the new font if one was provided, if not keep the original value
+    var weightMatches = newFont.match(/(\d00|bold\D*|lighter|normal)/);
+    this.fontWeight = (weightMatches !== null) ? weightMatches[0] : this.fontWeight;
 
-    /**
-     * @returns {{align: string,baseline:string, text: string, font: string }}
-     */
-    this.asObject = function(){
-      return {align: this.align, baseline: this.baseline, text: this.text, font: this.font};
-    };
+    var sizeMatches = newFont.match(/(\d+(px)|\d+(em)|\d+(pt))/);
+    this.fontSize = (sizeMatches !== null) ? sizeMatches[0] : this.fontSize;
 
-    /**
-     * Set the objects text.
-     *
-     * @param {string} phrase
-     */
-    this.setText = function(phrase){
-      this.text = phrase;
-    };
+    this.fontFamily = newFont.replace(this.fontWeight, "").replace(this.fontSize, "").trim();
+  }
 
-    CanvasEngine.utilities.setProperties(this, params);
-  };
+  /**
+   * @returns {{align: string,baseline:string, text: string, font: string }}
+   */
+  asObject(){
+    return {align: this.align, baseline: this.baseline, text: this.text, font: this.font};
+  }
 
-  CanvasEngine.EntityManager.addComponent("Text", function(params, entity){
-    return new Text(params, entity);
-  }, true);
-})(window.CanvasEngine);
+  /**
+   * Set the objects text.
+   *
+   * @param {string} phrase
+   */
+  setText(phrase){
+    this.text = phrase;
+  }
+}
+
+export default Text;

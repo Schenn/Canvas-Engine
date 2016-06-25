@@ -7,95 +7,93 @@
  * @property {function} [onUpdate]
  * @property {function} [onElapsed]
  */
-(function(CanvasEngine) {
-  var utils = CanvasEngine.utilities;
+
+import Component from "Component.js"
+import * as utilities from "../engineParts/utilities.js"
+
+let date = Symbol("date");
+let delta = Symbol("delta");
+let isActive = Symbol("isActive");
+let onBeep = Symbol("onBeep");
+let onUpdate = Symbol("onUpdate");
+let timeUntilBeep = Symbol("timeUntilBeep");
+let beep = Symbol("beep");
+
+class Timer extends Component{
+  constructor(params, entity){
+    super(entity);
+
+    this[date] = new Date();
+    this[delta] = new Date();
+    this[isActive] = true;
+
+    this[onBeep] = utilities.isFunction(params.onElapsed) ? params.onElapsed : null;
+    this[onUpdate] = utilities.isFunction(params.onUpdate) ? params.onUpdate : null;
+    this[timeUntilBeep] = utilities.exists(params.duration) ? params.duration : 0;
+    this[beep] = this[date].getDate() + this[timeUntilBeep];
+
+  }
 
   /**
-   * The Timer component tracks the passage of time.
-   *  It can run a function when a pre-determined amount of time has passed and/or on every update.
-   * @param {LocalParams~TimerParams}params
-   * @param {CanvasEngine.Entities.Entity} entity
-   * @class
-   * @memberOf CanvasEngine.Components
+   * Update the date information.
    */
-  var Timer = function(params, entity){
-    var date = new Date();
-    var delta = new Date();
-    var isActive = true;
+  update(){
+    if(this[isActive] == true) {
+      this[delta] = this[date];
+      this[date] = new Date();
+      // Only beep if we have all the information we need to beep.
+      if (utilities.isFunction(this[onBeep]) &&
+        this[timeUntilBeep] > 0 &&
+        this.getMS() >= this[beep]) {
 
-    var onBeep = utils.isFunction(params.onElapsed) ? params.onElapsed : null,
-      onUpdate = utils.isFunction(params.onUpdate) ? params.onUpdate : null,
-      timeUntilBeep = utils.exists(params.duration) ? params.duration : 0,
-      beep = date.getDate() + timeUntilBeep;
-
-    /**
-     * Update the date information.
-     */
-    this.update = function(){
-      if(isActive) {
-        delta = date;
-        date = new Date();
-        // Only beep if we have all the information we need to beep.
-        if (utils.isFunction(onBeep) &&
-          timeUntilBeep > 0 &&
-          this.getMS() >= beep) {
-
-          onBeep(this.deltaTime);
-          beep = this.getMS()+ timeUntilBeep;
-        }
-
-        if (utils.isFunction(onUpdate)) {
-          onUpdate(this.deltaTime());
-        }
+        this[onBeep](this.deltaTime);
+        this[beep] = this.getMS()+ this[timeUntilBeep];
       }
-    };
 
-    /**
-     * Get the current last updated time in milliseconds
-     * @returns {number}
-     */
-    this.getMS = function () {
-      return (date.getTime());
-    };
+      if (utilities.isFunction(this[onUpdate])) {
+        this[onUpdate](this.deltaTime());
+      }
+    }
+  }
 
-    /**
-     * Get the current last updated time in seconds
-     * return {number}
-     */
-    this.getS = function () {
-      return (Math.round(date.getTime / 1000));
-    };
+  /**
+   * Get the current last updated time in milliseconds
+   * @returns {number}
+   */
+  getMS() {
+    return (this[date].getTime());
+  }
 
-    /**
-     * Get the time since the last update request in fractions of a second
-     * return {number}
-     */
-    this.deltaTime = function () {
-      return ((date.getTime() - delta.getTime()) / 1000);
-    };
+  /**
+   * Get the current last updated time in seconds
+   * return {number}
+   */
+  getS() {
+    return (Math.round(this[date].getTime() / 1000));
+  }
 
-    this.getEntity = function(){
-      return entity;
-    };
+  /**
+   * Get the time since the last update request in fractions of a second
+   * return {number}
+   */
+  deltaTime() {
+    return ((this[date].getTime() - this[delta].getTime()) / 1000);
+  }
 
-    /**
-     * Stop doing things
-     */
-    this.disable = function(){
-      isActive = false;
-    };
+  /**
+   * Stop doing things
+   */
+  disable(){
+    this[isActive] = false;
+  }
 
-    /**
-     * Do things again
-     */
-    this.enable = function(){
-      isActive = true;
-      this.update();
-    };
+  /**
+   * Do things again
+   */
+  enable(){
+    this[isActive] = true;
+    this.update();
+  }
+}
 
-  };
-
-  CanvasEngine.EntityManager.addComponent("Timer", function(params, entity){
-    return new Timer(params, entity);
-  }, true);
-})(window.CanvasEngine);
+export default Timer;

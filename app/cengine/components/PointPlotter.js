@@ -6,134 +6,92 @@
  * @property {number} ...x
  * @property {number} ...y
  */
-(function(CanvasEngine){
-  var props = CanvasEngine.EntityManager.properties;
 
-  /**
-   * The PointPlotter component manages an array of coordinates (points)
-   *
-   * @constructor
-   * @property {GeneralTypes~coords} PointPlotter.coords
-   * @memberof! CanvasEngine.Components
-   *
-   * @param {Object} params
-   * @param {GeneralTypes~coords[]} params.coords
-   * @param {Callbacks~onPropertyChanged} [params.callback]
-   * @param {CanvasEngine.Entities.Entity} entity
-   *
-   */
-  var PointPlotter = function(params, entity){
+import Component from "Component.js"
+import properties from "../engineParts/propertyDefinitions.js"
+import * as utilities from "../engineParts/utilities.js"
 
-    var coordinateArray=[];
-    /**
-     * @inner
-     * @type {GeneralTypes~CoordinateCollection}
-     * @memberof CanvasEngine.Components.PointPlotter
-     */
-    var coordinateObj = {};
+let coordinateArray = Symbol("coordinateArray");
+let coordinates = Symbol("coordinates");
 
-    Object.defineProperty(this,"coords",props.defaultProperty(coordinateObj));
-
-    /**
-     * Plot out the coordinates as a property on the coordinateObj
-     * @param {GeneralTypes~coords[]} coords
-     * @memberof CanvasEngine.Components.PointPlotter
-     */
-    this.plot = function(coords){
-      coordinateArray = coords;
-      for (var i = 1; i <= coords.length; i++) {
-
-        // If we don't have the x coordinate property, create it.
-        if(!coordinateObj.hasOwnProperty("x"+i)) {
-          Object.defineProperty(coordinateObj,"x"+i,props.defaultProperty(coords[i-1].x, params.callback));
-        }
-        else {
-          coordinateObj["x" + i] = coords[i - 1].x;
-        }
-
-        // If we don't have the y coordinate property, create it.
-        if(!coordinateObj.hasOwnProperty("y"+i)) {
-          Object.defineProperty(coordinateObj,"y"+i,props.defaultProperty(coords[i-1].y, params.callback));
-        } else {
-          coordinateObj["y" + i] = coords[i - 1].y;
-        }
-      }
-    };
-
-    /**
-     * Get the bounding area of the points
-     *
-     * @returns {{x: number, y: number, width: number, height: number}}
-     */
-    this.getArea = function(){
-      var smallX = 0;
-      var smallY = 0;
-      var bigX = 0;
-      var bigY = 0;
-      for (var i = 0; i < coordinateArray.length; i++) {
-        if (coordinateArray[i].x <= smallX) {
-          smallX = coordinateArray[i].x;
-        }
-        if (coordinateArray[i].y <= smallX) {
-          smallY = coordinateArray[i].y;
-        }
-        if (coordinateArray[i].x >= bigX) {
-          bigX = coordinateArray[i].x;
-        }
-        if (coordinateArray[i].y >= bigY) {
-          bigY = coordinateArray[i].y;
-        }
-      }
-
-      return ({
-        x: smallX, y: smallY,
-        width:  bigX - smallX, height: bigY - smallY
-      });
-    };
-
-    if(CanvasEngine.utilities.exists(params.coords)){
+class PointPlotter extends Component {
+  constructor(params, entity){
+    super(entity, params.callback);
+    this[coordinateArray] = [];
+    let coordinateObj = {};
+    this.setProperty("coords", coordinateObj);
+    if(utilities.exists(params.coords)){
       this.plot(params.coords);
     }
+  }
 
-    /**
-     * @returns {CanvasEngine.Entities.Entity}
-     */
-    this.getEntity = function(){
-      return entity;
-    };
+  /**
+   * Transform the set of coordinates into xy positions that trigger the callback on change.
+   * @param {GeneralTypes~coords} coords
+   */
+  plot(coords){
+    this[coordinateArray] = coords;
+    for (var i = 1; i <= coords.length; i++) {
 
-    /**
-     * Get the Coordinate collection as an Array
-     * @returns {GeneralTypes~coords[]}
-     */
-    this.getCoordinatesAsArray = function(){
-      return coordinateArray;
-    };
+      // If we don't have the x coordinate property, create it.
+      if(!this.coords.hasOwnProperty("x"+i)) {
+        properties.observe({name:"x"+i,value: coords[i-1].x, callback: this.propertyCallback}, this.coords);
+      }
+      else {
+        this.coords["x" + i] = coords[i - 1].x;
+      }
 
-    /**
-     * Get the Coordinate collection as an Object
-     *
-     *  - Note: Making changes to the values on this object will trigger the @see{Callback~onPropertyChanged} callback
-     *
-     * @returns {GeneralTypes~CoordinateCollection}
-     */
-    this.getCoordinatesAsObject = function(){
-      return coordinateObj;
-    };
+      // If we don't have the y coordinate property, create it.
+      if(!this.coords.hasOwnProperty("y"+i)) {
+        properties.observe({name:"y"+i,value: coords[i-1].x, callback: this.propertyCallback}, this.coords);
+      } else {
+        this.coords["y" + i] = coords[i - 1].y;
+      }
+    }
+  }
+  /**
+   * Get the bounding area of the points
+   *
+   * @todo use iterator instead of for loop
+   * @returns {{x: number, y: number, width: number, height: number}}
+   */
+  getArea(){
+    var smallX = 0;
+    var smallY = 0;
+    var bigX = 0;
+    var bigY = 0;
+    for (var i = 0; i < this[coordinateArray].length; i++) {
+      if (this[coordinateArray][i].x <= smallX) {
+        smallX = this[coordinateArray][i].x;
+      }
+      if (this[coordinateArray][i].y <= smallX) {
+        smallY = this[coordinateArray][i].y;
+      }
+      if (this[coordinateArray][i].x >= bigX) {
+        bigX = this[coordinateArray][i].x;
+      }
+      if (this[coordinateArray][i].y >= bigY) {
+        bigY = this[coordinateArray][i].y;
+      }
+    }
 
+    return ({
+      x: smallX, y: smallY,
+      width:  bigX - smallX, height: bigY - smallY
+    });
   };
 
-  // Add the PointPlotter component to CanvasEngine storage
-  CanvasEngine.EntityManager.addComponent("PointPlotter",
-    /**
-     * @construct
-     * @memberOf CanvasEngine.Components.PointPlotter
-     * @param {object} params
-     * @property {GeneralTypes~coords[]} params.coords
-     * @property {Callbacks~onPropertyChanged} [params.callback]
-     * @param {CanvasEngine.Entities.Entity} entity
-     */
-    function(params, entity){
-    return new PointPlotter(params, entity);
-  }, true);
-})(window.CanvasEngine);
+  get CoordinateArray(){
+    return properties.proxy(this[coordinateArray]);
+  }
+
+  get Coordinates(){
+    return properties.proxy(this.coords);
+  }
+
+  asObject(){
+    return this.Coordinates;
+  }
+}
+
+export default PointPlotter
