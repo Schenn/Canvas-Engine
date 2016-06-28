@@ -52,13 +52,10 @@
  */
 
 import properties from "../engineParts/propertyDefinitions.js";
+import privateProperties from "../engineParts/propertyDefinitions";
 import Component from "Component.js";
 import * as utilities from "../engineParts/utilities";
 
-let clearShadow = Symbol("clearShadow");
-let isDirty = Symbol("isDirty");
-let clear = Symbol("clearOverride");
-let clearInfo = Symbol("clearInfo");
 
 /**
  * The Renderer component is responsible for managing the properties required to draw an object to a canvas.
@@ -68,9 +65,10 @@ let clearInfo = Symbol("clearInfo");
  *
  *
  * @class Renderer
- * @memberof CanvasEngine.Components
+ * @memberOf CanvasEngine.Components
  *
  * @todo Allow the Renderer to use gradients and patterns
+ * @property {boolean} fromCenter = false
  *
  */
 class Renderer extends Component {
@@ -80,7 +78,7 @@ class Renderer extends Component {
    */
   constructor(params, entity) {
     super(entity, this.markDirty);
-    this[isDirty] = true;
+    privateProperties[this].isDirty = true;
 
     // Private Properties
     var { angle = 0,
@@ -324,32 +322,30 @@ class Renderer extends Component {
     delete params.draw;
 
     if(utilities.exists(params.clearInfo)){
-      this[clearInfo] = params.clearInfo;
-      this[clearInfo].bind(this);
+      privateProperties[this].clearInfo = params.clearInfo;
+      privateProperties[this].clearInfo.bind(this);
     }
 
-    this[clearInfo].bind(this);
-
     if ((utilities.isFunction(params.clear))) {
-      this[clear] = params.clear;
-      this[clear].bind(this);
+      privateProperties[this].clear = params.clear;
+      privateProperties[this].clear.bind(this);
     }
 
   }
 
   /**
-   * Get the Clear Info for the Rendered image
+   * Get the Clear Info for the Rendered thing
    *
    * @returns {{x: (number), y: (number), height: (number), width: (number), fromCenter: boolean}}
    */
-  clearInfo(){
-    return (utilities.exists(this[clear])) ? this[clearInfo]() :{
+  clearInfo(ctx){
+    return (utilities.exists(privateProperties[this].clearInfo)) ? privateProperties[this].clearInfo(ctx) :{
       x: this.x,
       y: this.y,
       height: this.height,
       width: this.width,
       fromCenter: this.fromCenter
-    }
+    };
   }
 
   /**
@@ -357,22 +353,22 @@ class Renderer extends Component {
    * @param {Canvas.enhancedContext} ctx
    */
   clear(ctx) {
-    if(utilties.exists(this[clear])){
-      this[clear](ctx)
+    if(utilities.exists(privateProperties[this].clear)){
+      privateProperties[this].clear(ctx);
     } else {
-      if (!utilities.exists(this[clearShadow])) {
-        this[clearShadow] = this.clearInfo();
+      if (!utilities.exists(privateProperties[this].clearShadow)) {
+        privateProperties[this].clearShadow = this.clearInfo(ctx);
       }
-      ctx.clear(this[clearShadow]);
+      ctx.clear(privateProperties[this].clearShadow);
     }
   }
 
   markDirty () {
-    this[isDirty] = true;
-  };
+    privateProperties[this].isDirty = true;
+  }
 
   get isDirty(){
-    return this[isDirty] === true;
+    return privateProperties[this].isDirty === true;
   }
 
   /**
@@ -384,9 +380,9 @@ class Renderer extends Component {
   render (ctx) {
     ctx.setDefaults($.extend({}, this));
     this.draw(ctx);
-    this[isDirty] = false;
-    this[clearShadow] = this.clearInfo(ctx);
-  };
+    privateProperties[this].isDirty = false;
+    privateProperties[this].clearShadow = this.clearInfo(ctx);
+  }
 
   /**
    * Does a given pixel fall inside of this renderer component?
@@ -417,7 +413,7 @@ class Renderer extends Component {
 
   asObject() {
     return properties.proxy(this);
-  };
+  }
 
   /**
    * Set the position of the renderer component
@@ -432,7 +428,7 @@ class Renderer extends Component {
       this.y = position.y;
     }
 
-  };
+  }
 
   /**
    * Set the size dimensions for the renderer component
@@ -445,7 +441,7 @@ class Renderer extends Component {
     if (utilities.exists(size.width)) {
       this.width = size.width;
     }
-  };
+  }
 
 }
 

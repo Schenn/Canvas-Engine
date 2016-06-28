@@ -7,17 +7,26 @@
  * @property {number} ...y
  */
 
-import Component from "Component.js"
-import properties from "../engineParts/propertyDefinitions.js"
-import * as utilities from "../engineParts/utilities.js"
+import Component from "Component.js";
+import properties from "../engineParts/propertyDefinitions.js";
+import * as utilities from "../engineParts/utilities.js";
+import privateProperties from "../engineParts/propertyDefinitions.js";
 
-let coordinateArray = Symbol("coordinateArray");
-let coordinates = Symbol("coordinates");
-
+/**
+ * @class PointPlotter
+ * @memberOf CanvasEngine.Components
+ * @property {GeneralTypes~CoordinateCollection} coords
+ */
 class PointPlotter extends Component {
+  /**
+   * @param {object} params
+   * @param {GeneralTypes~coords[]} params.coords
+   * @param {Callbacks~onPropertyChanged} params.callback
+   * @param {Entity} entity
+   */
   constructor(params, entity){
     super(entity, params.callback);
-    this[coordinateArray] = [];
+    privateProperties[this].coordinateArray = [];
     let coordinateObj = {};
     this.setProperty("coords", coordinateObj);
     if(utilities.exists(params.coords)){
@@ -27,10 +36,10 @@ class PointPlotter extends Component {
 
   /**
    * Transform the set of coordinates into xy positions that trigger the callback on change.
-   * @param {GeneralTypes~coords} coords
+   * @param {GeneralTypes~coords[]} coords
    */
   plot(coords){
-    this[coordinateArray] = coords;
+    privateProperties[this].coordinateArray = coords;
     for (var i = 1; i <= coords.length; i++) {
 
       // If we don't have the x coordinate property, create it.
@@ -60,18 +69,18 @@ class PointPlotter extends Component {
     var smallY = 0;
     var bigX = 0;
     var bigY = 0;
-    for (var i = 0; i < this[coordinateArray].length; i++) {
-      if (this[coordinateArray][i].x <= smallX) {
-        smallX = this[coordinateArray][i].x;
+    for (var i = 0; i < privateProperties[this].coordinateArray.length; i++) {
+      if (privateProperties[this].coordinateArray[i].x <= smallX) {
+        smallX = privateProperties[this].coordinateArray[i].x;
       }
-      if (this[coordinateArray][i].y <= smallX) {
-        smallY = this[coordinateArray][i].y;
+      if (privateProperties[this].coordinateArray[i].y <= smallX) {
+        smallY = privateProperties[this].coordinateArray[i].y;
       }
-      if (this[coordinateArray][i].x >= bigX) {
-        bigX = this[coordinateArray][i].x;
+      if (privateProperties[this].coordinateArray[i].x >= bigX) {
+        bigX = privateProperties[this].coordinateArray[i].x;
       }
-      if (this[coordinateArray][i].y >= bigY) {
-        bigY = this[coordinateArray][i].y;
+      if (privateProperties[this].coordinateArray[i].y >= bigY) {
+        bigY = privateProperties[this].coordinateArray[i].y;
       }
     }
 
@@ -79,10 +88,10 @@ class PointPlotter extends Component {
       x: smallX, y: smallY,
       width:  bigX - smallX, height: bigY - smallY
     });
-  };
+  }
 
   get CoordinateArray(){
-    return properties.proxy(this[coordinateArray]);
+    return properties.proxy(privateProperties[this].coordinateArray);
   }
 
   get Coordinates(){
@@ -94,4 +103,4 @@ class PointPlotter extends Component {
   }
 }
 
-export default PointPlotter
+export default PointPlotter;

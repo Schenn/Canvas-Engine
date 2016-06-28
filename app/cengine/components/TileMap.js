@@ -20,13 +20,9 @@
  */
 
 import properties from "../engineParts/propertyDefinitions.js";
+import privateProperties from "../engineParts/propertyDefinitions";
 import Component from "Component.js";
 import * as utilities from "../engineParts/utilities";
-
-let tiles = Symbol("Tiles");
-let scrollOffset = Symbol("ScrollOffset");
-let tileSize = Symbol("TileSize");
-let onTileClick = Symbol("onTileClick");
 
 /**
  * A TileMap Component manages maintaining a collection of values in specific 2-d array positions.
@@ -45,40 +41,39 @@ let onTileClick = Symbol("onTileClick");
  */
 class TileMap extends Component {
   get TileSize(){
-    return this[tileSize];
+    return privateProperties[this].tileSize;
   }
-
 
   constructor(params, entity){
     super(entity);
-    this[tiles] = utilities.exists(params.tiles) ? params.tiles :[];
-    this[scrollOffset] = {};
-    this[tileSize] = {
+    privateProperties[this].tiles = utilities.exists(params.tiles) ? params.tiles :[];
+    privateProperties[this].scrollOffset = {};
+    privateProperties[this].tileSize = {
       width: params.width, height: params.height
     };
 
     if(utilities.isFunction(params.onTileClick)) {
-      this[onTileClick]= params.onTileClick;
+      privateProperties[this].onTileClick= params.onTileClick;
     }
 
-    properties.observe({name: "x", value: 0, callback: params.onScroll}, this[scrollOffset]);
-    properties.observe({name: "y", value: 0, callback: params.onScroll}, this[scrollOffset]);
+    properties.observe({name: "x", value: 0, callback: params.onScroll}, privateProperties[this].scrollOffset);
+    properties.observe({name: "y", value: 0, callback: params.onScroll}, privateProperties[this].scrollOffset);
   }
 
   asObject(){
-    return properties.proxy(this[tiles]);
+    return properties.proxy(privateProperties[this].tiles);
   }
 
   /**
    * Scroll the TileMap
-   * @param {coords} direction
+   * @param {GeneralTypes~coords} direction
    */
   scroll(direction){
-    var actualX = Math.round(direction.x / this[tileSize].width);
-    var actualY = Math.round(direction.y / this[tileSize].height);
+    var actualX = Math.round(direction.x / privateProperties[this].tileSize.width);
+    var actualY = Math.round(direction.y / privateProperties[this].tileSize.height);
     // Change our initial tile position based on the distance in pixels over the size of a tile.
-    this[scrollOffset].x += actualX;
-    this[scrollOffset].y += actualY;
+    privateProperties[this].scrollOffset.x += actualX;
+    privateProperties[this].scrollOffset.y += actualY;
 
     // Tell the CanvasEngine event manager to fire a scrollMap event.
     // If there's a scrollMap event, living, non-gui entities should be forced
@@ -93,7 +88,7 @@ class TileMap extends Component {
    * @returns {Array}
    */
   getVisibleTiles(area){
-    if(this[tileSize].height === 0 || this[tileSize].width ===0){
+    if(privateProperties[this].tileSize.height === 0 || privateProperties[this].tileSize.width ===0){
       return [];
     }
 
@@ -106,13 +101,13 @@ class TileMap extends Component {
     // scrollOffset.y = firstColumn
     // scrollOffset.y + Math.round(area.height / tileSize.height) = maxY?
 
-    let maxY = this[scrollOffset].y + Math.round(area.height / this[tileSize].height);
-    let maxX = this[scrollOffset].x + Math.round(area.width / this[tileSize].width);
-    for(let y = this[scrollOffset].y; y < maxY; y++) {
+    let maxY = privateProperties[this].scrollOffset.y + Math.round(area.height / privateProperties[this].tileSize.height);
+    let maxX = privateProperties[this].scrollOffset.x + Math.round(area.width / privateProperties[this].tileSize.width);
+    for(let y = privateProperties[this].scrollOffset.y; y < maxY; y++) {
       tiles[yI] = [];
       xI= 0;
       // x position in tileMap
-      for (let x = this[scrollOffset].x; x < maxX; x++) {
+      for (let x = privateProperties[this].scrollOffset.x; x < maxX; x++) {
         tiles[yI][xI] = this[tiles][y][x];
         xI++;
       }
@@ -125,18 +120,18 @@ class TileMap extends Component {
    * Convert a pixel position into a tile element.
    *  x, and y represent the position's area in pixels.
    *
-   * @param {coords} coord
+   * @param {GeneralTypes~coords} coord
    * @returns {{tile: *, x: number, y: number, row: number, col: number}}
    */
   pixelToTile(coord){
-    let row = Math.floor(coord.y / this[tileSize].height) + this[scrollOffset].y;
-    let col = Math.floor(coord.x / this[tileSize].width);
+    let row = Math.floor(coord.y / privateProperties[this].tileSize.height) + privateProperties[this].scrollOffset.y;
+    let col = Math.floor(coord.x / privateProperties[this].tileSize.width);
 
-    if (utilities.exists(this[tiles][row]) && utilities.exists(this[tiles][row][col])) {
+    if (utilities.exists(privateProperties[this].tiles[row]) && utilities.exists(privateProperties[this].tiles[row][col])) {
       return {
-        tile: this[tiles][row][col],
-        x: col * this[tileSize].width,
-        y: row * this[tileSize].height,
+        tile: privateProperties[this].tiles[row][col],
+        x: col * privateProperties[this].tileSize.width,
+        y: row * privateProperties[this].tileSize.height,
         row: row,
         col: col
       };
@@ -152,21 +147,21 @@ class TileMap extends Component {
    *
    */
   TileClick(coord){
-    if(utilities.isFunction(this[onTileClick])){
+    if(utilities.isFunction(privateProperties[this].onTileClick)){
       var tile = this.pixelToTile(coord);
-      this[onTileClick].call(tile);
+      privateProperties[this].onTileClick.call(tile);
     }
   }
 
   /**
    * Override a tile state value
    *
-   * @param {coords} coord
+   * @param {GeneralTypes~coords} coord
    * @param {*} newName - Should just be a string or number but realistically could be anything.
    */
   setTile(coord, newName){
-    if(utilities.exists(this[tiles][coord.y][coord.x])) {
-      this[tiles][coord.y][coord.x] = newName;
+    if(utilities.exists(privateProperties[this].tiles[coord.y][coord.x])) {
+      privateProperties[this].tiles[coord.y][coord.x] = newName;
     }
   }
 }

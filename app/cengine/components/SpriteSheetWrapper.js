@@ -2,9 +2,8 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 
-import Component from "Component.js"
-
-let Sheet = Symbol("Sheet");
+import Component from "Component.js";
+import privateProperties from "../engineParts/propertyDefinitions";
 
 /**
  * The SpriteSheet component handles interactions with a SpriteSheet resource.
@@ -17,7 +16,7 @@ class SpriteSheetWrapper extends Component{
    */
   constructor(params, entity){
     super(entity);
-    this[sheet] = params.spritesheet;
+    privateProperties[this].sheet = params.spritesheet;
   }
 
   /**
@@ -27,7 +26,7 @@ class SpriteSheetWrapper extends Component{
    * @returns {GeneralTypes~Sprite}
    */
   getSprite(name){
-    return this[sheet].getSprite(name);
+    return privateProperties[this].sheet.getSprite(name);
   }
 
   /**
@@ -35,7 +34,7 @@ class SpriteSheetWrapper extends Component{
    * @returns {number}
    */
   sHeight(){
-    return this[sheet].sHeight();
+    return privateProperties[this].sheet .sHeight();
   }
 
   /**
@@ -43,7 +42,7 @@ class SpriteSheetWrapper extends Component{
    * @returns {number}
    */
   sWidth(){
-    return this[sheet].sWidth();
+    return privateProperties[this].sheet .sWidth();
   }
 
   /**
@@ -51,8 +50,8 @@ class SpriteSheetWrapper extends Component{
    * @returns {Image}
    */
   source(){
-    return this[sheet].source();
+    return privateProperties[this].sheet .source();
   }
 }
 
-export default SpriteSheetWrapper
+export default SpriteSheetWrapper;

@@ -2,8 +2,8 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 
-import Component from "Component.js"
-import * as utilities from "../engineParts/utilities.js"
+import Component from "Component.js";
+import * as utilities from "../engineParts/utilities.js";
 
 /**
  * @typedef {object} GeneralTypes~Sprite
@@ -42,7 +42,7 @@ class ImageWrapper extends Component{
    */
   constructor(params, entity){
     super(entity, params.callback);
-    var source = params.source,
+    let source = params.source,
       sx= utilities.exists(params.sx) ? params.sx : 0,
       sy= utilities.exists(params.sy) ? params.sy : 0,
       sw= utilities.exists(params.sWidth) ? params.sWidth : 0,
@@ -87,4 +87,4 @@ class ImageWrapper extends Component{
   }
 }
 
-export default ImageWrapper
+export default ImageWrapper;

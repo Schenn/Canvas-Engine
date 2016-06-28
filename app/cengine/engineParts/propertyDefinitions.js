@@ -54,12 +54,12 @@ let propertyDefinitions = {
     });
   },
   observe: function({name, value, locked=false, callback}, object){
-    var prop = (locked == true)? this.lockedProperty(value, callback) : this.defaultProperty(value, callback);
-    Object.defineProperty(object, name, prop)
+    var prop = (locked === true)? this.lockedProperty(value, callback) : this.defaultProperty(value, callback);
+    Object.defineProperty(object, name, prop);
   }
 };
 
-var properties = new Proxy(propertyDefinitions, {
+let properties = new Proxy(propertyDefinitions, {
   get: function(definitions, name){
     return definitions[name];
   }
@@ -67,4 +67,29 @@ var properties = new Proxy(propertyDefinitions, {
 
 export default properties;
 
+export const privateProperties = (function(){
+  let props = new WeakMap();
 
+  let handler = {
+    get: function(props, thing){
+      if(!props.has(thing)){
+        props.set(thing, {});
+      }
+
+      let propHandler = {
+        get: function(privateProps, prop){
+          return privateProps[prop];
+        },
+        set: function(privateProps, prop, val){
+          privateProps[prop] = val;
+          return this;
+        }
+      };
+
+
+      return new Proxy(props.get(thing), propHandler);
+    }
+  };
+
+  return new Proxy(props, handler);
+})();

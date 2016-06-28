@@ -16,11 +16,11 @@
  * @this CanvasEngine.Entities.Entity
  */
 
-import Component from "Component.js"
-import * as utilities from "../engineParts/utilities"
-import $ from 'jQuery'
+import Component from "Component.js";
+import * as utilities from "../engineParts/utilities";
+import $ from 'jQuery';
 
-let keyCallbacks = Symbol("KeyCallbacks");
+import privateProperties from "../engineParts/propertyDefinitions.js";
 
 /**
  * KeyPress listens for key presses and triggers a function call when they occur
@@ -33,9 +33,10 @@ let keyCallbacks = Symbol("KeyCallbacks");
 class KeyPress extends Component{
   constructor(params, entity){
     super(entity);
-    this[keyCallbacks] = {};
+    privateProperties[this].keyCallbacks = {};
 
     this.onKeys(params.keys);
+    let self=this;
 
     /**
      * @fires keyboard#keypress
@@ -45,15 +46,15 @@ class KeyPress extends Component{
        * @listens keyboard#keypress
        */
       function(event){
-        var keyCode = event.keyCode || event.which;
-        this.onKeyDown(String.fromCharCode(keyCode));
+        let keyCode = event.keyCode || event.which;
+        self.onKeyDown(String.fromCharCode(keyCode));
       }
     );
   }
 
   onKeyDown(key){
-    if(utilities.isFunction(this[keyCallbacks][key])){
-      keyCallbacks[key].call(this.Entity);
+    if(utilities.isFunction(privateProperties[this].keyCallbacks[key])){
+      privateProperties[this].keyCallbacks[key].call(this.Entity);
     }
   }
 
@@ -64,7 +65,7 @@ class KeyPress extends Component{
    * @param {Callbacks~onKeyPress} callback
    */
   onKey(key, callback){
-    this[keyCallbacks][key] = callback;
+    privateProperties[this].keyCallbacks[key] = callback;
   }
 
   /**

@@ -8,57 +8,38 @@
  * @this {CanvasEngine.Entities.Entity}
  */
 
-import Component from "Component.js"
-import * as utilities from "../engineParts/utilities"
+import Component from "Component.js";
+import * as utilities from "../engineParts/utilities";
 
-let onClick = Symbol("onClick");
-let onMouseOver = Symbol("onMouseOver");
-let onMouseDown = Symbol("onMouseDown");
-let onMouseUp = Symbol("onMouseUp");
-let onMouseMove = Symbol("onMouseMove");
-let onMouseOut = Symbol("onMouseOut");
-
+import privateProperties from "../engineParts/propertyDefinitions.js";
 
 class Mouse extends Component {
   constructor(params, entity){
     super(entity);
 
-    this[onClick] = [];
-    this[onMouseOver] = [];
-    this[onMouseDown] = [];
-    this[onMouseUp] = [];
-    this[onMouseMove] = [];
-    this[onMouseOut] = [];
+    privateProperties[this].onClick = [];
+    privateProperties[this].onMouseOver = [];
+    privateProperties[this].onMouseDown = [];
+    privateProperties[this].onMouseUp = [];
+    privateProperties[this].onMouseMove = [];
+    privateProperties[this].onMouseOut = [];
 
-    if(utilities.isFunction(params.onClick)){
-      this[onClick].push(params.onClick);
-    } else if(Array.isArray(params.onClick)){
-      this[onClick] = this[onClick].concat(params.onClick);
-    }
+    let assign = function(name){
+      if(utilities.isFunction(params[name])){
+        privateProperties[this][name] = [];
+        privateProperties[this][name].push(params[name]);
+      } else if (Array.isArray(params[name])){
+        privateProperties[this][name] = params[name];
+      }
+    };
 
-    if(utilities.isFunction(params.onMouseOver)){
-      this[onMouseOver].push(params.onMouseOver);
-    } else if(Array.isArray(params.onMouseOver)){
-      this[onMouseOver] = this[onMouseOver].concat(params.onMouseOver);
-    }
+    assign.bind(this);
+    assign("onClick");
+    assign("onMouseOver");
+    assign("onMouseDown");
+    assign("onMouseUp");
+    assign("onMouseOut");
 
-    if(utilities.isFunction(params.onMouseDown)){
-      this[onMouseDown].push(params.onMouseDown);
-    } else if(Array.isArray(params.onMouseDown)){
-      this[onMouseDown] = this[onMouseDown].concat(params.onMouseDown);
-    }
-
-    if(utilities.isFunction(params.onMouseUp)){
-      this[onMouseUp].push(params.onMouseUp);
-    } else if(Array.isArray(params.onMouseUp)){
-      this[onMouseUp] = this[onMouseUp].concat(params.onMouseUp);
-    }
-
-    if(utilities.isFunction(params.onMouseOut)){
-      this[onMouseOut].push(params.onMouseOut);
-    } else if(Array.isArray(params.onMouseOut)){
-      this[onMouseOut] = this[onMouseOut].concat(params.onMouseOut);
-    }
   }
 
   /**
@@ -66,7 +47,7 @@ class Mouse extends Component {
    * @param {GeneralTypes~coords} args
    */
   Click(args){
-    for(let callback of this[onClick]){
+    for(let callback of privateProperties[this].onClick){
       callback.call(this.Entity, args);
     }
   }
@@ -76,7 +57,7 @@ class Mouse extends Component {
    * @param {GeneralTypes~coords} args
    */
   onMouseOver(args){
-    for(let callback of this[onMouseOver]){
+    for(let callback of privateProperties[this].onMouseOver){
       callback.call(this.Entity, args);
     }
   }
@@ -86,7 +67,7 @@ class Mouse extends Component {
    * @param {GeneralTypes~coords} args
    */
   onMouseDown(args){
-    for(let callback of this[onMouseDown]){
+    for(let callback of privateProperties[this].onMouseDown){
       callback.call(this.Entity, args);
     }
   }
@@ -96,7 +77,7 @@ class Mouse extends Component {
    * @param {GeneralTypes~coords} args
    */
   onMouseUp(args){
-    for(let callback of this[onMouseUp]){
+    for(let callback of privateProperties[this].onMouseUp){
       callback.call(this.Entity, args);
     }
   }
@@ -106,7 +87,7 @@ class Mouse extends Component {
    * @param {GeneralTypes~coords} args
    */
   onMouseMove(args){
-    for(let callback of this[onMouseMove]){
+    for(let callback of privateProperties[this].onMouseMove){
       callback.call(this.Entity, args);
     }
   }
@@ -115,7 +96,7 @@ class Mouse extends Component {
    * When the mouse is leaves the entity
    */
   onMouseOut(){
-    for(let callback of this[onMouseOut]){
+    for(let callback of privateProperties[this].onMouseOut){
       callback.call(this.Entity);
     }
   }
@@ -125,7 +106,7 @@ class Mouse extends Component {
    * @param {Callbacks~onMouse[]} methods
    */
   addClickMethods(methods){
-    this[onClick] = this[onClick].concat(methods);
+    privateProperties[this].onClick = privateProperties[this].onClick.concat(methods);
   }
 
   /**
@@ -141,11 +122,11 @@ class Mouse extends Component {
   addMouseMethods(methodContainer){
     let mouseMethods = Object.keys(methodContainer);
     for(let method in mouseMethods){
-      if(this.hasOwnProperty(method) && utilities.isArray(this[method])) {
-        this[method].push(methodContainer[method]);
+      if(utilities.isArray(this[method])) {
+        privateProperties[this][method].push(methodContainer[method]);
       }
     }
-  };
+  }
 }
 
 export default Mouse;

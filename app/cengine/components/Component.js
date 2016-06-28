@@ -1,18 +1,21 @@
 /**
  * Created by schenn on 6/23/16.
  */
-import properties from "../engineParts/propertyDefinitions.js"
-
-var propCallback = Symbol("PropertyCallback");
+import properties from "../engineParts/propertyDefinitions.js";
+import privateProperties from "../engineParts/propertyDefinitions.js";
 
 class Component {
   constructor(entity, propertyCallback){
-    Object.defineProperty(this, "Entity", properties.lockedProperty(entity));
-    this[propCallback] = propertyCallback;
+    privateProperties[this].Entity = entity;
+    privateProperties[this].propertyCallback = propertyCallback;
   }
 
   get propertyCallback(){
-    return this[propCallback];
+    return privateProperties[this].propertyCallback;
+  }
+
+  get Entity(){
+    return privateProperties[this].Entity;
   }
 
   /**
@@ -25,8 +28,8 @@ class Component {
   }
 
   setProperty(name, value, locked = false){
-    properties.observe({name:name, value:value, locked:locked, callback: this[propCallback]}, this);
+    properties.observe({name:name, value:value, locked:locked, callback: privateProperties[this].propertyCallback}, this);
   }
 }
 
-export default Component
+export default Component;
