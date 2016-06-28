@@ -13,6 +13,11 @@ import * as utilities from "utilities";
 
 import SpriteSheet from "../Resources/SpriteSheet";
 
+/**
+ * @class ResourceManager
+ * @memberof CanvasEngine
+ * @inner
+ */
 class ResourceManager {
   constructor(){
     privateProperties[this].sounds = new Map();
@@ -208,4 +213,4 @@ class ResourceManager {
   }
 }
 
-export default ResourceManager;
+export default new ResourceManager();
