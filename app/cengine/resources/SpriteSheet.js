@@ -5,116 +5,135 @@
  * @property {Array|Object} sprites
  *
  */
-(function(CanvasEngine){
 
-  var utils = CanvasEngine.utilities;
+import privateProperties from "../engineParts/propertyDefinitions";
+import * as utilities from "../engineParts/utilities";
 
-  /**
-   * The SpriteSheet Resource manages creating and accessing specific sprites from its source image
-   *
-   * @class
-   * @memberOf CanvasEngine.Resources
-   * @param {object} details
-   * @param {number} details.height
-   * @param {number} details.width
-   * @param {Array|Object} [details.sprites]
-   */
-  var SpriteSheet = function(details){
-    var spriteHeight = details.height;
-    var spriteWidth = details.width;
-    var sprites = [];
-    var spriteCache;
-    var source;
+let processSprites = function(spriteCache, source, spriteWidth, spriteHeight){
+  var sx = 0, sy= 0, index=0;
+  var useCache = utilities.exists(spriteCache);
 
-    if(typeof(details.sprites) !== "undefined"){
-      spriteCache = details.sprites;
+  let sprites = {};
+
+  while(sy<source.height){
+    while(sx < source.width){
+      var name = useCache ? spriteCache[index] : index;
+      sprites[name] = {
+        x: sx, y: sy, width: spriteWidth, height: spriteHeight
+      };
+      sx += spriteWidth;
+      index++;
     }
-    // If no sprites are defined, run through the image y->x, the sprite name is the index.
-    // If sprites are array of names, run through the image y->x using the names provided
-    var processSprites = function(){
-      var sx = 0, sy= 0, index=0;
-      var useCache = utils.exists(spriteCache);
+    sy += spriteHeight;
+    sx = 0;
+  }
 
-      while(sy<source.height){
-        while(sx < source.width){
-          var name = useCache ? spriteCache[index] : index;
-          sprites[name] = {
-            x: sx, y: sy, width: spriteWidth, height: spriteHeight
-          };
-          sx += spriteWidth;
-          index++;
-        }
-        sy += spriteHeight;
-        sx = 0;
-      }
+  return sprites;
+};
 
-    };
+// If sprites are an object, take their data and fill in the rest.
+let processSpriteObject = function(spriteCache, spriteWidth, spriteHeight) {
+  let sprites = {};
+  for(let {[name]: sprite} in spriteCache){
+    sprites[name] = Object.assign({}, {width: spriteWidth, height: spriteHeight}, sprite);
+  }
 
-    // If sprites are an object, take their data and fill in the rest.
-    var processSpriteObject = function() {
-      $.each(spriteCache, function (name, sprite) {
-        sprites[name] = $.extend({}, {width: spriteWidth, height: spriteHeight}, sprite);
-      });
-    };
+  return sprites;
+};
 
-    /**
-     * Process the sprites against an image.
-     * @param {Image} img
-     */
-    this.processSprites = function(img){
-      source = img;
-      // If we have a spriteCache and it's an object, not an array
-      if(utils.exists(spriteCache) &&
-        Object.keys(spriteCache).length > 0 &&
-        !utils.isArray(spriteCache)){
-
-        processSpriteObject();
-      }
-      else{
-        processSprites();
-      }
-    };
-
-    /**
-     * Get a sprite detail object by its name
-     * @param {string} name
-     * @returns {{sx: number, sy: number, sWidth: number, sHeight: number}}
-     */
-    this.getSprite = function(name){
-      return sprites[name];
-    };
-
-    /**
-     * Get the sprite height
-     * @returns {number}
-     */
-    this.sHeight = function(){
-      return spriteHeight;
-    };
-
-    /**
-     * Get the sprite width
-     * @returns {number}
-     */
-    this.sWidth = function(){
-      return spriteWidth;
-    };
-
-    /**
-     * Get the source image
-     * @returns {Image}
-     */
-    this.source = function(){
-      return source;
-    };
-  };
+/**
+ * The SpriteSheet Resource manages creating and accessing specific sprites from its source image
+ *
+ * @class
+ * @memberOf CanvasEngine.Resources
+ * @param {object} details
+ * @param {number} details.height
+ * @param {number} details.width
+ * @param {Array|Object} [details.sprites]
+ */
+class SpriteSheet {
 
   /**
-   * Tell the CanvasEngine how to create a SpriteSheet resource.
-   * @constructs CanvasEngine.Resources.SpriteSheet
+   * @returns {number}
    */
-  CanvasEngine.ResourceManager.setResourceType("SpriteSheet",
-    function(details){
-    return new SpriteSheet(details);
-  });
-})(window.CanvasEngine);
+  get sHeight(){
+    return privateProperties[this].spriteHeight;
+  }
+
+  /**
+   * @param {number} height
+   */
+  set sHeight(height){
+    privateProperties[this].spriteHeight = height;
+  }
+
+  /**
+   * @returns {number}
+   */
+  get sWidth(){
+    return privateProperties[this].spriteWidth;
+  }
+
+  /**
+   * @param {number} width
+   */
+  set sWidth(width){
+    privateProperties[this].spriteWidth = width;
+  }
+
+  /**
+   * @returns {Image}
+   */
+  get Source(){
+    return privateProperties[this].source;
+  }
+
+  /**
+   * @param {Image} source
+   */
+  set Source(source){
+    if(privateProperties[this].source === "") {
+      privateProperties[this].source = source;
+    }
+  }
+
+  constructor(details){
+    privateProperties[this].spriteHeight = details.height;
+    privateProperties[this].spriteWidth = details.width;
+    privateProperties[this].sprites = [];
+    privateProperties[this].source = "";
+
+    if(typeof(details.sprites !== "undefined")){
+      privateProperties[this].spriteCache = details.sprites;
+    }
+  }
+
+  /**
+   * Process the sprites against an image.
+   * @param {Image} img
+   */
+  processSprites(img){
+    privateProperties[this].source = img;
+    // If we have a spriteCache and it's an object, not an array
+    if(utilities.exists(privateProperties[this].spriteCache) &&
+      Object.keys(privateProperties[this].spriteCache).length > 0 &&
+      !utilities.isArray(privateProperties[this].spriteCache)){
+
+      processSpriteObject();
+    }
+    else{
+      processSprites();
+    }
+  }
+
+  /**
+   * Get a sprite detail object by its name
+   * @param {string} name
+   * @returns {{sx: number, sy: number, sWidth: number, sHeight: number}}
+   */
+  getSprite(name){
+    return privateProperties[this].sprites[name];
+  }
+}
+
+export default SpriteSheet;
