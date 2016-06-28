@@ -79,6 +79,8 @@ class Renderer extends Component {
   constructor(params, entity) {
     super(entity, this.markDirty);
     privateProperties[this].isDirty = true;
+    privateProperties[this].hidden = false;
+    privateProperties[this].postRender = null;
 
     // Private Properties
     var { angle = 0,
@@ -371,6 +373,11 @@ class Renderer extends Component {
     return privateProperties[this].isDirty === true;
   }
 
+  hide(callback){
+    privateProperties[this].hidden = true;
+    privateProperties[this].postRender = callback;
+  }
+
   /**
    * Set the defaults and call the draw method against a context.
    *    When a renderer is drawn, it stores a 'shadow' of the render for clearing later.
@@ -378,10 +385,18 @@ class Renderer extends Component {
    * @param {Canvas.enhancedContext} ctx EnhancedContext
    */
   render (ctx) {
-    ctx.setDefaults($.extend({}, this));
-    this.draw(ctx);
-    privateProperties[this].isDirty = false;
-    privateProperties[this].clearShadow = this.clearInfo(ctx);
+    ctx.setDefaults(Object.assign({}, this));
+    if(!privateProperties[this].hidden) {
+      this.draw(ctx);
+      privateProperties[this].isDirty = false;
+      privateProperties[this].clearShadow = this.clearInfo(ctx);
+    }
+  }
+
+  postRender(){
+    if(utilities.isFunction(privateProperties[this].postRender)){
+      privateProperties[this].postRender();
+    }
   }
 
   /**
