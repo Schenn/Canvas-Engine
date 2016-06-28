@@ -37,7 +37,7 @@ class Sprite extends Entity {
 
     this.EntityManager.attachComponent(this, "Renderer", myParams);
 
-    for(let sheetName in params.spritesheets){
+    for(let sheetName of params.spritesheets){
       let image = {};
       image[sheetName+"Image"] = {
         source: params.spritesheets[sheetName].source(),
