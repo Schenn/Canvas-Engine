@@ -26,7 +26,7 @@ class ResourceManager {
 
     privateProperties[this].Resources = {
       SpriteSheet: SpriteSheet
-    }
+    };
   }
   /**
    * Set the base image path
@@ -34,6 +34,13 @@ class ResourceManager {
    */
   set ImagePath(path){
     privateProperties[this].imagePath = path;
+  }
+
+  /**
+   * @returns {string}
+   */
+  get ImagePath(){
+    return privateProperties[this].imagePath;
   }
 
   /**
