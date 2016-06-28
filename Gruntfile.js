@@ -56,6 +56,7 @@ module.exports = function(grunt) {
     jshint: {
       cengine: ['<%= cengine %>'],
       options:{
+        esversion: 6,
         ignores: ["<%=cengine %>/doc"]
       }
     },
@@ -66,14 +67,14 @@ module.exports = function(grunt) {
           files: ['index.html', 'js/*', 'Gruntfile.js']
         }
       },
-      lintAndCompile: {
+      lint: {
         files: ["<%= cengine %>/components/*",
           "<%= cengine %>/engineParts/*",
           "<%= cengine %>/entities/*",
           "<%= cengine %>/resources/*",
           "<%= cengine %>/*.js"
           ],
-        tasks: ['jshint', 'uglify', "jsdoc"]
+        tasks: ['jshint']
       }
     },
     jsdoc:{
@@ -121,9 +122,9 @@ module.exports = function(grunt) {
     grunt.task.run('buildlib');
   });
 
-  grunt.registerTask('compile', ['jshint', 'uglify:cengine']);
+  grunt.registerTask('compile', ['jshint']);
 
-  grunt.event.on('lintAndCompile', function(action, filepath) {
+  grunt.event.on('lint', function(action, filepath) {
     grunt.config('jshint.compiledJS.src', filepath);
   });
 };
