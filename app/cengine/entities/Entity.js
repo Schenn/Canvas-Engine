@@ -12,10 +12,10 @@ import component from "../components/component.js";
  * The Entity Class is the actual class for all the living objects in the Engine.
  *  It contains the base properties required for existing and the methods for communicating with its components and subentities.
  *
- * @class
+ * @class Entity
+ * @memberOf CanvasEngine.Entities
  * @property {number} z_index
  * @property {string} name
- * @memberOf CanvasEngine.Entities
  * @param {Map} params Map
  * @param {string} [params.name]
  * @param {number} [params.z_index]
