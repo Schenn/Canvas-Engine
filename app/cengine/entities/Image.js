@@ -2,49 +2,39 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 /**
- * @typedef {object} LocalParams~ImageEntityParams
+* @typedef {object} LocalParams~ImageEntityParams
+*/
+
+import Entity from "Entity.js";
+
+/**
+ * Responsible for rendering a static image to the screen.
+ *
+ * @class ImageEntity
+ * @memberOf CanvasEngine.Entities
+ * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Image
+ * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Renderer
  */
-(function(CanvasEngine){
-    var EM = CanvasEngine.EntityManager;
+class ImageEntity extends Entity {
+  constructor(params, EntityManager){
+    super(params, EntityManager);
 
-  /**
-   * Attaches an Image and Renderer component to the base entity
-   *
-   * @param {CanvasEngine.Entities.Entity} entity
-   * @param {LocalParams~ImageEntityParams} params
-   * @returns {CanvasEngine.Entities.Image}
-   */
-  var makeImage = function(entity, params){
+    let self=this;
 
-    /**
-     * @class
-     * @memberOf CanvasEngine.Entities
-     * @alias Image
-     * @augments CanvasEngine.Entities.Entity
-     * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Image
-     * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Renderer
-     */
-    var img = $.extend(true, {}, entity);
-
-    // Add an Image Component
-    EM.attachComponent(img,"Image", $.extend({}, params, {
+    let componentParams = {
       callback: function(){
-        img.messageToComponent("Renderer", "markDirty");
-      }
-    }));
-
-    // Add a renderer component
-    EM.attachComponent(img, "Renderer", $.extend({}, params, {
+        self.messageToComponent("Renderer", "markDirty");
+      },
       draw: function(ctx){
-        ctx.drawImage($.extend({}, this, img.getFromComponent("Image", "asObject")));
+        ctx.drawImage(self.getFromComponent("Image", "asObject"));
       }
-    }));
-    return img;
-  };
+    };
 
-  /**
-   * Tell the EntityManager how to make an IMAGE
-   */
-  EM.setMake("IMAGE", makeImage);
+    Object.assign(componentParams, params);
 
-})(window.CanvasEngine);
+    this.EntityManager.attachComponent(this, "ImageWrapper", componentParams);
+    this.EntityManager.attachComponent(this, "Renderer", componentParams);
+  }
+}
+
+export default ImageEntity;

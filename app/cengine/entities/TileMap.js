@@ -13,13 +13,12 @@ import Entity from "Entity.js";
 class TileMap extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
-    let self=this;
 
     EntityManager.attachComponent("TileMap", {
       Click: {
         "TileClick": {
-          onClick: function(coord){
-            self.messageToComponent("TileMap", "TileClick", coord);
+          onClick: coord=>{
+            this.messageToComponent("TileMap", "TileClick", coord);
           }
         }
       }
@@ -29,27 +28,27 @@ class TileMap extends Entity {
     EntityManager.attachComponent(this, "SpriteSheet", params);
 
     // A tilemap needs to reference a tilemap component
-    EntityManager.attachComponent(this, "TileMap", $.extend({},{
-      onScroll: function(){
-        TileMap.messageToComponent("Renderer", "markDirty");
+    EntityManager.attachComponent(this, "TileMap", Object.assign({},{
+      onScroll: ()=>{
+        this.messageToComponent("Renderer", "markDirty");
       }
     }, params.tileMap));
 
     // A tilemap needs a renderer component
-    EntityManager.attachComponent(this, "Renderer", $.extend({}, {
+    EntityManager.attachComponent(this, "Renderer", Object.assign({}, {
       draw: function(ctx){
         // Draw each tile in the tilemap
-        var tiles = self.getFromComponent("TileMap", "getVisibleTiles", {width: CanvasEngine.Screen.width(), height: CanvasEngine.Screen.height()});
-        var tileSize = self.getFromComponent("TileMap", "getTileSize");
+        let tiles = this.Entity.getFromComponent("TileMap", "getVisibleTiles", {width: CanvasEngine.Screen.width(), height: CanvasEngine.Screen.height()});
+        let tileSize = this.Entity.getFromComponent("TileMap", "getTileSize");
         // for each row
         for(let y =0; y < tiles.length; y++){
           // for each col in row
           for(let x=0; x < tiles[y].length; x++){
             let spriteName = tiles[y][x];
-            let tile = self.getFromComponent("SpriteSheet", "getSprite", spriteName);
+            let tile = this.Entity.getFromComponent("SpriteSheet", "getSprite", spriteName);
 
-            let imgSource = self.getFromComponent("SpriteSheet", "source");
-            let output =$.extend({},{
+            let imgSource = this.Entity.getFromComponent("SpriteSheet", "source");
+            let output =Object.assign({},{
               x: x * tileSize.width,
               y: y * tileSize.height,
               source: imgSource,

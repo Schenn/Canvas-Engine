@@ -7,81 +7,62 @@
  * @property {function} [onDirectionChange]
  * @property {LocalParams~TimerParams} movementTimer
  */
-(function(CanvasEngine) {
-  var EM = CanvasEngine.EntityManager;
-  var utilities = CanvasEngine.utilities;
 
-  /**
-   * Tell the EntityManager how to make a mobile sprite from an animated sprite.
-   */
-  EM.setMake("MSPRITE",
+import AnimatedSprite from "AnimatedSprite";
+import * as utilities from "../engineParts/utilities";
+
+class MobileSprite extends AnimatedSprite {
+  constructor(params, EntityManager){
+    super(params, EntityManager);
+
+    if(utilities.isFunction(params.onMovement)) {
+      this.onMovement = params.onMovement;
+      this.onMovement.bind(this);
+    }
+
+    if(utilities.isFunction(params.onDirectionChange)){
+      this.onDirectionChange = params.onDirectionChange;
+      this.onDirectionChange.bind(this);
+    } else {
+      this.onDirectionChange = newDirection => {
+        this.CurrentAnimation = newDirection.direction;
+      };
+    }
+
+    EntityManager.attachComponent(this, "Movement", Object.assign({}, {
+      onDirectionChange:(direction)=>{this.onDirectionChange(direction);},
+      onMoveX: val=>{this.updateRenderPosition("x", val);},
+      onMoveY: val=>{this.updateRenderPosition("y", val);}
+    }, params));
+
     /**
-     *
-     * @param {CanvasEngine.Entities.AnimatedSprite} entity
-     * @param {LocalParams~MobileSpriteParams} params
-     * @returns {CanvasEngine.Entities.MobileSprite}
+     * Attach a second timer component to the entity which we use to control our movement over time.
      */
-    function (entity, params) {
-
-      /**
-       * @class
-       * @memberOf CanvasEngine.Entities
-       * @augments CanvasEngine.Entities.AnimatedSprite
-       * @borrows CanvasEngine.Components.Movement as CanvasEngine.Entities.MobileSprite#components~Movement
-       * @borrows CanvasEngine.Components.Timer as CanvasEngine.Entities.MobileSprite#components~movementTimer
-       */
-      var MobileSprite = $.extend(true, {}, {
-        onMovement: (utilities.isFunction(params.onMovement)) ? params.onMovement.bind(this) : null,
-        onDirectionChange: (utilities.isFunction(params.onDirectionChange)) ?
-          params.onDirectionChange.bind(this) :
-          function(newDirection){
-            this.setCurrentAnimation(newDirection.direction);
-          },
-        updateRenderPosition: function(axis, val){
-          var data = {};
-          data[axis] = val;
-          this.messageToComponent("Renderer", "setPosition", data);
-          if(utilities.isFunction(this.onMovement)){
-            this.onMovement.call(this, data);
+    EntityManager.attachComponent(this,
+      Object.assign({}, {
+          Timer:{
+            // The entity already has a timer component added for animating sprites.
+            //  We need to add a second timer for managing movement.
+            "movementTimer": Object.assign({},{
+              onUpdate: delta=>{
+                this.messageToComponent("Movement", "move", delta);
+              }
+            },params.movementTimer)
           }
         }
-      }, entity);
+      )
+    );
+  }
 
-      /**
-       * Attach a movement component to the entity. When it moves in either direction, tell it to update the Renderer.
-       */
-      EM.attachComponent(MobileSprite, "Movement", $.extend({},
-        {
-          onDirectionChange:function(direction){
-            MobileSprite.onDirectionChange(direction);
-          }, onMoveX: function(val){
-            MobileSprite.updateRenderPosition("x", val);
-          }, onMoveY: function(val){
-            MobileSprite.updateRenderPosition("y", val);
-          }
-        },
-        params)
-      );
+  updateRenderPosition(axis, val){
+    var data = {};
+    data[axis] = val;
+    this.messageToComponent("Renderer", "setPosition", data);
+    if(utilities.isFunction(this.onMovement)){
+      this.onMovement.call(this, data);
+    }
+  }
 
-      /**
-       * Attach a second timer component to the entity which we use to control our movement over time.
-       */
-      EM.attachComponent(MobileSprite,
-        $.extend({}, {
-            Timer:{
-              // The entity already has a timer component added for animating sprites.
-              //  We need to add a second timer for managing movement.
-              "movementTimer": $.extend({},{
-                onUpdate: function(delta){
-                  MobileSprite.messageToComponent("Movement", "move", delta);
-                }
+}
 
-              },params.movementTimer)
-            }
-          }
-        ));
-
-      return MobileSprite;
-  }, "ASPRITE");
-
-})(window.CanvasEngine);
+export default MobileSprite;

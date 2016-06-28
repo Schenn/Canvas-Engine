@@ -3,215 +3,217 @@
  *
  */
 
-(function(CanvasEngine){
-  // These properties are used but can only be set once
+import properties from "../engineParts/propertyDefinitions.js";
+import privateProperties from "../engineParts/propertyDefinitions";
+import * as utilities from "../engineParts/utilities";
+import component from "../components/component.js";
 
-  var EM = CanvasEngine.EntityManager;
-  var utils = CanvasEngine.utilities;
+/**
+ * The Entity Class is the actual class for all the living objects in the Engine.
+ *  It contains the base properties required for existing and the methods for communicating with its components and subentities.
+ *
+ * @class
+ * @property {number} z_index
+ * @property {string} name
+ * @memberOf CanvasEngine.Entities
+ * @param {Map} params Map
+ * @param {string} [params.name]
+ * @param {number} [params.z_index]
+ * @param {CanvasEngine.EntityManager} EM
+ */
+class Entity{
+  get EntityManager() {
+    return properties.proxy(privateProperties[this].EntityManager);
+  }
 
   /**
-   * The Entity Class is the actual class for all the living objects in the Engine.
-   *  It contains the base properties required for existing and the methods for communicating with its components and subentities.
+   * Get the current state of the components on this entity.
+   *    Leaves the original components untouched.
    *
-   * @class
-   * @property {number} z_index
-   * @property {string} name
-   * @memberOf CanvasEngine.Entities
-   *
-   * @param {object} params
-   * @param {string} [params.name]
-   * @param {number} [params.z_index]
-   *
+   * @return {Proxy<Map>}
    */
-  function Entity(params){
+  get componentList(){
+    return properties.proxy(privateProperties[this].components);
+  }
+
+  constructor(params, EM){
+    privateProperties[this].EntityManager = EM;
     /**
      * @link{CanvasEngine.Components} provide their own self-contained functionality and are used by their parent
      *  entity to perform tasks.
      *
      * @inner
-     * @type {Object.<string, object>}
+     * @type Map
      */
-    var components = {};
+    privateProperties[this].components = new Map();
     /**
      * subEntities are regular @link{CanvasEngine.Entities} which belong to another.
      *
      * @inner
-     * @type {Object.<string,object>}
+     * @type Map
      */
-    var subEntities = {};
+    privateProperties[this].subEntities = new Map();
 
-    // Fixed Public Properties
-    // The z_index and name cannot be changed.
     Object.defineProperties(this, {
       /**
        * @type number
        * @instance
        * @memberof Entity
        */
-      z_index:EM.properties.lockedProperty(params.z_index || 0),
+      z_index:properties.lockedProperty(params.z_index || 0),
       /**
        * @type string
        * @instance
        * @memberof Entity
        */
-      name:EM.properties.lockedProperty(params.name || utils.randName())
+      name:properties.lockedProperty(params.name || utilities.randName())
     });
 
-    if(params.hasOwnProperty("z_index")){
-      delete params.z_index;
+  }
+  /**
+   * Attach a component to this entity;
+   *
+   * @param {string} name the name of the component
+   * @param {Component} comp the instantiated component @see{CanvasEngine.Components}
+   */
+  attachComponent(name, comp){
+    if(!privateProperties[this].components.has(name) && comp instanceof component){
+      privateProperties[this].components.set(name, comp);
     }
+  }
+  /**
+   * Attach a sub-entity to this entity
+   *  A sub-entity is simply another entity.
+   *  This allows complex entities made up of multiple entities to be constructed.
+   *  Warning: BroadcastToComponent iterates over subEntities.
+   *    If you want to disconnect an inner entity from outside messages, don't attach it as a sub-entity.
+   *
+   * @param {string} name
+   * @param {Entity} entity
+   */
+  attachSubEntity(name, entity){
+    if(entity instanceof this){
+      privateProperties[this].subEntities.set(name, entity);
+    }
+  }
 
-    /**
-     * Attach a component to this entity;
-     *
-     * @param {string} name the name of the component
-     * @param {object} component the instantiated component @see{CanvasEngine.Components}
-     */
-    this.attachComponent = function(name, component){
-      if(!this.hasComponent(name)) {
-        components[name] = component;
+  /**
+   * Does the entity have a component?
+   *
+   * @param {string} name
+   * @returns {boolean}
+   */
+  hasComponent(name) {
+    return privateProperties[this].components.has(name);
+  }
+
+  /**
+   * Does the entity have a sub-entity?
+   *
+   * @param {string} name
+   * @returns {boolean}
+   */
+  hasSubEntity(name){
+    return privateProperties[this].subEntities.has(name);
+  }
+
+  /**
+   * Tell every component to do a function.
+   *    If it can't, that's ok just go to the next component.
+   *
+   * @param {string} funcName
+   * @param {*} [args]
+   */
+  broadcastToComponent(funcName, args){
+    privateProperties[this].components.forEach(function(name, component){
+      if(utilities.isFunction(privateProperties[this].components[funcName])){
+        component[funcName].call(component,args);
       }
-    };
+    });
 
-    /**
-     * Attach a sub-entity to this entity
-     *  A sub-entity is simply another entity.
-     *  This allows complex entities made up of multiple entities to be constructed.
-     *  Warning: BroadcastToComponent iterates over subEntities.
-     *    If you want to disconnect an inner entity from outside messages, don't attach it as a sub-entity.
-     *
-     * @param {object} subEntity @see{CanvasEngine.Entities}
-     */
-    this.attachSubEntity = function(subEntity){
-      if(EM.isEntity(subEntity)) {
-        subEntities[subEntity.name] = subEntity;
-      } else {
-        console.log("subEntity is not an entity:"+subEntity);
-      }
-    };
-
-    /**
-     * Does the entity have a component?
-     *
-     * @param {string} componentName
-     * @returns {boolean}
-     */
-    this.hasComponent = function(componentName){
-      return Object.keys(components).indexOf(componentName)>-1;
-    };
-
-    /**
-     * Tell every component to do a function.
-     *    If it can't, that's ok just go to the next component.
-     *
-     * @param {string} funcName
-     * @param {*} [args]
-     */
-    this.broadcastToComponents = function(funcName, args){
-      $.each(components, function(name, component){
-        if(utils.isFunction(component[funcName])){
-          component[funcName].call(component,args);
-        }
-      });
-
-      // Tell the sub-entities to tell their components to do the function as well.
-      $.each(subEntities, function(name, entity){
-        entity.broadcastToComponents(funcName,args);
-      });
-    };
-
-    /**
-     * Tell a specific component to do something, maybe with arguments.
-     *
-     * @param {string} componentName
-     * @param {string} funcName
-     * @param {*} [args]
-     */
-    this.messageToComponent = function(componentName, funcName, args){
-      if(utils.exists(components[componentName]) &&
-        utils.isFunction(components[componentName][funcName])){
-
-        if(utils.exists(args)) {
-          components[componentName][funcName].call(components[componentName], args);
-        }else {
-          components[componentName][funcName].call(components[componentName]);
-        }
-      }
-    };
-
-    /**
-     * Get data from a component
-     *
-     * @param {string} componentName
-     * @param {string} funcName
-     * @param {*} [args]
-     * @throws Will throw an error if the Entity does not have the given component or the component doesn't have the given function
-     * @returns {*}
-     */
-    this.getFromComponent = function(componentName, funcName, args){
-      if(utils.exists(components[componentName]) &&
-        utils.isFunction(components[componentName][funcName])){
-
-        if(utils.exists(args)) {
-          return components[componentName][funcName].call(components[componentName],args);
-        }else {
-          return components[componentName][funcName].call(components[componentName]);
-        }
-      }
-      else {
-        throw this.name + " Does not have component: "+ componentName;
-      }
-    };
-
-    /**
-     * Get or set a property on a component
-     *
-     * @param {string} componentName
-     * @param {string} propertyName
-     * @param {*} [value]
-     * @returns {*}
-     */
-    this.componentProperty = function(componentName, propertyName, value){
-      if(utils.exists(value) && components[componentName].hasOwnProperty(propertyName)){
-        components[componentName][propertyName] = value;
-      }
-
-      return components[componentName][propertyName];
-    };
-
-    /**
-     * Tell a specific sub-entity to do something
-     *
-     * @param {string} entityName
-     * @param {string} funcName
-     * @param {*} [args]
-     */
-    this.messageToSubEntity = function(entityName, funcName, args){
-      if(utils.exists(subEntities[entityName]) &&
-        utils.isFunction(subEntities[entityName][funcName])){
-
-        if(utils.exists(args)) {
-          subEntities[entityName][funcName].call(subEntities[entityName], args);
-        }else {
-          subEntities[entityName][funcName].call(subEntities[entityName]);
-        }
-      }
-    };
-
-    /**
-     * Get the current state of the components on this entity.
-     *    Leaves the original components untouched.
-     *
-     * @return {Array.<object>}
-     */
-    this.getComponentList = function(){
-      return $.extend({}, components);
-    };
+    privateProperties[this].subEntities.forEach(function(name, entity){
+      entity.broadcastToComponents(funcName,args);
+    });
 
   }
 
-  // Tell the EntityManager how to build a base entity.
-  EM.setBaseEntityGenerator(function(params){
-    return new Entity(params);
-  });
-})(window.CanvasEngine);
+  /**
+   * Tell a specific component to do something, maybe with arguments.
+   *
+   * @param {string} componentName
+   * @param {string} funcName
+   * @param {*} [args]
+   */
+  messageToComponent(componentName, funcName, args){
+    if(utilities.exists(privateProperties[this].components[componentName]) &&
+      utilities.isFunction(privateProperties[this].components[componentName][funcName])){
+
+      if(utilities.exists(args)) {
+        privateProperties[this].components[componentName][funcName].call(privateProperties[this].components[componentName], args);
+      }else {
+        privateProperties[this].components[componentName][funcName].call(privateProperties[this].components[componentName]);
+      }
+    }
+  }
+
+  /**
+   * Get data from a component
+   *
+   * @param {string} componentName
+   * @param {string} funcName
+   * @param {*} [args]
+   * @throws Will throw an error if the Entity does not have the given component or the component doesn't have the given function
+   * @returns {*}
+   */
+  getFromComponent(componentName, funcName, args){
+    if(utilities.exists(privateProperties[this].components[componentName]) &&
+      utilities.isFunction(privateProperties[this].components[componentName][funcName])){
+
+      if(utilities.exists(args)) {
+        return privateProperties[this].components[componentName][funcName].call(privateProperties[this].components[componentName],args);
+      }else {
+        return privateProperties[this].components[componentName][funcName].call(privateProperties[this].components[componentName]);
+      }
+    }
+    else {
+      throw this.name + " Does not have component: "+ componentName;
+    }
+  }
+
+  /**
+   * Get or set a property on a component
+   *
+   * @param {string} componentName
+   * @param {string} propertyName
+   * @param {*} [value]
+   * @returns {*}
+   */
+  componentProperty(componentName, propertyName, value){
+    if(utilities.exists(value) && privateProperties[this].components[componentName].hasOwnProperty(propertyName)){
+      privateProperties[this].components[componentName][propertyName] = value;
+    }
+
+    return privateProperties[this].components[componentName][propertyName];
+  }
+
+  /**
+   * Tell a specific sub-entity to do something
+   *
+   * @param {string} entityName
+   * @param {string} funcName
+   * @param {*} [args]
+   */
+  messageToSubEntity(entityName, funcName, args){
+    if(utilities.exists(privateProperties[this].subEntities[entityName]) &&
+      utilities.isFunction(privateProperties[this].subEntities[entityName][funcName])){
+
+      if(utilities.exists(args)) {
+        privateProperties[this].subEntities[entityName][funcName].call(privateProperties[this].subEntities[entityName], args);
+      }else {
+        privateProperties[this].subEntities[entityName][funcName].call(privateProperties[this].subEntities[entityName]);
+      }
+    }
+  }
+}
+
+export default Entity;

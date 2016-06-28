@@ -5,78 +5,60 @@
  * @typedef {object} LocalParams~AnimatedSpriteParams
  * @property {object.<string, LocalParams~AnimatorParams>} animations
  */
-(function(CanvasEngine) {
-  var EM = CanvasEngine.EntityManager;
-  var utilities = CanvasEngine.utilities;
+
+import Sprite from "Sprite";
+import privateProperties from "../engineParts/propertyDefinitions";
+import * as utilities from "../engineParts/utilities";
+
+class AnimatedSprite extends Sprite {
+  /**
+   * @returns {string}
+   */
+  get CurrentAnimation(){
+    return privateProperties[this].currentAnimation;
+  }
 
   /**
-   * Tell the EntityManager how to make an AnimatedSprite from a SPRITE entity
    *
-   * @see CanvasEngine~EntityManager.create
+   * @param {string} animation
    */
-  EM.setMake("ASPRITE",
-    /**
-     * @param {CanvasEngine.Entities.Sprite} entity
-     * @param {LocalParams~AnimatedSpriteParams} params
-     * @returns {CanvasEngine.Entities.AnimatedSprite}
-     */
-  function (entity, params) {
-    var animations={}, currentAnimation = "default";
+  set CurrentAnimation(animation){
+    if(utilities.exists(privateProperties[this].animations.has(animation))){
+      this.messageToSubEntity(privateProperties[this].currentAnimation, "disable");
+      privateProperties[this].currentAnimation = animation;
+      this.messageToSubEntity(privateProperties[this].currentAnimation, "enable");
+    }
+  }
 
-      /**
-       * @class
-       * @memberOf CanvasEngine.Entities
-       * @alias AnimatedSprite
-       * @augments CanvasEngine.Entities.Sprite
-       * @borrows CanvasEngine.Entities.Animator as AnimatedSprite#subEntities~AnimationName
-       */
-      var AnimatedSprite = $.extend(true, {}, {
+  constructor(params, EntityManager){
+    super(params, EntityManager);
+    privateProperties[this].animations = new Map();
+    privateProperties[this].currentAnimation = "default";
 
+    for(var {[name]:animation} of params.animations) {
+      this.addAnimation(name, animation);
+    }
+  }
 
-        /**
-         * @memberof CanvasEngine.Entities.AnimatedSprite
-         * @param {string} animation
-         */
-        setCurrentAnimation : function(animation){
-          if(utilities.exists(animations[animation])){
-            this.messageToSubEntity(currentAnimation, "disable");
-            currentAnimation = animation;
-            this.messageToSubEntity(currentAnimation, "enable");
+  addAnimation(name, animation){
+    let animator = this.EntityManager.create("Animator", Object.assign({}, {
+        name: name,
+        // When the sprite's frame has changed, tell the entity to set the sprite to the next frame.
+        onFrameChange: nextFrame=>{
+          if(privateProperties[this].currentAnimation === name){
+            this.setSprite(nextFrame);
           }
-        },
-        /**
-         * @memberof CanvasEngine.Entities.AnimatedSprite
-         * @param {string} name
-         * @param {LocalParams~AnimatorParams} animation
-         */
-        addAnimation : function(name, animation){
-          var animator =EM.create("Animator",
-            $.extend({}, {
-                name: name,
-                // When the sprite's frame has changed, tell the entity to set the sprite to the next frame.
-                onFrameChange: function(nextFrame){
-                  if(currentAnimation === name){
-                    AnimatedSprite.setSprite(nextFrame);
-                  }
-                }
-              },
-              animation));
-          if(name !== "default") {
-            animator.disable();
-          }
-          animations[name] = true;
-
-          this.attachSubEntity(animator);
         }
-      }, entity);
+      },
+      animation));
+    if(name !== "default") {
+      animator.disable();
+    }
 
+    privateProperties[this].animations[name] = true;
 
-    $.each(params.animations, function(name, animation){
-      AnimatedSprite.addAnimation(name, animation);
-    });
+    this.attachSubEntity(name, animator);
+  }
+}
 
-    return AnimatedSprite;
-  }, "SPRITE");
-
-
-})(window.CanvasEngine);
+export default AnimatedSprite;
