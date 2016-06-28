@@ -3,7 +3,12 @@
  */
 import properties from "../engineParts/propertyDefinitions.js";
 import privateProperties from "../engineParts/propertyDefinitions.js";
+import Entity from "../entities/Entity";
 
+/**
+ * @class Component
+ * @memberof CanvasEngine.Components
+ */
 class Component {
   constructor(entity, propertyCallback){
     privateProperties[this].Entity = entity;
