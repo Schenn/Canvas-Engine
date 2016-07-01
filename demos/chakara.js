@@ -1,4 +1,4 @@
-(function(){
+(function(CanvasEngine){
 
 var game = function(){
 
@@ -19,13 +19,13 @@ var game = function(){
 
     CanvasEngine.addMap([
       {
-        type: "RECT",
+        type: "Rect",
         height:CanvasEngine.Screen.height(),
         width: CanvasEngine.Screen.width(),
         fillStyle: "#000000"
       },
       {
-        type: "LABEL",
+        type: "Label",
         name: "Loading",
         text: "Loading...",
         x: CanvasEngine.Screen.width()/2,
@@ -59,7 +59,7 @@ var game = function(){
 
     CanvasEngine.addMap([
       {
-        type: "TILEMAP",
+        type: "TileMap",
         spritesheet: "medieval",
         tileMap: {
           height: 32, width: 32,
@@ -91,7 +91,7 @@ var game = function(){
   this.addMovable = function(){
     CanvasEngine.addMap([
       {
-        type: "MSPRITE",
+        type: "MobileSprite",
         x: 98, y:98,
         z_index: 2,
         spritesheets: {
@@ -140,4 +140,4 @@ var game = function(){
 
 window.chakara = new game();
 
-})();
+})(window.CanvasEngine);

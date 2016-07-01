@@ -25,21 +25,11 @@
   }
   </style>
   <script src="js/lib.min.js"></script>
-  <script src="js/cengine.min.js"></script>
-  <script src="demos/tictactoe.js"></script>
+  <script src="app/cengine/CanvasEngine.js"></script>
   <script src="demos/chakara.js"></script>
   <script>
 
     $(function(){
-      /**
-      var tictacStart = function(){
-        tictactoe.setup($("#game")[0]);
-        $("#tictac").on("click", function(){
-          tictactoe.start();
-        });
-      };
-       */
-
 
       var chakaraStart = function(){
         chakara.setup($("#game")[0]);
@@ -47,8 +37,6 @@
           chakara.start();
         });
       };
-
-      //tictacStart();
       chakaraStart();
 
     });
@@ -60,7 +48,6 @@
   <p>Bring your web canvases to life with this simple to use game engine!</p>
   <!-- Set the demo title to the current demo name -->
   <h2>Chakara Demo</h2>
-  <button id="tictac" disabled="disabled">Start TicTacToe</button>
   <button id="chakara">Start Chakara</button>
   <div id="wrap">
     <canvas id="game"></canvas>
