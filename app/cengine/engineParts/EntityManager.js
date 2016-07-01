@@ -135,7 +135,7 @@ class EntityManager {
           /** component = {"componentName" : {"name to use" : data }} */
           let names = Object.keys(component[com]);
           for(let name of names){
-            entity.attachComponent(name, new privateProperties[this].components.get(component[com])(params, entity))
+            entity.attachComponent(name, new privateProperties[this].components.get(component[com])(params, entity));
           }
         } else if(typeof(component[com]== "string")){
           /** component = {"componentName" : "name to use"} */
