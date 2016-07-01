@@ -2,7 +2,6 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 
-
 import privateProperties from "propertyDefinitions";
 import * as utilities from "utilities";
 
@@ -24,6 +23,10 @@ class EntityTracker {
     return privateProperties[this].entities.size();
   }
 
+  get zIndexes(){
+    return privateProperties[this].entitiesByZ.keys();
+  }
+
   constructor(){
     privateProperties[this].entities = new WeakMap();
     privateProperties[this].entitiesByZ = [];
@@ -34,7 +37,7 @@ class EntityTracker {
   /**
    * Add "Entities" to the Entity Tracker
    *
-   * @param {CanvasEngine.Entities.Entity[]} entities
+   * @param {Entity[]} entities
    */
   addEntities(entities){
     for(let entity of entities){
@@ -71,7 +74,7 @@ class EntityTracker {
    * Get the entities with the given names
    *
    * @param {string[]} names array of names
-   * @returns {CanvasEngine.Entities.Entity[]}
+   * @returns {Entity[]}
    */
   getEntities(names){
     var ents = [];
@@ -83,30 +86,8 @@ class EntityTracker {
   }
 
   /**
-   * Remove a collection of entities from the Tracker.
-   *
-   * @param {string[]} names array of names
+   * Clear all the Entities from the world
    */
-  removeEntities(names){
-    for(let name of names){
-      // Clear the entity from the Screen.
-
-      let entity= privateProperties[this].entities.get(name);
-
-      entity.messageToComponent("Renderer", "hide", ()=>{
-        privateProperties[this].entities.delete(name);
-        if(privateProperties[this].entitiesByZ[entity.z_index].size === 0){
-          privateProperties[this].entitiesByZ.splice(entity.z_index,1);
-          privateProperties[this].entitiesByZ = utilities.cleanArray(privateProperties[this].entitiesByZ);
-          let zs = privateProperties[this].entitiesByZ.keys();
-          privateProperties[this].maxZ = zs[zs.length -1];
-
-        }
-
-      });
-    }
-  }
-
   clearEntities(){
     // Starting with the last z index, work backwards, clearing each collection
     var zs = privateProperties[this].entitiesByZ.keys();
@@ -117,10 +98,45 @@ class EntityTracker {
   }
 
   /**
+   * Remove a collection of entities from the Tracker.
+   *
+   * @param {string[]} names array of names
+   */
+  removeEntities(names){
+
+    for(let name of names){
+      // Clear the entity from the Screen.
+      this.removeEntity(name);
+    }
+  }
+
+  /**
+   * Remove Entity from collections
+   *
+   * @param {string} name
+   */
+  removeEntity(name){
+    let entity= privateProperties[this].entities.get(name);
+
+    entity.messageToComponent("Renderer", "hide", ()=>{
+      privateProperties[this].entities.delete(name);
+      if(privateProperties[this].entitiesByZ[entity.z_index].size === 0){
+        privateProperties[this].entitiesByZ.splice(entity.z_index,1);
+        privateProperties[this].entitiesByZ = utilities.cleanArray(privateProperties[this].entitiesByZ);
+        let zs = privateProperties[this].entitiesByZ.keys();
+        privateProperties[this].maxZ = zs[zs.length -1];
+
+      }
+
+    });
+  }
+
+
+  /**
    * Get all the entities on a given z-index
    *
    * @param {number} z the Z index
-   * @returns {CanvasEngine.Entities.Entity[]} Array of Entities
+   * @returns {Entity[]} Array of Entities
    */
   getEntitiesByZ(z){
     var ents = [];
