@@ -11,263 +11,217 @@
  * }} LocalParams~mouseEventParams
  */
 
-/**
- * Create and attach the Screen to the CanvasEngine
- */
-(function(CanvasEngine){
+import privateProperties from "propertyDefinitions";
+import * as utilities from "utilities";
 
-  var previousMousePosition;
+import $ from 'jQuery';
+
+
+class Screen {
+
+  get height(){
+    return privateProperties[this].baseCanvas.height();
+  }
+
+  get width(){
+    return privateProperties[this].baseCanvas.width();
+  }
+
+  constructor(MouseHandler){
+    privateProperties[this].previousMousePosition = {};
+    privateProperties[this].canvases = [];
+    privateProperties[this].baseCanvas = null;
+    privateProperties[this].onMouseEvent = MouseHandler;
+  }
+
+  attachToCanvas(canvas){
+    if(!(canvas instanceof jQuery)){
+      canvas = $(canvas);
+    }
+    privateProperties[this].canvases[0] = canvas;
+    privateProperties[this].baseCanvas = canvas;
+    privateProperties[this].baseCanvas.parent().on({
+      click:this.onClick,
+      mousedown: this.onMouseDown,
+      mouseup:this.onMouseUp,
+      mousemove: this.onMouseMove
+    }, "canvas");
+  }
 
   /**
-   * The Screen class manages the individual canvases of the Engine
-   *
-   * @class
-   * @memberOf CanvasEngine
-   * @static
+   * Fill the parent container up to a given modifier.
+   * @param {number} modifier A percentage 1 - 100
    */
-  var Screen = function(){
-    var canvases = [];
-    var baseCanvas;
+  maximize(modifier = 100){
+    privateProperties[this].forEach(function(canvas){
+      canvas.maximize(modifier);
+    });
+  }
 
-    /**
-     * Get the height of the drawing area
-     * @returns {number}
-     */
-    this.height = function(){
-      return baseCanvas.height();
-    };
+  getScreenContext(zIndex){
+    return privateProperties[this].canvases[zIndex].getEnhancedContext();
+  }
 
-    /**
-     * Get the width of the drawing area
-     * @returns {number}
-     */
-    this.width = function(){
-      return baseCanvas.width();
-    };
+  setResolution(resolution){
 
-    /**
-     * Set the base canvas which forms the back of the screen.
-     *
-     * @param {jQuery | HTMLElement} canvas A jQuery wrapped canvas
-     */
-    this.setScreen = function(canvas){
-      if(!(canvas instanceof jQuery)){
-        canvas = $(canvas);
-      }
-      canvases[0] = canvas;
-      baseCanvas = canvas;
-      baseCanvas.parent().on({
-        click:this.onClick,
-        mousedown: this.onMouseDown,
-        mouseup:this.onMouseUp,
-        mousemove: this.onMouseMove
-      }, "canvas");
-    };
+  }
 
-    /**
-     * Fill the parent container up to a given modifier.
-     * @param {number} modifier A percentage 1 - 100
-     */
-    this.maximize = function(modifier){
-      canvases.forEach(function(canvas){
-        canvas.maximize(modifier);
-      });
-    };
-
-    /**
-     * Set the Screen Resolution.
-     *
-     * If you know what resolution your animation looks best at;
-     *  Set it with this method and use CSS to scale the view.
-     *  Be sure to maintain your aspect ratio in your style adjustments.
-     *
-     * @param {number} width
-     * @param {number} height
-     */
-    this.setResolution = function(width, height){
-      $.each(canvases, function(index, canvas){
-        canvas.attr("width", width);
-        canvas.attr("height", height);
-      });
-    };
-
-    /**
-     * Add a z layer (canvas) to the screen.
-     *
-     * @param {number} z The z index to add
-     */
-    this.addZLayer = function(z){
-      if(CanvasEngine.utilities.exists(canvases[z])) return;
+  /**
+   * Add a z layer (canvas) to the screen.
+   *
+   * @param {number[]} layers The z indexes to add
+   */
+  addZLayers(layers){
+    for(let z of layers){
+      if(utilities.exists(privateProperties[this].canvases[z])) return;
 
       // Set reference to the canvas element, not its jQuery wrapped version.
       // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
-      canvases[z] = baseCanvas.addZLayer(
-        baseCanvas.attr("height"),
-        baseCanvas.attr("width"),
+      privateProperties[this].canvases[z] = privateProperties[this].baseCanvas.addZLayer(
+        privateProperties[this].baseCanvas.attr("height"),
+        privateProperties[this].baseCanvas.attr("width"),
         z
       );
-    };
+    }
+  }
 
-    /**
-     * Remove a z layer from the Screen.
-     *    You cannot remove the base canvas.
-     *
-     * @param {number} z The index to remove.
-     */
-    this.removeZLayer = function(z){
+  /**
+   * Remove a z layer from the Screen.
+   *    You cannot remove the base canvas.
+   *
+   * @param {number[]} layers The index to remove.
+   */
+  removeZLayers(layers){
+    for(let z of layers){
       if(z > 0) {
-        canvases[z].remove();
-        delete canvases[z];
-        canvases = CanvasEngine.utilities.cleanArray(canvases);
+        privateProperties[this].canvases[z].remove();
+        delete privateProperties[this].canvases[z];
+        privateProperties[this].canvases = utilities.cleanArray(privateProperties[this].canvases);
       }
-    };
+    }
 
-    /**
-     * Draw the Screen Stack
-     *  - For each Screen Layer, get the enhanced context and tell CanvasEngine to draw the current Z layer
-     *
-     *  @see{@link CanvasEngine.drawZ}
-     */
-    this.drawScreen = function(){
-      canvases.forEach(function(canvas, z){
-        var ctx = canvas.getEnhancedContext();
+  }
 
-        CanvasEngine.drawZ(z, ctx);
-      });
-    };
+  /**
+   * Get the pixel data of a given position
+   *
+   * @param {number} x The x position of the pixel
+   * @param {number} y The y position of the pixel
+   * @param {number} h The height of the search area
+   * @param {number} w The width of the search area
+   * @param {number} transparent Flag to only check for transparent pixels
+   *
+   * @returns {Array}
+   */
+  atPixel(x, y, h, w, transparent){
+    var pixelHits = [];
+    var zs = privateProperties[this].canvases.keys();
 
-    /**
-     * Clear an entity from the game screen.
-     * @param {CanvasEngine.Entities#Entity} entity
-     */
-    this.clear = function(entity){
-      var ctx = canvases[entity.z_index].getEnhancedContext();
-      entity.messageToComponent("Renderer", "clear", ctx);
-    };
-
-    /**
-     * Get the pixel data of a given position
-     *
-     * @param {number} x The x position of the pixel
-     * @param {number} y The y position of the pixel
-     * @param {number} h The height of the search area
-     * @param {number} w The width of the search area
-     * @param {number} transparent Flag to only check for transparent pixels
-     *
-     * @returns {Array}
-     */
-    this.atPixel = function(x, y, h, w, transparent){
-      var pixelHits = [];
-      var zs = Object.keys(canvases);
-
-      // For each canvas
-      $.each(zs, function(index, zIndex){
-        // Ask the canvas if it has a solid pixel at that location
-        if(canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent)){
-          pixelHits[zIndex] = true;
-        }
-        // If so, collect it.
-      });
-      return pixelHits;
-    };
-
-    /**
-     * When a screen is clicked, collect the click coordinate and pass it to the CanvasEngine
-     *
-     * @param {LocalParams~mouseEventParams} e The click event
-     *
-     */
-    this.onClick = function(e){
-      e.stopPropagation();
-      e.cancelBubble = true;
-      var coords = {
-        x: e.offsetX,
-        y: e.offsetY
-      };
-      CanvasEngine.mouse(coords, "Click");
-    };
-
-    /**
-     * When the mouse is moved over the canvas
-     *
-     * @param {LocalParams~mouseEventParams} e
-     */
-    this.onMouseMove = function(e){
-      e.stopPropagation();
-      e.cancelBubble = true;
-      var coords = {
-        x: e.offsetX,
-        y: e.offsetY
-      };
-      CanvasEngine.mouse(coords, "MouseMove", previousMousePosition);
-      previousMousePosition = coords;
-    };
-
-    /**
-     * When a mouse button is pressed over the canvas
-     *
-     * @param {LocalParams~mouseEventParams} e
-     */
-    this.onMouseDown = function(e){
-      e.stopPropagation();
-      e.cancelBubble = true;
-      var coords = {
-        x: e.offsetX,
-        y: e.offsetY
-      };
-      CanvasEngine.mouse(coords, "MouseDown");
-    };
-
-    /**
-     * When a mouse button is released over the canvas
-     *
-     * @param {LocalParams~mouseEventParams} e
-     */
-    this.onMouseUp = function(e){
-      e.stopPropagation();
-      e.cancelBubble = true;
-      var coords = {
-        x: e.offsetX,
-        y: e.offsetY
-      };
-      CanvasEngine.mouse(coords, "MouseUp");
-    };
-
-    /**
-     * Capture a screenshot
-     *
-     * This method draws the stack of canvases to a single canvas.
-     *  Then it converts that images into a base64 and sets it as an anchor tag ref with a download attribute
-     *  Then it triggers a click onto that anchor tag, before removing it.
-     *  This triggers the browser to (usually) perform a save-as for the image with the filename of the download attribute.
-     */
-    this.capture = function(){
-      // Create a hidden canvas of the appropriate size
-      var output = $("<canvas><canvas>");
-      output.attr("height", baseCanvas.height);
-      output.attr("width", baseCanvas.width);
-      output.hide();
-
-      var ctx = output.getContext("2d");
-
-      // Draw each canvas to the hidden canvas in order of z index
-      for(var z=0; z < canvases.length; z++){
-        ctx.drawImage(canvases[i], 0, 0);
+    for(let zIndex of zs){
+      if(privateProperties[this].canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent)){
+        pixelHits[zIndex] = true;
       }
+    }
 
-      // Get the image data
-      var dataUrl = output.toDataURL();
+    return pixelHits;
+  }
 
-      // Save the image as a png
-      var a = $("<a></a>");
-      a.attr("href", dataUrl);
-      a.attr("download", "ScreenShot"+(new Date().getDate())+".png");
-      $("body").append(a);
-      a.click();
-      a.remove();
+  /**
+   * When a screen is clicked, collect the click coordinate and pass it to the CanvasEngine
+   *
+   * @param {LocalParams~mouseEventParams} e The click event
+   *
+   */
+  onClick(e){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    let coords = {
+      x: e.offsetX,
+      y: e.offsetY
     };
-  };
+    privateProperties[this].onMouseEvent(coords, "Click");
+  }
 
-  // Attach The Screen manager to the CanvasEngine.
-  CanvasEngine.Screen = new Screen();
-})(window.CanvasEngine);
+  /**
+   * When the mouse is moved over the canvas
+   *
+   * @param {LocalParams~mouseEventParams} e
+   */
+  onMouseMove(e){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    let coords = {
+      x: e.offsetX,
+      y: e.offsetY
+    };
+    privateProperties[this].onMouseEvent(coords, "MouseMove", privateProperties[this].previousMousePosition);
+    privateProperties[this].previousMousePosition = coords;
+  }
+
+  /**
+   * When a mouse button is pressed over the canvas
+   *
+   * @param {LocalParams~mouseEventParams} e
+   */
+  onMouseDown(e){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    let coords = {
+      x: e.offsetX,
+      y: e.offsetY
+    };
+    privateProperties[this].onMouseEvent(coords, "MouseDown");
+  }
+
+  /**
+   * When a mouse button is released over the canvas
+   *
+   * @param {LocalParams~mouseEventParams} e
+   */
+  onMouseUp(e){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    let coords = {
+      x: e.offsetX,
+      y: e.offsetY
+    };
+    privateProperties[this].onMouseEvent(coords, "MouseUp");
+  }
+
+  /**
+   * Capture a screenshot
+   *
+   * This method draws the stack of canvases to a single canvas.
+   *  Then it converts that images into a base64 and sets it as an anchor tag ref with a download attribute
+   *  Then it triggers a click onto that anchor tag, before removing it.
+   *  This triggers the browser to (usually) perform a save-as for the image with the filename of the download attribute.
+   */
+  capture(){
+    // Create a hidden canvas of the appropriate size
+    let output = $("<canvas><canvas>");
+    output.attr("height", privateProperties[this].baseCanvas.height);
+    output.attr("width", privateProperties[this].baseCanvas.width);
+    output.hide();
+
+    let ctx = output.getContext("2d");
+
+    // Draw each canvas to the hidden canvas in order of z index
+    for(let z=0; z < privateProperties[this].canvases.length; z++){
+      ctx.drawImage(privateProperties[this].canvases[i], 0, 0);
+    }
+
+    // Get the image data
+    let dataUrl = output.toDataURL();
+
+    // Save the image as a png
+    let a = $("<a></a>");
+    a.attr("href", dataUrl);
+    a.attr("download", "ScreenShot"+(new Date().getDate())+".png");
+    $("body").append(a);
+    a.click();
+    a.remove();
+  }
+
+}
+
+export default new Screen();
