@@ -24,7 +24,7 @@ let propertyDefinitions = {
       }
     };
   },
-  lockedProperty: function (privateVar, callback) {
+  lockedProperty: function (privateVar) {
     return {
       enumerable: true,
       configurable: false,
@@ -32,17 +32,7 @@ let propertyDefinitions = {
         return privateVar;
       },
       set: function (val) {
-        if(typeof(privateVar)=="number"){
-          val = Number(val);
-        } else if (typeof(privateVar) == "string"){
-          val = val.toString();
-        } else if(typeof(privateVar) == "boolean"){
-          val = Boolean(val);
-        }
-        privateVar = val;
-        if(CanvasEngine.utilities.isFunction(callback)){
-          callback(val);
-        }
+        // Do Nothing
       }
     };
   },
