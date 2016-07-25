@@ -11,26 +11,26 @@
  * @property {number} y
  */
 
-import * as utilities from 'engineParts/utilities';
-import EntityManager from "engineParts/EntityManager";
-import EntityTracker from "engineParts/EntityTracker";
-import privateProperties from "engineParts/propertyDefinitions";
-import properties from "engineParts/propertyDefinitions";
-import ResourceManager from "engineParts/ResourceManager";
-import Screen from "engineParts/Screen";
+import * as utilities from 'engineParts/utilities.js';
+import {EntityManager} from "engineParts/EntityManager.js";
+import {EntityTracker} from "engineParts/EntityTracker.js";
+import {properties} from "engineParts/propertyDefinitions.js";
+import {ResourceManager} from "engineParts/ResourceManager.js";
+import {Screen} from "engineParts/Screen.js";
+const privateProperties = new WeakMap();
 
-import $ from "jQuery";
 
 class CanvasEngine{
 
   constructor(){
+    privateProperties[this] = {};
     privateProperties[this].paused = true;
 
-    properties.observe("ResourceManager", ResourceManager, true, this);
-    properties.observe("EntityTracker", EntityTracker, true, this);
+    properties.observe("ResourceManager", new ResourceManager(), true, this);
+    properties.observe("EntityTracker", new EntityTracker(), true, this);
 
     properties.observe("EntityManager", new EntityManager(this.ResourceManager, this.EntityTracker), true, this);
-    properties.observe("Screen", Screen, true, this);
+    properties.observe("Screen", new Screen, true, this);
 
   }
 

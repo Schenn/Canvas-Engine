@@ -2,10 +2,11 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 
-import privateProperties from "propertyDefinitions";
-import * as utilities from "utilities";
+import * as utilities from "engineParts/utilities.js";
 
-import Entity from "../entities/Entity";
+import {Entity} from "entities/Entity.js";
+
+const privateProperties = new WeakMap();
 /**
  * The EntityTracker manages the information about all current living Entities in our engine.
  *
@@ -13,7 +14,7 @@ import Entity from "../entities/Entity";
  * @memberOf CanvasEngine
  * @inner
  */
-class EntityTracker {
+export class EntityTracker {
 
   get maxZ(){
     return privateProperties[this].maxZ;
@@ -28,6 +29,7 @@ class EntityTracker {
   }
 
   constructor(){
+    privateProperties[this] = {};
     privateProperties[this].entities = new WeakMap();
     privateProperties[this].entitiesByZ = [];
     privateProperties[this].zExcludedFromInteractions = [];
@@ -202,5 +204,3 @@ class EntityTracker {
     return (positions);
   }
 }
-
-export default new EntityTracker();

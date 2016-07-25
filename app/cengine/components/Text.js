@@ -13,9 +13,9 @@
  * @property {string} params.text
  */
 
-import Component from "Component.js";
-import properties from "../engineParts/propertyDefinitions.js";
-import * as utilities from "../engineParts/utilities.js";
+import {Component} from "components/Component.js";
+import {properties} from "engineParts/propertyDefinitions.js";
+import * as utilities from "engineParts/utilities.js";
 
 /**
  * A Text Component handles the manipulation of text and its font.
@@ -33,7 +33,7 @@ import * as utilities from "../engineParts/utilities.js";
  * @param {ComponentParams~Text} params
  * @param {CanvasEngine.Entities.Entity} entity
  */
-class Text extends Component {
+export class Text extends Component {
   constructor(params, entity) {
     super(entity, params.callback);
     var { align = "center",
@@ -83,5 +83,3 @@ class Text extends Component {
     this.text = phrase;
   }
 }
-
-export default Text;

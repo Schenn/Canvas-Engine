@@ -7,17 +7,18 @@
  * @property {number} ...y
  */
 
-import Component from "Component.js";
-import properties from "../engineParts/propertyDefinitions.js";
-import * as utilities from "../engineParts/utilities.js";
-import privateProperties from "../engineParts/propertyDefinitions.js";
+import {Component} from "components/Component.js";
+import {properties} from "engineParts/propertyDefinitions.js";
+import * as utilities from "engineParts/utilities.js";
+
+const privateProperties = new WeakMap();
 
 /**
  * @class PointPlotter
  * @memberOf CanvasEngine.Components
  * @property {GeneralTypes~CoordinateCollection} coords
  */
-class PointPlotter extends Component {
+export class PointPlotter extends Component {
   /**
    * @param {object} params
    * @param {GeneralTypes~coords[]} params.coords
@@ -26,6 +27,7 @@ class PointPlotter extends Component {
    */
   constructor(params, entity){
     super(entity, params.callback);
+    privateProperties[this] = {};
     privateProperties[this].coordinateArray = [];
     let coordinateObj = {};
     this.setProperty("coords", coordinateObj);
@@ -102,5 +104,3 @@ class PointPlotter extends Component {
     return this.Coordinates;
   }
 }
-
-export default PointPlotter;

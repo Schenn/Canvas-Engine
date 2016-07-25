@@ -12,9 +12,10 @@
  * @see {ComponentParams~Text}
  */
 
-import Entity from "Entity";
-import privateProperties from "../engineParts/propertyDefinitions";
-import * as utilities from "../engineParts/utilities";
+import {Entity} from "entities/Entity.js";
+import * as utilities from "../engineParts/utilities.js";
+
+const privateProperties = new WeakMap();
 
 var makeThing = function(EntityManager, params){
 
@@ -38,7 +39,7 @@ var makeThing = function(EntityManager, params){
  * @borrows CanvasEngine.Components.Text as CanvasEngine.Entities.Button#components~Text
  *
  */
-class Button extends Entity {
+export class Button extends Entity {
 
   /**
    * @inner
@@ -74,6 +75,7 @@ class Button extends Entity {
 
   constructor(params, EntityManager){
     super(params, EntityManager);
+    privateProperties[this] = {};
 
     this.Background = params.background;
 
@@ -180,5 +182,3 @@ class Button extends Entity {
    */
 
 }
-
-export default Button;

@@ -2,8 +2,8 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 
-import Component from "Component.js";
-import * as utilities from "../engineParts/utilities.js";
+import {Component} from "components/Component.js";
+import * as utilities from "engineParts/utilities.js";
 
 /**
  * @typedef {object} GeneralTypes~Sprite
@@ -27,7 +27,7 @@ import * as utilities from "../engineParts/utilities.js";
  * @property {number} sHeight
  * @property {boolean} cropFromCenter
  */
-class ImageWrapper extends Component{
+export class ImageWrapper extends Component{
   /**
    * @param {Object} params
    * @param {Image} params.source
@@ -86,5 +86,3 @@ class ImageWrapper extends Component{
     this.sHeight = sprite.height;
   }
 }
-
-export default ImageWrapper;

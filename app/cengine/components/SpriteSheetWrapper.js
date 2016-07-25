@@ -2,20 +2,22 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 
-import Component from "Component.js";
-import privateProperties from "../engineParts/propertyDefinitions";
+import {Component} from "components/Component.js";
+
+const privateProperties = new WeakMap();
 
 /**
  * The SpriteSheet component handles interactions with a SpriteSheet resource.
  * @memberOf CanvasEngine.Components
  */
-class SpriteSheetWrapper extends Component{
+export class SpriteSheetWrapper extends Component{
   /**
    * @param {{spritesheet: CanvasEngine.Resources.SpriteSheet }} params
    * @param {CanvasEngine.Entities.Entity} entity
    */
   constructor(params, entity){
     super(entity);
+    privateProperties[this] = {};
     privateProperties[this].sheet = params.spritesheet;
   }
 
@@ -34,7 +36,7 @@ class SpriteSheetWrapper extends Component{
    * @returns {number}
    */
   sHeight(){
-    return privateProperties[this].sheet .sHeight();
+    return privateProperties[this].sheet.sHeight();
   }
 
   /**
@@ -42,7 +44,7 @@ class SpriteSheetWrapper extends Component{
    * @returns {number}
    */
   sWidth(){
-    return privateProperties[this].sheet .sWidth();
+    return privateProperties[this].sheet.sWidth();
   }
 
   /**
@@ -50,8 +52,6 @@ class SpriteSheetWrapper extends Component{
    * @returns {Image}
    */
   source(){
-    return privateProperties[this].sheet .source();
+    return privateProperties[this].sheet.source();
   }
 }
-
-export default SpriteSheetWrapper;

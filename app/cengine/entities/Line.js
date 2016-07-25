@@ -10,7 +10,7 @@
  * @property {boolean} [rounded]
  */
 
-import Entity from "Entity.js";
+import {Entity} from "entities/Entity.js";
 import * as utilities from "../engineParts/utilities.js";
 
 /**
@@ -20,7 +20,7 @@ import * as utilities from "../engineParts/utilities.js";
  * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Line#components~Renderer
  *
  */
-class Line extends Entity {
+export class Line extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
     let myParams = {
@@ -60,5 +60,3 @@ class Line extends Entity {
   }
 
 }
-
-export default Line;

@@ -19,10 +19,11 @@
  * @this {GeneralTypes~Tile}
  */
 
-import properties from "../engineParts/propertyDefinitions.js";
-import privateProperties from "../engineParts/propertyDefinitions";
-import Component from "Component.js";
-import * as utilities from "../engineParts/utilities";
+import {properties} from "engineParts/propertyDefinitions.js";
+import {Component} from "components/Component.js";
+import * as utilities from "engineParts/utilities.js";
+
+const privateProperties = new WeakMap();
 
 /**
  * A TileMap Component manages maintaining a collection of values in specific 2-d array positions.
@@ -39,13 +40,14 @@ import * as utilities from "../engineParts/utilities";
  *
  * @memberOf CanvasEngine.Components
  */
-class TileMap extends Component {
+export class TileMap extends Component {
   get TileSize(){
     return privateProperties[this].tileSize;
   }
 
   constructor(params, entity){
     super(entity);
+    privateProperties[this] = {};
     privateProperties[this].tiles = utilities.exists(params.tiles) ? params.tiles :[];
     privateProperties[this].scrollOffset = {};
     privateProperties[this].tileSize = {
@@ -165,5 +167,3 @@ class TileMap extends Component {
     }
   }
 }
-
-export default TileMap;

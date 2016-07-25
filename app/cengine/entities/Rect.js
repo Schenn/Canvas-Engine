@@ -9,14 +9,14 @@
  * @property {string} [fillStyle]
  */
 
-import Entity from "Entity.js";
+import {Entity} from "entities/Entity.js";
 
 /**
  * @class Rect
  * @memberof CanvasEngine.Entities
  * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Rect#components~Renderer
  */
-class Rect extends Entity {
+export class Rect extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
 
@@ -35,5 +35,3 @@ class Rect extends Entity {
 
   }
 }
-
-export default Rect;

@@ -25,8 +25,33 @@
   }
   </style>
   <script src="js/lib.min.js"></script>
-  <script src="app/cengine/CanvasEngine.js"></script>
+  <script src="app/dependencies/systemjs-0.19.31/dist/system.js"></script>
   <script src="demos/chakara.js"></script>
+  <script>
+    // set our baseURL reference path
+    SystemJS.config({
+      map: {
+        'plugin-babel': '../Canvas-Engine/app/dependencies/plugin-babel-0.0.12/plugin-babel.js',
+        'systemjs-babel-build': '../Canvas-Engine/app/dependencies/plugin-babel-0.0.12/systemjs-babel-browser.js'
+      },
+      transpiler: 'plugin-babel',
+      baseURL: 'app/cengine'
+    });
+
+    // loads /js/main.js
+    SystemJS.import('CanvasEngine.js').then(function(m) {
+      var chakaraStart = function(){
+        chakara.setup($("#game")[0]);
+        $("#chakara").on("click", function(){
+          chakara.start();
+        });
+      };
+      chakaraStart();
+    });
+  </script>
+
+  <!--
+   <script src="app/cengine/CanvasEngine.js"></script>
   <script>
 
     $(function(){
@@ -42,6 +67,7 @@
     });
 
   </script>
+  -->
 </head>
 <body>
   <h1>Canvas Engine</h1>

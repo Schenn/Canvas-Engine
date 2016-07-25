@@ -8,12 +8,12 @@
  * @property {function} [onElapsed]
  */
 
-import Component from "Component.js";
-import * as utilities from "../engineParts/utilities.js";
+import {Component} from "components/Component.js";
+import * as utilities from "engineParts/utilities.js";
 
-import privateProperties from "../engineParts/propertyDefinitions";
+let privateProperties = new WeakMap();
 
-class Timer extends Component{
+export class Timer extends Component{
 
   /**
    * Get the current last updated time in milliseconds
@@ -42,7 +42,7 @@ class Timer extends Component{
 
   constructor(params, entity){
     super(entity);
-
+    privateProperties[this] = {};
     privateProperties[this].date = new Date();
     privateProperties[this].delta = new Date();
     privateProperties[this].isActive = true;
@@ -91,5 +91,3 @@ class Timer extends Component{
     this.update();
   }
 }
-
-export default Timer;

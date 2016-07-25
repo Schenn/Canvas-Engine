@@ -16,12 +16,10 @@
  * @this CanvasEngine.Entities.Entity
  */
 
-import Component from "Component.js";
-import * as utilities from "../engineParts/utilities";
-import $ from 'jQuery';
+import {Component} from "components/Component.js";
+import * as utilities from "engineParts/utilities.js";
 
-import privateProperties from "../engineParts/propertyDefinitions.js";
-
+const privateProperties = new WeakMap();
 /**
  * KeyPress listens for key presses and triggers a function call when they occur
  * @class KeyPress
@@ -30,9 +28,10 @@ import privateProperties from "../engineParts/propertyDefinitions.js";
  * @param {CanvasEngine.Entities.Entity} entity
  *
  */
-class KeyPress extends Component{
+export class KeyPress extends Component{
   constructor(params, entity){
     super(entity);
+    privateProperties[this] = {};
     privateProperties[this].keyCallbacks = {};
 
     this.onKeys(params.keys);
@@ -80,5 +79,3 @@ class KeyPress extends Component{
   }
 
 }
-
-export default KeyPress;

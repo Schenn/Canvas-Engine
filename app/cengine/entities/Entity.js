@@ -3,10 +3,11 @@
  *
  */
 
-import properties from "../engineParts/propertyDefinitions.js";
-import privateProperties from "../engineParts/propertyDefinitions";
-import * as utilities from "../engineParts/utilities";
-import component from "../components/component.js";
+import {properties} from "engineParts/propertyDefinitions.js";
+import * as utilities from "engineParts/utilities.js";
+import {Component} from "components/Component.js";
+
+const privateProperties =new WeakMap();
 
 /**
  * The Entity Class is the actual class for all the living objects in the Engine.
@@ -21,7 +22,7 @@ import component from "../components/component.js";
  * @param {number} [params.z_index]
  * @param {CanvasEngine.EntityManager} EM
  */
-class Entity{
+export class Entity{
   get EntityManager() {
     return properties.proxy(privateProperties[this].EntityManager);
   }
@@ -37,6 +38,7 @@ class Entity{
   }
 
   constructor(params, EM){
+    privateProperties[this] = {};
     privateProperties[this].EntityManager = EM;
     /**
      * @link{CanvasEngine.Components} provide their own self-contained functionality and are used by their parent
@@ -215,5 +217,3 @@ class Entity{
     }
   }
 }
-
-export default Entity;

@@ -14,10 +14,10 @@
  * @see {CanvasEngine.Components.getDirection}
  */
 
-import Component from "Component.js";
-import properties from "../engineParts/propertyDefinitions.js";
-import * as utilities from "../engineParts/utilities.js";
-import privateProperties from "../engineParts/propertyDefinitions.js";
+import {Component} from "components/Component.js";
+import {properties} from "engineParts/propertyDefinitions.js";
+import * as utilities from "engineParts/utilities.js";
+const privateProperties = new WeakMap();
 
 /**
  * The movement component adjusts the current position based on speed and the passage of time
@@ -28,7 +28,7 @@ import privateProperties from "../engineParts/propertyDefinitions.js";
  * @property {number} Movement.y
 
  */
-class Movement extends Component {
+export class Movement extends Component {
   /**
    * @param {object} params
    * @param {number} params.x
@@ -40,9 +40,9 @@ class Movement extends Component {
    * @param {Callbacks~onPropertyChanged} [params.onMoveY] A callback which is fired when the component moves along the y Axis
    * @param {CanvasEngine.Entities.Entity} entity
    */
-  constructor(params, entity){
+  constructor(params, entity) {
     super(entity);
-
+    privateProperties[this] = {};
     privateProperties[this].currentX = params.x;
     privateProperties[this].currentY = params.y;
     privateProperties[this].xSpeed = utilities.exists(params.xSpeed) ? params.xSpeed : 0;
@@ -52,7 +52,7 @@ class Movement extends Component {
     privateProperties[this].destY = 0;
     privateProperties[this].lastDirection = null;
 
-    if(utilities.isFunction(params.onDirectionChange)){
+    if (utilities.isFunction(params.onDirectionChange)) {
       this.onDirectionChange = params.onDirectionChange.bind(this);
     }
 
@@ -61,11 +61,11 @@ class Movement extends Component {
   }
 
   /**
-  * Adjust the position based on axis speeds
-  *
-  * @param {number} delta The seconds as a decimal since the last render call.
-  */
-  move(delta){
+   * Adjust the position based on axis speeds
+   *
+   * @param {number} delta The seconds as a decimal since the last render call.
+   */
+  move(delta) {
     this.x += (privateProperties[this].xSpeed !== 0) ? privateProperties[this].xSpeed * delta : 0;
     this.y += (privateProperties[this].ySpeed !== 0) ? privateProperties[this].ySpeed * delta : 0;
 
@@ -80,7 +80,7 @@ class Movement extends Component {
     }
 
     if (privateProperties[this].ySpeed > 0) {
-      if (privateProperties[this].destY !== 0 && this.y >= privateProperties[this].destY ) {
+      if (privateProperties[this].destY !== 0 && this.y >= privateProperties[this].destY) {
         privateProperties[this].ySpeed = 0;
       }
     } else if (privateProperties[this].ySpeed < 0) {
@@ -104,9 +104,9 @@ class Movement extends Component {
    * @param {number} [speeds.ySpeed]
    *
    */
-  setSpeed(speeds){
-    privateProperties[this].xSpeed = utilities.exists(speeds.xSpeed)? speeds.xSpeed : privateProperties[this].xSpeed;
-    privateProperties[this].ySpeed = utilities.exists(speeds.ySpeed)? speeds.ySpeed : privateProperties[this].ySpeed;
+  setSpeed(speeds) {
+    privateProperties[this].xSpeed = utilities.exists(speeds.xSpeed) ? speeds.xSpeed : privateProperties[this].xSpeed;
+    privateProperties[this].ySpeed = utilities.exists(speeds.ySpeed) ? speeds.ySpeed : privateProperties[this].ySpeed;
   }
 
   /**
@@ -114,7 +114,7 @@ class Movement extends Component {
    *
    * @param {GeneralTypes~coords} coords
    */
-  setOrigin(coords){
+  setOrigin(coords) {
     this.x = coords.x;
     this.y = coords.y;
   }
@@ -124,8 +124,8 @@ class Movement extends Component {
    *
    * @returns {{x: number, y: number, xSpeed: number, ySpeed: number}}
    */
-  asObject(){
-    return {x:this.x, y:this.y,xSpeed: privateProperties[this].xSpeed, ySpeed: privateProperties[this].ySpeed};
+  asObject() {
+    return {x: this.x, y: this.y, xSpeed: privateProperties[this].xSpeed, ySpeed: privateProperties[this].ySpeed};
   }
 
   /**
@@ -137,7 +137,7 @@ class Movement extends Component {
     var direction = "";
 
     direction += (privateProperties[this].ySpeed > 0) ? "S" : "N";
-    if(privateProperties[this].xSpeed !== 0) {
+    if (privateProperties[this].xSpeed !== 0) {
       direction += (privateProperties[this].xSpeed > 0) ? "E" : "W";
     }
 
@@ -156,8 +156,8 @@ class Movement extends Component {
    *
    * @param distance {{x: number, y: number, speed: number }}
    */
-  travel(distance){
-    if(privateProperties[this].ySpeed === 0) {
+  travel(distance) {
+    if (privateProperties[this].ySpeed === 0) {
       if (utilities.exists(distance.y)) {
         privateProperties[this].destY = this.y + distance.y;
         if (distance.y < 0) {
@@ -168,10 +168,10 @@ class Movement extends Component {
       }
     }
 
-    if(privateProperties[this].xSpeed === 0){
-      if(utilities.exists(distance.x)){
+    if (privateProperties[this].xSpeed === 0) {
+      if (utilities.exists(distance.x)) {
         privateProperties[this].destX = this.x + distance.x;
-        if(distance.x < 0){
+        if (distance.x < 0) {
           privateProperties[this].xSpeed = Math.abs(distance.speed) * -1;
         } else {
           privateProperties[this].xSpeed = Math.abs(distance.speed);
@@ -182,5 +182,3 @@ class Movement extends Component {
   }
 
 }
-
-export default Movement;

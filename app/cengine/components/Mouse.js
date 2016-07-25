@@ -8,15 +8,15 @@
  * @this {CanvasEngine.Entities.Entity}
  */
 
-import Component from "Component.js";
-import * as utilities from "../engineParts/utilities";
+import {Component} from "components/Component.js";
+import * as utilities from "../engineParts/utilities.js";
 
-import privateProperties from "../engineParts/propertyDefinitions.js";
+const privateProperties = new WeakMap();
 
-class Mouse extends Component {
+export class Mouse extends Component {
   constructor(params, entity){
     super(entity);
-
+    privateProperties[this] = {};
     privateProperties[this].onClick = [];
     privateProperties[this].onMouseOver = [];
     privateProperties[this].onMouseDown = [];
@@ -128,5 +128,3 @@ class Mouse extends Component {
     }
   }
 }
-
-export default Mouse;

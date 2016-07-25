@@ -51,10 +51,11 @@
  * @property {?Callbacks~Clear} [clear=null]
  */
 
-import properties from "../engineParts/propertyDefinitions.js";
-import privateProperties from "../engineParts/propertyDefinitions";
-import Component from "Component.js";
-import * as utilities from "../engineParts/utilities";
+import {properties} from "engineParts/propertyDefinitions.js";
+import {Component} from "components/Component.js";
+import * as utilities from "engineParts/utilities.js";
+
+let privateProperties = new WeakMap();
 
 
 /**
@@ -71,13 +72,14 @@ import * as utilities from "../engineParts/utilities";
  * @property {boolean} fromCenter = false
  *
  */
-class Renderer extends Component {
+export class Renderer extends Component {
   /**
    * @param {ComponentParams~Renderer} params The container of property values.
    * @param {CanvasEngine.Entities.Entity} entity The entity to attach the Renderer Component to
    */
   constructor(params, entity) {
     super(entity, ()=>{this.markDirty()});
+    privateProperties[this] = {};
     privateProperties[this].isDirty = true;
     privateProperties[this].hidden = false;
     privateProperties[this].postRender = null;
@@ -459,5 +461,3 @@ class Renderer extends Component {
   }
 
 }
-
-export default Renderer;

@@ -8,9 +8,9 @@
  *
  */
 
-import Entity from "Entity.js";
+import {Entity} from "entities/Entity.js";
 
-class TileMap extends Entity {
+export class TileMap extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
 
@@ -88,5 +88,3 @@ class TileMap extends Entity {
     this.messageToComponent("Renderer", "markDirty");
   }
 }
-
-export default TileMap;

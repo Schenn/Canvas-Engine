@@ -9,15 +9,16 @@
  * @property {number} [frameCount]
  */
 
-import Entity from "Entity.js";
+import {Entity} from "entities/Entity.js";
 
-import * as utilities from "../engineParts/utilities";
-import privateProperties from "../engineParts/propertyDefinitions";
+import * as utilities from "../engineParts/utilities.js";
 
-class Animator extends Entity {
+const privateProperties = new WeakMap();
+
+export class Animator extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
-
+    privateProperties[this] = {};
     if(utilities.exists(params.frames)){
       privateProperties[this].frames = params.frames;
       privateProperties[this].frameCount = frames.length;

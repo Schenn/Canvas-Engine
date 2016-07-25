@@ -6,8 +6,8 @@
  *
  */
 
-import privateProperties from "../engineParts/propertyDefinitions";
-import * as utilities from "../engineParts/utilities";
+import * as utilities from "engineParts/utilities.js";
+const privateProperties = new WeakMap();
 
 let processSprites = function(spriteCache, source, spriteWidth, spriteHeight){
   var sx = 0, sy= 0, index=0;
@@ -98,6 +98,7 @@ class SpriteSheet {
   }
 
   constructor(details){
+    privateProperties[this]={};
     privateProperties[this].spriteHeight = details.height;
     privateProperties[this].spriteWidth = details.width;
     privateProperties[this].sprites = [];

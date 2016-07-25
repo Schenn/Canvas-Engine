@@ -24,7 +24,7 @@ let propertyDefinitions = {
       }
     };
   },
-  lockedProperty: function (privateVar) {
+  lockedProperty: function (privateVar, callback) {
     return {
       enumerable: true,
       configurable: false,
@@ -32,7 +32,11 @@ let propertyDefinitions = {
         return privateVar;
       },
       set: function (val) {
-        // Do Nothing
+        // Don't change the private variable.
+        // Call the callback with the passed value
+        if(CanvasEngine.utilities.isFunction(callback)){
+          callback(val);
+        }
       }
     };
   },
@@ -49,37 +53,8 @@ let propertyDefinitions = {
   }
 };
 
-let properties = new Proxy(propertyDefinitions, {
+export var properties = new Proxy(propertyDefinitions, {
   get: function(definitions, name){
     return definitions[name];
   }
 });
-
-export default properties;
-
-export const privateProperties = (function(){
-  let props = new WeakMap();
-
-  let handler = {
-    get: function(props, thing){
-      if(!props.has(thing)){
-        props.set(thing, {});
-      }
-
-      let propHandler = {
-        get: function(privateProps, prop){
-          return privateProps[prop];
-        },
-        set: function(privateProps, prop, val){
-          privateProps[prop] = val;
-          return this;
-        }
-      };
-
-
-      return new Proxy(props.get(thing), propHandler);
-    }
-  };
-
-  return new Proxy(props, handler);
-})();

@@ -11,13 +11,10 @@
  * }} LocalParams~mouseEventParams
  */
 
-import privateProperties from "propertyDefinitions";
-import * as utilities from "utilities";
+import * as utilities from "engineParts/utilities.js";
+const privateProperties = new WeakMap();
 
-import $ from 'jQuery';
-
-
-class Screen {
+export class Screen {
 
   get height(){
     return privateProperties[this].baseCanvas.height();
@@ -28,6 +25,7 @@ class Screen {
   }
 
   constructor(MouseHandler){
+    privateProperties[this] = {};
     privateProperties[this].previousMousePosition = {};
     privateProperties[this].canvases = [];
     privateProperties[this].baseCanvas = null;
@@ -223,5 +221,3 @@ class Screen {
   }
 
 }
-
-export default new Screen();

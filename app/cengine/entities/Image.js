@@ -5,7 +5,7 @@
 * @typedef {object} LocalParams~ImageEntityParams
 */
 
-import Entity from "Entity.js";
+import {Entity} from "entities/Entity.js";
 
 /**
  * Responsible for rendering a static image to the screen.
@@ -15,7 +15,7 @@ import Entity from "Entity.js";
  * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Image
  * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Renderer
  */
-class ImageEntity extends Entity {
+export class ImageEntity extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
 
@@ -36,5 +36,3 @@ class ImageEntity extends Entity {
     this.EntityManager.attachComponent(this, "Renderer", componentParams);
   }
 }
-
-export default ImageEntity;

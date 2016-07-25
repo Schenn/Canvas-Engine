@@ -8,7 +8,7 @@
  * @see {ComponentParams~Text}
  */
 
-import Entity from "Entity.js";
+import {Entity} from "entities/Entity.js";
 
 /**
  * @class Label
@@ -16,7 +16,7 @@ import Entity from "Entity.js";
  * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Label#components~Renderer
  * @borrows CanvasEngine.Components.Text as CanvasEngine.Entities.Label#components~Text
  */
-class Label extends Entity {
+export class Label extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
     let myParams = {
@@ -83,5 +83,3 @@ class Label extends Entity {
     });
   }
 }
-
-export default Label;

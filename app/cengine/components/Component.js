@@ -1,16 +1,18 @@
 /**
  * Created by schenn on 6/23/16.
  */
-import properties from "../engineParts/propertyDefinitions.js";
-import privateProperties from "../engineParts/propertyDefinitions.js";
-import Entity from "../entities/Entity";
+import {properties} from "engineParts/propertyDefinitions.js";
+
+const privateProperties = new WeakMap();
+
 
 /**
  * @class Component
  * @memberof CanvasEngine.Components
  */
-class Component {
+export class Component {
   constructor(entity, propertyCallback){
+    privateProperties[this] = {};
     privateProperties[this].Entity = entity;
     privateProperties[this].propertyCallback = propertyCallback;
   }
@@ -36,5 +38,3 @@ class Component {
     properties.observe({name:name, value:value, locked:locked, callback: privateProperties[this].propertyCallback}, this);
   }
 }
-
-export default Component;

@@ -8,18 +8,20 @@
  * @callback Callbacks~onResourcesLoaded
  */
 
-import privateProperties from "propertyDefinitions";
-import * as utilities from "utilities";
+import * as utilities from "engineParts/utilities.js";
 
-import SpriteSheet from "../Resources/SpriteSheet";
+import {SpriteSheet} from "resources/SpriteSheet.js";
+
+const privateProperties = new WeakMap();
 
 /**
  * @class ResourceManager
  * @memberof CanvasEngine
  * @inner
  */
-class ResourceManager {
+export class ResourceManager {
   constructor(){
+    privateProperties[this] ={};
     privateProperties[this].sounds = new Map();
     privateProperties[this].images = new Map();
     privateProperties[this].spriteSheets = new Map();
@@ -212,5 +214,3 @@ class ResourceManager {
     this.finishedAddingResources();
   }
 }
-
-export default new ResourceManager();

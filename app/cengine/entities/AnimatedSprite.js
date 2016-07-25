@@ -6,11 +6,11 @@
  * @property {object.<string, LocalParams~AnimatorParams>} animations
  */
 
-import Sprite from "Sprite";
-import privateProperties from "../engineParts/propertyDefinitions";
-import * as utilities from "../engineParts/utilities";
+import {Sprite} from "entities/Sprite.js";
+import * as utilities from "../engineParts/utilities.js";
+const privateProperties = new WeakMap();
 
-class AnimatedSprite extends Sprite {
+export class AnimatedSprite extends Sprite {
   /**
    * @returns {string}
    */
@@ -32,6 +32,7 @@ class AnimatedSprite extends Sprite {
 
   constructor(params, EntityManager){
     super(params, EntityManager);
+    privateProperties[this] = {};
     privateProperties[this].animations = new Map();
     privateProperties[this].currentAnimation = "default";
 
@@ -60,5 +61,3 @@ class AnimatedSprite extends Sprite {
     this.attachSubEntity(name, animator);
   }
 }
-
-export default AnimatedSprite;

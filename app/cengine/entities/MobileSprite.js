@@ -8,10 +8,10 @@
  * @property {LocalParams~TimerParams} movementTimer
  */
 
-import AnimatedSprite from "AnimatedSprite";
-import * as utilities from "../engineParts/utilities";
+import {AnimatedSprite} from "entities/AnimatedSprite.js";
+import * as utilities from "engineParts/utilities.js";
 
-class MobileSprite extends AnimatedSprite {
+export class MobileSprite extends AnimatedSprite {
   constructor(params, EntityManager){
     super(params, EntityManager);
 
@@ -64,5 +64,3 @@ class MobileSprite extends AnimatedSprite {
   }
 
 }
-
-export default MobileSprite;

@@ -9,8 +9,9 @@
  * @property {string | number} [defaultSprite]
  */
 
-import Entity from "Entity.js";
-import privateProperties from "../engineParts/propertyDefinitions";
+import {Entity} from "entities/Entity.js";
+
+const privateProperties = new WeakMap();
 
 /**
  * @class Sprite
@@ -22,9 +23,10 @@ import privateProperties from "../engineParts/propertyDefinitions";
  * @param {LocalParams~SpriteParams} params
  *
  */
-class Sprite extends Entity {
+export class Sprite extends Entity {
   constructor(params, EntityManager){
     super(params,EntityManager);
+    privateProperties[this] = {};
     privateProperties[this].currentSpriteName = "";
     privateProperties[this].currentSheet = "default";
 
@@ -79,5 +81,3 @@ class Sprite extends Entity {
     return privateProperties[this].sheet;
   }
 }
-
-export default Sprite;

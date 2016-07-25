@@ -36,14 +36,16 @@
  */
 
 
-import getClassList from "../EntityList.js";
-import getComponentList from "../ComponentList.js";
-import * as utilities from "utilities";
-import privateProperties from "propertyDefinitions";
-import properties from "propertyDefinitions";
+import {getClassList} from "EntityList.js";
+import {getComponentList} from "ComponentList.js";
+import * as utilities from "engineParts/utilities.js";
+import {properties} from "engineParts/propertyDefinitions.js";
 
-class EntityManager {
+const privateProperties = new WeakMap();
+
+export class EntityManager {
   constructor(ResourceManager, EntityTracker) {
+    privateProperties[this] = {};
     privateProperties[this].entities = getClassList();
     privateProperties[this].components = getComponentList();
     privateProperties[this].baseEntity = privateProperties[this].entities.get("BaseEntity");
@@ -164,5 +166,3 @@ class EntityManager {
     return entities;
   }
 }
-
-export default EntityManager;
