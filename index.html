@@ -25,6 +25,7 @@
   }
   </style>
   <script src="js/lib.min.js"></script>
+  <script src="js/cengine-plugins.min.js"></script>
   <script src="app/dependencies/systemjs-0.19.31/dist/system.js"></script>
   <script src="demos/chakara.js"></script>
   <script>
@@ -40,8 +41,10 @@
 
     // loads /js/main.js
     SystemJS.import('CanvasEngine.js').then(function(m) {
+      window.CanvasEngine = new m.CanvasEngine();
+      console.log(window.CanvasEngine);
       var chakaraStart = function(){
-        chakara.setup($("#game")[0]);
+        chakara.setup($("#game")[0], window.CanvasEngine);
         $("#chakara").on("click", function(){
           chakara.start();
         });

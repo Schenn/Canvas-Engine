@@ -85,14 +85,9 @@ module.exports = function(grunt) {
           quoteStyle: 3
         },
         files: {
-          'js/cengine.min.js': [
+          'js/cengine-plugins.min.js': [
             '<%= cengine %>/polyfills/**/*.js',
-            '<%= cengine %>/jqueryPlugins/**/*.js',
-            '<%= cengine %>/*.js',
-            '<%= cengine %>/engineParts/*.js',
-            '<%= cengine %>/resources/*.js',
-            '<%= cengine %>/entities/*.js',
-            '<%= cengine %>/components/*.js' ]
+            '<%= cengine %>/jqueryPlugins/**/*.js']
         }
       }
     },
