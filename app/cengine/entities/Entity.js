@@ -70,7 +70,7 @@ export class Entity{
        */
       name:properties.lockedProperty(params.name || utilities.randName())
     });
-
+    Promise.resolve(Component);
   }
   /**
    * Attach a component to this entity;
@@ -79,7 +79,7 @@ export class Entity{
    * @param {Component} comp the instantiated component @see{CanvasEngine.Components}
    */
   attachComponent(name, comp){
-    if(!privateProperties[this].components.has(name) && comp instanceof component){
+    if(!privateProperties[this].components.has(name) && comp instanceof Component){
       privateProperties[this].components.set(name, comp);
     }
   }

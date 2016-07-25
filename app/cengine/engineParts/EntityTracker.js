@@ -34,6 +34,8 @@ export class EntityTracker {
     privateProperties[this].entitiesByZ = [];
     privateProperties[this].zExcludedFromInteractions = [];
     privateProperties[this].maxZ = 0;
+
+    privateProperties[this].entityProxies = {};
   }
 
   /**
@@ -43,15 +45,18 @@ export class EntityTracker {
    */
   addEntities(entities){
     for(let entity of entities){
+      console.log(entity);
       if(entity instanceof Entity) {
-        privateProperties[this].entities.set(entity.name, entity);
+        privateProperties[this].entities.set(entity, entity.name);
+        // If we don't already have a collection of entity references at this z index, start one.
         if(!utilities.exists(privateProperties[this].entitiesByZ[entity.z_index])){
-          privateProperties[this].entitiesByZ[privateProperties[this].entities.get(entity.name).z_index] = new WeakSet();
-          if(privateProperties[this].entities.get(entity.name).z_index > privateProperties[this].maxZ){
-            privateProperties[this].maxZ = privateProperties[this].entities.get(entity.name).z_index;
+          privateProperties[this].entitiesByZ[entity.z_index] = new WeakSet();
+          if(entity.z_index > privateProperties[this].maxZ){
+            privateProperties[this].maxZ = entity.z_index;
           }
         }
-        privateProperties[this].entitiesByZ[entity.z_index].add(entity.name);
+        privateProperties[this].entitiesByZ[entity.z_index].add(entity);
+        privateProperties[this].entityProxies[entity.name] = ()=>{return new Proxy(entity, {});}
       }
     }
   }
@@ -81,7 +86,7 @@ export class EntityTracker {
   getEntities(names){
     var ents = [];
     names.forEach((name, index)=>{
-      ents[index] = privateProperties[this].entities[name];
+      ents[index] = privateProperties[this].entityProxies[name]();
     });
 
     return ents;
@@ -121,7 +126,7 @@ export class EntityTracker {
     let entity= privateProperties[this].entities.get(name);
 
     entity.messageToComponent("Renderer", "hide", ()=>{
-      privateProperties[this].entities.delete(name);
+      privateProperties[this].entityProxies.delete(name);
       if(privateProperties[this].entitiesByZ[entity.z_index].size === 0){
         privateProperties[this].entitiesByZ.splice(entity.z_index,1);
         privateProperties[this].entitiesByZ = utilities.cleanArray(privateProperties[this].entitiesByZ);

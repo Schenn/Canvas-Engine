@@ -51,7 +51,7 @@ export class Screen {
    * @param {number} modifier A percentage 1 - 100
    */
   maximize(modifier = 100){
-    privateProperties[this].forEach(function(canvas){
+    privateProperties[this].canvases.forEach(function(canvas){
       canvas.maximize(modifier);
     });
   }

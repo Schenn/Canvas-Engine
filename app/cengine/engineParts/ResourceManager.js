@@ -120,6 +120,7 @@ export class ResourceManager {
 * @param {LocalParams~SpriteSheetParams} details The spritesheets details
 */
   addSpriteSheet(name, path, details){
+  console.log(privateProperties[this].Resources);
     privateProperties[this].spriteSheets[name] = new privateProperties[this].Resources.SpriteSheet(details);
     privateProperties[this].resourcesLoaded[name+"sheet"] = false;
     this.addImage(name, path, ()=>{

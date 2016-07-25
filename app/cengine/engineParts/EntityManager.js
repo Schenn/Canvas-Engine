@@ -46,6 +46,8 @@ const privateProperties = new WeakMap();
 export class EntityManager {
   constructor(ResourceManager, EntityTracker) {
     privateProperties[this] = {};
+    Promise.resolve(getClassList);
+    Promise.resolve(getComponentList);
     privateProperties[this].entities = getClassList();
     privateProperties[this].components = getComponentList();
     privateProperties[this].baseEntity = privateProperties[this].entities.get("BaseEntity");
@@ -87,12 +89,12 @@ export class EntityManager {
 
     // Make sure that the z_index is set properly
     if(!utilities.exists(params.z_index)){
-      params.z_index = privateProperties[this].EntityTracker.maxZ();
+      params.z_index = privateProperties[this].EntityTracker.maxZ;
     }
 
     // Create the entity
     let entity;
-    entity = privateProperties[this].entities[type](params, this);
+    entity = new (privateProperties[this].entities.get(type))(params, this);
 
     // Attach the click and other event handling components.
     if(utilities.exists(params.onClick) ||
@@ -127,7 +129,7 @@ export class EntityManager {
     // component === "componentName"
     if(typeof(component) == "string"){
       if(privateProperties[this].components.has(component)){
-        entity.attachComponent(component, new privateProperties[this].components[component](params, entity));
+        entity.attachComponent(component, new (privateProperties[this].components.get(component))(params, entity));
       }
     } else if (component instanceof privateProperties[this].components.get("BaseComponent")){
       entity.attachComponent(component.constructor.name, component);
@@ -137,11 +139,11 @@ export class EntityManager {
           /** component = {"componentName" : {"name to use" : data }} */
           let names = Object.keys(component[com]);
           for(let name of names){
-            entity.attachComponent(name, new privateProperties[this].components.get(component[com])(params, entity));
+            entity.attachComponent(name, new (privateProperties[this].components.get(component[com]))(params, entity));
           }
         } else if(typeof(component[com]== "string")){
           /** component = {"componentName" : "name to use"} */
-          entity.attachComponent(component[com], new privateProperties[this].components.get(com)(params, entity));
+          entity.attachComponent(component[com], new (privateProperties[this].components.get(com))(params, entity));
         }
       }
     }

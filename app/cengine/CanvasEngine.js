@@ -20,17 +20,44 @@ import {Screen} from "engineParts/Screen.js";
 const privateProperties = new WeakMap();
 
 
-class CanvasEngine{
+export class CanvasEngine{
+
+  get paused() {
+    return privateProperties[this].paused;
+  }
+
+  get ResourceManager() {
+    return privateProperties[this].ResourceManager;
+  }
+
+  get EntityTracker() {
+    return privateProperties[this].EntityTracker;
+  }
+
+  get EntityManager() {
+    return privateProperties[this].EntityManager;
+  }
+
+  get Screen(){
+    return privateProperties[this].Screen;
+  }
 
   constructor(){
     privateProperties[this] = {};
     privateProperties[this].paused = true;
 
-    properties.observe("ResourceManager", new ResourceManager(), true, this);
-    properties.observe("EntityTracker", new EntityTracker(), true, this);
 
-    properties.observe("EntityManager", new EntityManager(this.ResourceManager, this.EntityTracker), true, this);
-    properties.observe("Screen", new Screen, true, this);
+    Promise.resolve(ResourceManager);
+    privateProperties[this].ResourceManager = new ResourceManager();
+
+    Promise.resolve(EntityTracker);
+    privateProperties[this].EntityTracker = new EntityTracker();
+
+    Promise.resolve(EntityTracker);
+    privateProperties[this].EntityManager = new EntityManager(privateProperties[this].ResourceManager, privateProperties[this].EntityTracker);
+
+    Promise.resolve(Screen);
+    privateProperties[this].Screen = new Screen();
 
   }
 
@@ -242,5 +269,3 @@ class CanvasEngine{
   }
 
 }
-
-window.CanvasEngine = new CanvasEngine();

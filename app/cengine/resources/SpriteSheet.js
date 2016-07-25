@@ -51,7 +51,7 @@ let processSpriteObject = function(spriteCache, spriteWidth, spriteHeight) {
  * @param {number} details.width
  * @param {Array|Object} [details.sprites]
  */
-class SpriteSheet {
+export class SpriteSheet {
 
   /**
    * @returns {number}
@@ -136,5 +136,3 @@ class SpriteSheet {
     return privateProperties[this].sprites[name];
   }
 }
-
-export default SpriteSheet;
