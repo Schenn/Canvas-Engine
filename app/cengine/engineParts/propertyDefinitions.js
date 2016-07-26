@@ -18,7 +18,7 @@ let propertyDefinitions = {
           val = Boolean(val);
         }
         privateVar = val;
-        if(CanvasEngine.utilities.isFunction(callback)){
+        if($.isFunction(callback)){
           callback(val);
         }
       }
@@ -34,7 +34,7 @@ let propertyDefinitions = {
       set: function (val) {
         // Don't change the private variable.
         // Call the callback with the passed value
-        if(CanvasEngine.utilities.isFunction(callback)){
+        if($.isFunction(callback)){
           callback(val);
         }
       }
