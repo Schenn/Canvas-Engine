@@ -45,6 +45,8 @@ const privateProperties = new WeakMap();
 
 export class EntityManager {
   constructor(ResourceManager, EntityTracker) {
+    if(!utilities.exists(ResourceManager)) throw "No ResourceManager provided";
+    if(!utilities.exists(EntityTracker)) throw "No EntityTracker provided";
     privateProperties[this] = {};
     Promise.resolve(getClassList);
     Promise.resolve(getComponentList);
