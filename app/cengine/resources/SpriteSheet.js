@@ -7,17 +7,19 @@
  */
 
 import * as utilities from "engineParts/utilities.js";
+import {properties} from "engineParts/propertyDefinitions.js";
+
 const privateProperties = new WeakMap();
 
 let processSprites = function(spriteCache, source, spriteWidth, spriteHeight){
-  var sx = 0, sy= 0, index=0;
-  var useCache = utilities.exists(spriteCache);
+  let sx = 0, sy= 0, index=0;
+  let useCache = utilities.exists(spriteCache);
 
   let sprites = {};
 
   while(sy<source.height){
     while(sx < source.width){
-      var name = useCache ? spriteCache[index] : index;
+      let name = useCache ? spriteCache[index] : index;
       sprites[name] = {
         x: sx, y: sy, width: spriteWidth, height: spriteHeight
       };
@@ -34,7 +36,8 @@ let processSprites = function(spriteCache, source, spriteWidth, spriteHeight){
 // If sprites are an object, take their data and fill in the rest.
 let processSpriteObject = function(spriteCache, spriteWidth, spriteHeight) {
   let sprites = {};
-  for(let {[name]: sprite} in spriteCache){
+  for(let name of Object.keys(spriteCache)){
+    let sprite = spriteCache[name];
     sprites[name] = Object.assign({}, {width: spriteWidth, height: spriteHeight}, sprite);
   }
 
@@ -85,27 +88,37 @@ export class SpriteSheet {
    * @returns {Image}
    */
   get Source(){
-    return privateProperties[this].source;
+    return privateProperties[this].source.src;
   }
 
   /**
    * @param {Image} source
    */
   set Source(source){
-    if(privateProperties[this].source === "") {
-      privateProperties[this].source = source;
+    if(privateProperties[this].source === ""){
+      if(source instanceof Image) {
+        this.processSprites(source);
+      } else {
+        throw "Source needs to be a js Image object";
+      }
+    } else {
+      throw "Source already set. Create new SpriteSheet instead."
     }
   }
 
   constructor(details){
     privateProperties[this]={};
+    if(!utilities.exists(details.height) || !utilities.exists(details.width)) throw "Missing the width or height of the sprites";
     privateProperties[this].spriteHeight = details.height;
     privateProperties[this].spriteWidth = details.width;
     privateProperties[this].sprites = [];
     privateProperties[this].source = "";
+    privateProperties[this].isBuilding = false;
 
-    if(typeof(details.sprites !== "undefined")){
-      privateProperties[this].spriteCache = details.sprites;
+    privateProperties[this].spriteCache = (utilities.exists(details.sprites)) ? details.sprites : null;
+
+    if(utilities.exists(details.source)){
+      this.Source = details.source;
     }
   }
 
@@ -115,15 +128,16 @@ export class SpriteSheet {
    */
   processSprites(img){
     privateProperties[this].source = img;
+    privateProperties[this].isBuilding = true;
     // If we have a spriteCache and it's an object, not an array
     if(utilities.exists(privateProperties[this].spriteCache) &&
       Object.keys(privateProperties[this].spriteCache).length > 0 &&
       !utilities.isArray(privateProperties[this].spriteCache)){
 
-      processSpriteObject();
+      privateProperties[this].sprites = processSpriteObject(privateProperties[this].spriteCache,  privateProperties[this].spriteHeight,privateProperties[this].spriteWidth);
     }
     else{
-      processSprites();
+      privateProperties[this].sprites = processSprites( privateProperties[this].spriteCache, privateProperties[this].source, privateProperties[this].spriteHeight,privateProperties[this].spriteWidth);
     }
   }
 
@@ -131,8 +145,10 @@ export class SpriteSheet {
    * Get a sprite detail object by its name
    * @param {string} name
    * @returns {{sx: number, sy: number, sWidth: number, sHeight: number}}
+   * @todo Wait for spritesheet to finish building
    */
   getSprite(name){
+    if(!utilities.exists(privateProperties[this].sprites[name])) throw "Sprite: " +name + " Not Found on SpriteSheet: "+ this.Source;
     return privateProperties[this].sprites[name];
   }
 }
