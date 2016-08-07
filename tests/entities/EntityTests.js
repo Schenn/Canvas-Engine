@@ -10,11 +10,11 @@ SystemJS.import('entities/Entity.js').then(function(m) {
 
   QUnit.test("Entity Requires EntityManager", function(assert){
     assert.throws(function(){
-      let entity = new Entity();
+      let entity = new m.Entity();
     }, /defined/, "Entity won't construct without a reference to an EntityManager instance");
 
     assert.ok(function(){
-      let entity = new Entity({},{});
+      let entity = new m.Entity({},{});
     }, "Entity WILL construct with a plain object as an argument");
   });
 

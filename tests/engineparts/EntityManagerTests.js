@@ -10,8 +10,8 @@ SystemJS.import('engineParts/EntityManager.js').then(function(m) {
 
   QUnit.test("EntityManager Won't Construct", function(assert){
     assert.throws(function(){
-      let em = new EntityManager();
-    }, /defined/, "EntityManager won't construct without it's dependencies");
+      let em = new m.EntityManager();
+    }, /provided/, "EntityManager won't construct without it's dependencies");
   });
 
 });
