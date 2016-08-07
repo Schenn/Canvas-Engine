@@ -165,6 +165,7 @@ export class ResourceManager {
    */
   finishedAddingResources(){
     privateProperties[this].allAdded = true;
+    this.triggerCallback();
   }
 
   /**
