@@ -113,6 +113,10 @@ module.exports = function(grunt) {
           "<%= cengine %>/*.js"
           ],
         tasks: ['jshint']
+      },
+      qUnit: {
+        files: ["./tests/**/*.js","./tests/**/*.html" ],
+        tasks: ['runTests']
       }
     },
     jsdoc:{
@@ -132,6 +136,9 @@ module.exports = function(grunt) {
           pedantic: true
         }
       }
+    },
+    qunit: {
+      all: ['./tests/**/*.html']
     }
 
   });
@@ -142,11 +149,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-jsdoc');
+  grunt.loadNpmTasks('grunt-contrib-qunit');
 
   // Default task(s).
   grunt.registerTask('default', ['watch']);
 
   grunt.registerTask("babelfy", ["babel"]);
+  grunt.registerTask("runTests", ['qunit']);
 
   grunt.registerTask('buildlib', ['bower_concat','uglify:libraries']);
 
