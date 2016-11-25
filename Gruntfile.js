@@ -95,7 +95,7 @@ module.exports = function(grunt) {
       cengine: ['<%= cengine %>'],
       options:{
         esversion: 6,
-        ignores: ["<%=cengine %>/doc"]
+        ignores: ["<%=cengine %>/doc", "<%=cengine %>/es6"]
       }
     },
     watch: {
@@ -112,7 +112,7 @@ module.exports = function(grunt) {
           "<%= cengine %>/resources/*",
           "<%= cengine %>/*.js"
           ],
-        tasks: ['jshint']
+        tasks: ['jshint', 'babel']
       },
       qUnit: {
         files: ["./tests/**/*.js","./tests/**/*.html" ],
