@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Canvas Engine QUnit Tests</title>
-  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.0.1.css">
+  <link rel="stylesheet" href="../app/dependencies/qunit-2.0.1.css">
 </head>
 <body>
 <div id="qunit"></div>
 <div id="qunit-fixture"></div>
-<script src="https://code.jquery.com/qunit/qunit-2.0.1.js"></script>
+<script src="../app/dependencies/qunit-2.0.1.js"></script>
 <script src="../js/lib.min.js"></script>
 <script src="../app/dependencies/systemjs-0.19.31/dist/system.js"></script>
 
@@ -24,12 +24,78 @@
     baseURL: '../app/cengine'
   });
 </script>
-<script src="engineparts/utilitiesTests.js"></script>
-<script src="engineparts/ResourceManagerTests.js"></script>
-<script src="engineparts/EntityTrackerTests.js"></script>
-<script src="engineparts/EntityManagerTests.js"></script>
-<script src="components/ComponentTests.js"></script>
-<script src="entities/EntityTests.js"></script>
-<script src="resources/SpriteSheetTests.js"></script>
+<script>
+  QUnit.config.autostart = false;
+  let testMap = {
+    utilities:false,
+    ResourceManager: false,
+    EntityTracker: false,
+    EntityManager: false,
+    Component: false,
+    Entity: false,
+    SpriteSheet: false
+  };
+
+  let doneLoading = function(name){
+    testMap[name] = true;
+    let tests = Object.keys(testMap);
+    let allTrue = true;
+    for(let i = 0; i < tests.length; i++){
+      if(!testMap[tests[i]]){
+        i = tests.length;
+        allTrue = false;
+      }
+    }
+    if(allTrue){
+      QUnit.start();
+      $("#loading").remove();
+    }
+  };
+
+  (function(){
+
+    let testPath = "../tests/";
+
+
+    SystemJS.import(testPath + "engineparts/utilitiesTests.js").then(function(){
+      doneLoading('utilities');
+    });
+
+    SystemJS.import(testPath + "engineparts/PropertyTests.js").then(function(){
+      doneLoading('utilities');
+    });
+
+    SystemJS.import(testPath + "engineparts/EntityTrackerTests.js").then(function(){
+      doneLoading('EntityTracker');
+    });
+
+    SystemJS.import(testPath + "engineparts/ResourceManagerTests.js").then(function(){
+      doneLoading('ResourceManager');
+    });
+
+    SystemJS.import(testPath + "engineparts/EntityManagerTests.js").then(function(){
+      doneLoading('EntityManager');
+    });
+
+    SystemJS.import(testPath + "components/ComponentTests.js").then(function(){
+      doneLoading('Component');
+    });
+
+    SystemJS.import(testPath + "entities/EntityTests.js").then(function(){
+      doneLoading('Entity');
+    });
+
+    SystemJS.import(testPath + "resources/SpriteSheetTests.js").then(function(){
+      doneLoading('SpriteSheet');
+    });
+
+  })();
+
+</script>
+
+<div id="loading">
+  <b>Loading Tests...</b>
+</div>
+
 </body>
 </html>
