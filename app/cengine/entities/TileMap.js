@@ -14,25 +14,21 @@ export class TileMap extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
 
-    EntityManager.attachComponent("TileMap", {
+    EntityManager.attachComponent(this,"TileMap", {
       Click: {
         "TileClick": {
           onClick: coord=>{
             this.messageToComponent("TileMap", "TileClick", coord);
           }
+        },
+        onScroll: ()=>{
+          this.messageToComponent("Renderer", "markDirty");
         }
       }
     });
 
     // A tilemap needs to reference a spritesheet
     EntityManager.attachComponent(this, "SpriteSheet", params);
-
-    // A tilemap needs to reference a tilemap component
-    EntityManager.attachComponent(this, "TileMap", Object.assign({},{
-      onScroll: ()=>{
-        this.messageToComponent("Renderer", "markDirty");
-      }
-    }, params.tileMap));
 
     // A tilemap needs a renderer component
     EntityManager.attachComponent(this, "Renderer", Object.assign({}, {
