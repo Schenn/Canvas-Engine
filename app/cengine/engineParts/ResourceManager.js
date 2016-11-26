@@ -12,6 +12,8 @@ import * as utilities from "engineParts/utilities.js";
 
 import {SpriteSheet} from "resources/SpriteSheet.js";
 
+import {properties} from "engineParts/propertyDefinitions.js";
+
 const privateProperties = new WeakMap();
 
 /**
