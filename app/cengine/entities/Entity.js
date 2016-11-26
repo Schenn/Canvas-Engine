@@ -24,7 +24,7 @@ const privateProperties =new WeakMap();
  */
 export class Entity{
   get EntityManager() {
-    return properties.proxy(privateProperties[this].EntityManager);
+    return properties.proxy(privateProperties[this.name].EntityManager);
   }
 
   /**
@@ -34,7 +34,7 @@ export class Entity{
    * @return {Proxy<Map>}
    */
   get componentList(){
-    return properties.proxy(privateProperties[this].components);
+    return properties.proxy(privateProperties[this.name].components);
   }
 
   constructor(params, EM){
@@ -127,14 +127,15 @@ export class Entity{
    * @param {string} funcName
    * @param {*} [args]
    */
-  broadcastToComponent(funcName, args){
-    privateProperties[this.name].components.forEach(function(name, component){
-      if(utilities.isFunction(privateProperties[this.name].components[funcName])){
+  broadcastToComponents(funcName, args){
+    let self = this;
+    privateProperties[this.name].components.forEach((name, component)=>{
+      if(utilities.isFunction(component[funcName])){
         component[funcName].call(component,args);
       }
     });
 
-    privateProperties[this.name].subEntities.forEach(function(name, entity){
+    privateProperties[this.name].subEntities.forEach((name, entity)=>{
       entity.broadcastToComponents(funcName,args);
     });
 
@@ -148,13 +149,14 @@ export class Entity{
    * @param {*} [args]
    */
   messageToComponent(componentName, funcName, args){
-    if(utilities.exists(privateProperties[this.name].components[componentName]) &&
-      utilities.isFunction(privateProperties[this.name].components[componentName][funcName])){
+    let comp = privateProperties[this.name].components.get(componentName);
+    if(utilities.exists(comp) &&
+      utilities.isFunction(comp[funcName])){
 
       if(utilities.exists(args)) {
-        privateProperties[this.name].components[componentName][funcName].call(privateProperties[this.name].components[componentName], args);
+        comp[funcName].call(comp, args);
       }else {
-        privateProperties[this.name].components[componentName][funcName].call(privateProperties[this.name].components[componentName]);
+        comp[funcName].call(comp);
       }
     }
   }
@@ -169,18 +171,20 @@ export class Entity{
    * @returns {*}
    */
   getFromComponent(componentName, funcName, args){
-    if(utilities.exists(privateProperties[this.name].components[componentName]) &&
-      utilities.isFunction(privateProperties[this.name].components[componentName][funcName])){
+    let comp = privateProperties[this.name].components.get(componentName);
+    if(utilities.exists(comp)){
+      if(utilities.isFunction(comp[funcName])) {
 
-      if(utilities.exists(args)) {
-        return privateProperties[this.name].components[componentName][funcName].call(privateProperties[this.name].components[componentName],args);
-      }else {
-        return privateProperties[this.name].components[componentName][funcName].call(privateProperties[this.name].components[componentName]);
+        if (utilities.exists(args)) {
+          return comp[funcName].call(comp, args);
+        } else {
+          return comp[funcName].call(comp);
+        }
+      } else if(typeof comp[funcName] !== "undefined"){
+          return comp[funcName];
       }
     }
-    else {
-      throw this.name + " Does not have component: "+ componentName;
-    }
+    throw this.name + " Does not have component: "+ componentName;
   }
 
   /**
