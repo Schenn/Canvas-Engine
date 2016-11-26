@@ -126,9 +126,14 @@ export class SpriteSheet {
   }
 
   constructor(details){
-
-    let id = (details.source || utilities.randName());
-
+    let id;
+    if(details.source instanceof Image){
+      id = details.source.src;
+    } else if (details.source instanceof String){
+      id = details.source;
+    } else {
+      id = utilities.randName();
+    }
     Object.defineProperties(this, {
       id:properties.lockedProperty(id)
     });
@@ -191,24 +196,32 @@ export class SpriteSheet {
    * @todo Wait for spritesheet to finish building
    */
   getSprite(name){
-    if(privateProperties[this.id].isProcessing){
+    console.log(privateProperties[this.id].isProcessing);
+    if(privateProperties[this.id].isProcessing === true){
       console.log("Waiting for spritesheet to finish processing.");
+      console.log(this.id);
+      if(utilities.exists(privateProperties[this.id].spriteCache) &&
+        !utilities.exists(privateProperties[this.id].spriteCache[name])
+      ){
+        throw "Sprite: " +name + " Not Found in SpriteSheet Data: "+ self.Source;
+      }
       let self = this;
       return new Promise((resolve, reject)=>{
         let int= setInterval(()=>{
           if(privateProperties[self.id].isProcessing === false){
             clearInterval(int);
-            if(!utilities.exists(privateProperties[self.id].sprites[name])){
-              throw "Sprite: " +name + " Not Found on SpriteSheet: "+ self.Source;
-            } else {
-              resolve(privateProperties[self.id].sprites[name]);
+            console.log(privateProperties[self.id].sprites);
+            if(!utilities.exists(privateProperties[this.id].sprites[name])){
+              reject(new Error("Sprite: " +name + " Not Found on SpriteSheet: "+ this.Source));
             }
+
+            resolve(privateProperties[self.id].sprites[name]);
           }
-        }, 1000);
+        }, 100);
 
       });
     }
-
+    console.log(privateProperties[this.id].sprites);
     if(!utilities.exists(privateProperties[this.id].sprites[name])){
       throw "Sprite: " +name + " Not Found on SpriteSheet: "+ this.Source;
     }
