@@ -86,6 +86,22 @@ let objectSheet = new SpriteSheet({
    * Ensure we can retrieve sprites from a SpriteSheet.
    */
   QUnit.test("SpriteSheet contains accessible sprites!", function (assert){
-    assert.throws(function(){objectSheet.getSprite(0);}, /Found/, "Using a dictionary of sprite data prevents the auto-generation of sprites.");
-    assert.propEqual(objectSheet.getSprite('a'), {height: 50, width: 50, x: 200, y: 200}, "If we wait for the sprites to finish generating, we can specify specific names for sprites.");
+    let done = assert.async();
+    let a = objectSheet.getSprite("a");
+    a = Promise.resolve(a).then((sprite)=>{
+      if (sprite instanceof Error){
+        throw sprite.msg;
+      }
+      console.log(sprite);
+      assert.ok(sprite, "a should be found in our spritesheet.");
+      assert.propEqual(
+        sprite,
+        {
+          height: 50, width: 50, x: 200, y: 200
+        },
+        "If we wait for the sprites to finish generating, we can specify specific names for sprites."
+      );
+      done();
+    });
+
   });
