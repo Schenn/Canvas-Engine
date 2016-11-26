@@ -1,18 +1,17 @@
-(function(CanvasEngine){
-
 var game = function(){
-
+  let CanvasEngine = null;
   var randomTileMap = [];
 
   // Tell canvas engine to point to our canvas
-  this.setup = function(canvas){
-    CanvasEngine.ResourceManager.setImagePath("demos/chakara_graphics");
-    CanvasEngine.Screen.setScreen(canvas);
+  this.setup = function(canvas, CEngine){
+    CanvasEngine = CEngine;
+    CanvasEngine.ResourceManager.ImagePath = "demos/chakara_graphics";
+    CanvasEngine.Screen.attachToCanvas(canvas);
     CanvasEngine.Screen.maximize();
 
-    for(var y=0; (y * 32) < CanvasEngine.Screen.height();y++){
+    for(var y=0; (y * 32) < CanvasEngine.Screen.height;y++){
       randomTileMap[y]=[];
-      for(var x=0; (x * 32) < CanvasEngine.Screen.width(); x++){
+      for(var x=0; (x * 32) < CanvasEngine.Screen.width; x++){
         randomTileMap[y][x] = Math.floor(Math.random() * (4));
       }
     }
@@ -20,16 +19,16 @@ var game = function(){
     CanvasEngine.addMap([
       {
         type: "Rect",
-        height:CanvasEngine.Screen.height(),
-        width: CanvasEngine.Screen.width(),
+        height:CanvasEngine.Screen.height,
+        width: CanvasEngine.Screen.width,
         fillStyle: "#000000"
       },
       {
         type: "Label",
         name: "Loading",
         text: "Loading...",
-        x: CanvasEngine.Screen.width()/2,
-        y: CanvasEngine.Screen.height()/2,
+        x: CanvasEngine.Screen.width/2,
+        y: CanvasEngine.Screen.height/2,
         z_index: 1
       }
     ], true);
@@ -68,8 +67,8 @@ var game = function(){
       },
       {
         type: "Button",
-        x: CanvasEngine.Screen.width() / 2,
-        y: CanvasEngine.Screen.height() / 2,
+        x: CanvasEngine.Screen.width / 2,
+        y: CanvasEngine.Screen.height / 2,
         z_index: 3,
         text: "Add Movable Entity",
         padding: 2,
@@ -139,5 +138,3 @@ var game = function(){
 };
 
 window.chakara = new game();
-
-})(window.CanvasEngine);
