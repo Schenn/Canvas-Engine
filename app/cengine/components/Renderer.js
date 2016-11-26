@@ -78,7 +78,7 @@ export class Renderer extends Component {
    * @param {CanvasEngine.Entities.Entity} entity The entity to attach the Renderer Component to
    */
   constructor(params, entity) {
-    super(entity, ()=>{this.markDirty()});
+    super(entity, ()=>{this.markDirty();});
     privateProperties[this] = {};
     privateProperties[this].isDirty = true;
     privateProperties[this].hidden = false;
