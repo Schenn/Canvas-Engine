@@ -12,37 +12,46 @@
  */
 
 import * as utilities from "engineParts/utilities.js";
+import {properties} from "engineParts/propertyDefinitions.js";
+
 const privateProperties = new WeakMap();
 
 export class Screen {
 
   get height(){
-    return privateProperties[this].baseCanvas.height();
+    return privateProperties[this.id].baseCanvas.height();
   }
 
   get width(){
-    return privateProperties[this].baseCanvas.width();
+    return privateProperties[this.id].baseCanvas.width();
   }
 
   constructor(MouseHandler){
-    privateProperties[this] = {};
-    privateProperties[this].previousMousePosition = {};
-    privateProperties[this].canvases = [];
-    privateProperties[this].baseCanvas = null;
-    privateProperties[this].onMouseEvent = MouseHandler;
+
+    let id = utilities.randName();
+
+    Object.defineProperties(this, {
+      id: properties.lockedProperty(id)
+    });
+    privateProperties[this.id] = {};
+    privateProperties[this.id].previousMousePosition = {};
+    privateProperties[this.id].canvases = [];
+    privateProperties[this.id].baseCanvas = null;
+    privateProperties[this.id].onMouseEvent = MouseHandler;
   }
 
   attachToCanvas(canvas){
     if(!(canvas instanceof jQuery)){
       canvas = $(canvas);
     }
-    privateProperties[this].canvases[0] = canvas;
-    privateProperties[this].baseCanvas = canvas;
-    privateProperties[this].baseCanvas.parent().on({
-      click:this.onClick,
-      mousedown: this.onMouseDown,
-      mouseup:this.onMouseUp,
-      mousemove: this.onMouseMove
+    privateProperties[this.id].canvases[0] = canvas;
+    privateProperties[this.id].baseCanvas = canvas;
+    let self = this;
+    privateProperties[this.id].baseCanvas.parent().on({
+      click:(e)=>{self.onClick(e);},
+      mousedown: (e)=>{self.onMouseDown(e);},
+      mouseup:(e)=>{self.onMouseUp(e);},
+      mousemove: (e)=>{self.onMouseMove(e);}
     }, "canvas");
   }
 
@@ -51,13 +60,13 @@ export class Screen {
    * @param {number} modifier A percentage 1 - 100
    */
   maximize(modifier = 100){
-    privateProperties[this].canvases.forEach(function(canvas){
+    privateProperties[this.id].canvases.forEach(function(canvas){
       canvas.maximize(modifier);
     });
   }
 
   getScreenContext(zIndex){
-    return privateProperties[this].canvases[zIndex].getEnhancedContext();
+    return privateProperties[this.id].canvases[zIndex].getEnhancedContext();
   }
 
   setResolution(resolution){
@@ -71,13 +80,13 @@ export class Screen {
    */
   addZLayers(layers){
     for(let z of layers){
-      if(utilities.exists(privateProperties[this].canvases[z])) return;
+      if(utilities.exists(privateProperties[this.id].canvases[z])) continue;
 
       // Set reference to the canvas element, not its jQuery wrapped version.
       // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
-      privateProperties[this].canvases[z] = privateProperties[this].baseCanvas.addZLayer(
-        privateProperties[this].baseCanvas.attr("height"),
-        privateProperties[this].baseCanvas.attr("width"),
+      privateProperties[this.id].canvases[z] = privateProperties[this.id].baseCanvas.addZLayer(
+        privateProperties[this.id].baseCanvas.attr("height"),
+        privateProperties[this.id].baseCanvas.attr("width"),
         z
       );
     }
@@ -92,9 +101,9 @@ export class Screen {
   removeZLayers(layers){
     for(let z of layers){
       if(z > 0) {
-        privateProperties[this].canvases[z].remove();
-        delete privateProperties[this].canvases[z];
-        privateProperties[this].canvases = utilities.cleanArray(privateProperties[this].canvases);
+        privateProperties[this.id].canvases[z].remove();
+        delete privateProperties[this.id].canvases[z];
+        privateProperties[this.id].canvases = utilities.cleanArray(privateProperties[this.id].canvases);
       }
     }
 
@@ -113,10 +122,10 @@ export class Screen {
    */
   atPixel(x, y, h, w, transparent){
     var pixelHits = [];
-    var zs = privateProperties[this].canvases.keys();
+    var zs = privateProperties[this.id].canvases.keys();
 
     for(let zIndex of zs){
-      if(privateProperties[this].canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent)){
+      if(privateProperties[this.id].canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent)){
         pixelHits[zIndex] = true;
       }
     }
@@ -137,7 +146,7 @@ export class Screen {
       x: e.offsetX,
       y: e.offsetY
     };
-    privateProperties[this].onMouseEvent(coords, "Click");
+    privateProperties[this.id].onMouseEvent(coords, "Click");
   }
 
   /**
@@ -152,8 +161,8 @@ export class Screen {
       x: e.offsetX,
       y: e.offsetY
     };
-    privateProperties[this].onMouseEvent(coords, "MouseMove", privateProperties[this].previousMousePosition);
-    privateProperties[this].previousMousePosition = coords;
+    privateProperties[this.id].onMouseEvent(coords, "MouseMove", privateProperties[this.id].previousMousePosition);
+    privateProperties[this.id].previousMousePosition = coords;
   }
 
   /**
@@ -168,7 +177,7 @@ export class Screen {
       x: e.offsetX,
       y: e.offsetY
     };
-    privateProperties[this].onMouseEvent(coords, "MouseDown");
+    privateProperties[this.id].onMouseEvent(coords, "MouseDown");
   }
 
   /**
@@ -183,7 +192,7 @@ export class Screen {
       x: e.offsetX,
       y: e.offsetY
     };
-    privateProperties[this].onMouseEvent(coords, "MouseUp");
+    privateProperties[this.id].onMouseEvent(coords, "MouseUp");
   }
 
   /**
@@ -197,15 +206,15 @@ export class Screen {
   capture(){
     // Create a hidden canvas of the appropriate size
     let output = $("<canvas><canvas>");
-    output.attr("height", privateProperties[this].baseCanvas.height);
-    output.attr("width", privateProperties[this].baseCanvas.width);
+    output.attr("height", privateProperties[this.id].baseCanvas.height);
+    output.attr("width", privateProperties[this.id].baseCanvas.width);
     output.hide();
 
     let ctx = output.getContext("2d");
 
     // Draw each canvas to the hidden canvas in order of z index
-    for(let z=0; z < privateProperties[this].canvases.length; z++){
-      ctx.drawImage(privateProperties[this].canvases[i], 0, 0);
+    for(let z=0; z < privateProperties[this.id].canvases.length; z++){
+      ctx.drawImage(privateProperties[this.id].canvases[i], 0, 0);
     }
 
     // Get the image data

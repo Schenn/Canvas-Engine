@@ -22,22 +22,45 @@ const privateProperties = new WeakMap();
 
 export class CanvasEngine{
 
+  /**
+   *
+   * @returns {boolean}
+   */
   get paused() {
     return privateProperties[this].paused;
   }
 
+  /**
+   * @returns {ResourceManager}
+   * @constructor
+   */
   get ResourceManager() {
     return privateProperties[this].ResourceManager;
   }
 
+  /**
+   *
+   * @returns {EntityTracker}
+   * @constructor
+   */
   get EntityTracker() {
     return privateProperties[this].EntityTracker;
   }
 
+  /**
+   *
+   * @returns {EntityManager}
+   * @constructor
+   */
   get EntityManager() {
     return privateProperties[this].EntityManager;
   }
 
+  /**
+   *
+   * @returns {Screen}
+   * @constructor
+   */
   get Screen(){
     return privateProperties[this].Screen;
   }
@@ -57,7 +80,8 @@ export class CanvasEngine{
     privateProperties[this].EntityManager = new EntityManager(privateProperties[this].ResourceManager, privateProperties[this].EntityTracker);
 
     Promise.resolve(Screen);
-    privateProperties[this].Screen = new Screen();
+    let self = this;
+    privateProperties[this].Screen = new Screen(function(coords, interaction, previous){self.onMouse(coords, interaction, previous);});
 
   }
 
@@ -88,6 +112,7 @@ export class CanvasEngine{
 
     if(start){
       privateProperties[this].paused = false;
+      this.Loop();
     }
   }
 
@@ -97,15 +122,14 @@ export class CanvasEngine{
    */
   clearEntities(){
     //noinspection JSUnusedAssignment
-    paused = true;
+    privateProperties[this].paused = true;
     this.EntityTracker.clearEntities();
-    paused = false;
+    privateProperties[this].paused = false;
   }
 
   render(){
     let zs = this.EntityTracker.zIndexes;
-
-    for(let z = zs; z >0; z--){
+    for(let z of zs){
       this.drawZ(z);
     }
   }
@@ -123,10 +147,14 @@ export class CanvasEngine{
    */
   drawZ(z){
     let ctx = this.Screen.getScreenContext(z);
-    if(!privateProperties[this].paused && this.EntityTracker.entityCount() > 0) {
+    if(!privateProperties[this].paused && this.EntityTracker.entityCount > 0) {
+      let entities = this.EntityTracker.getEntitiesByZ(z);
       setTimeout(()=>{
-        for(let entity of this.EntityTracker.getEntitiesByZ(z)){
+
+        let ents = this.EntityTracker.getEntities(entities);
+        for(let entity of ents){
           entity.broadcastToComponents("update");
+
           if(entity.getFromComponent("Renderer", "isDirty")){
             entity.messageToComponent("Renderer", "clear", ctx);
             entity.messageToComponent("Renderer", "render", ctx);
@@ -236,6 +264,10 @@ export class CanvasEngine{
    * @returns {Array} Entities at the specified position
    */
   positionsAtPixel(p, w, h, hasComponent){
+    if(!utilities.exists(p.x)){
+      return [];
+    }
+
     let zPixels =this.Screen.atPixel(p.x, p.y, h, w, true);
     if (zPixels.length > 0) {
       return this.EntityTracker.positionsAtPixel(p,w,h, Object.keys(zPixels), hasComponent);
