@@ -22,7 +22,12 @@ export class EntityTracker {
   }
 
   get entityCount(){
-    return privateProperties[this].entities.size();
+    let count = 0;
+
+    for(let z of this.zIndexes){
+      count += privateProperties[this].entitiesByZ[z].size;
+    }
+    return count;
   }
 
   get zIndexes(){
@@ -129,6 +134,7 @@ export class EntityTracker {
     let entity = null;
     for(let z of privateProperties[this].entitiesByZ){
       for(let ent of z){
+        console.log(ent);
         if(ent.name === name) {
           entity = ent;
         }
