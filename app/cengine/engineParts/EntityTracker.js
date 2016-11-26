@@ -17,7 +17,8 @@ const privateProperties = new WeakMap();
 export class EntityTracker {
 
   get maxZ(){
-    return privateProperties[this].maxZ;
+    let zs = Object.keys(privateProperties[this].entitiesByZ);
+    return zs[zs.length-1];
   }
 
   get entityCount(){
@@ -44,19 +45,18 @@ export class EntityTracker {
    * @param {Entity[]} entities
    */
   addEntities(entities){
+    let retMethod = (entity)=>{return new Proxy(entity, {});};
     for(let entity of entities){
-      console.log(entity);
       if(entity instanceof Entity) {
         privateProperties[this].entities.set(entity, entity.name);
         // If we don't already have a collection of entity references at this z index, start one.
         if(!utilities.exists(privateProperties[this].entitiesByZ[entity.z_index])){
-          privateProperties[this].entitiesByZ[entity.z_index] = new WeakSet();
-          if(entity.z_index > privateProperties[this].maxZ){
-            privateProperties[this].maxZ = entity.z_index;
-          }
+          privateProperties[this].entitiesByZ[entity.z_index] = new Set();
         }
         privateProperties[this].entitiesByZ[entity.z_index].add(entity);
-        privateProperties[this].entityProxies[entity.name] = ()=>{return new Proxy(entity, {});}
+        privateProperties[this].entityProxies[entity.name] = retMethod(entity);
+      } else {
+        throw "Entity expected but " + entity +" encountered.";
       }
     }
   }
@@ -85,8 +85,11 @@ export class EntityTracker {
    */
   getEntities(names){
     var ents = [];
+    let ep = privateProperties[this].entityProxies;
     names.forEach((name, index)=>{
-      ents[index] = privateProperties[this].entityProxies[name]();
+      if(ep.hasOwnProperty(name)){
+        ents[index] = ep[name];
+      }
     });
 
     return ents;
@@ -96,11 +99,10 @@ export class EntityTracker {
    * Clear all the Entities from the world
    */
   clearEntities(){
-    // Starting with the last z index, work backwards, clearing each collection
-    var zs = privateProperties[this].entitiesByZ.keys();
-
-    for(var i = zs.length-1; i>=0; i--){
-      this.removeEntities(privateProperties[this].entitiesByZ[zs[i]]);
+    for(let i =privateProperties[this].entitiesByZ.length-1; i> -1; i--){
+      for(let entity of privateProperties[this].entitiesByZ[i]){
+        this.removeEntity(entity.name);
+      }
     }
   }
 
@@ -123,19 +125,33 @@ export class EntityTracker {
    * @param {string} name
    */
   removeEntity(name){
-    let entity= privateProperties[this].entities.get(name);
 
-    entity.messageToComponent("Renderer", "hide", ()=>{
-      privateProperties[this].entityProxies.delete(name);
+    let entity = null;
+    for(let z of privateProperties[this].entitiesByZ){
+      for(let ent of z){
+        if(ent.name === name) {
+          entity = ent;
+        }
+      }
+    }
+    let clearEntity = ()=>{
+      privateProperties[this].entitiesByZ[entity.z_index].delete(entity);
       if(privateProperties[this].entitiesByZ[entity.z_index].size === 0){
         privateProperties[this].entitiesByZ.splice(entity.z_index,1);
         privateProperties[this].entitiesByZ = utilities.cleanArray(privateProperties[this].entitiesByZ);
-        let zs = privateProperties[this].entitiesByZ.keys();
-        privateProperties[this].maxZ = zs[zs.length -1];
-
       }
+      privateProperties[this].entities.delete(entity);
+      delete privateProperties[this].entityProxies[name];
+    };
+    if(entity.hasComponent("Renderer")){
+      entity.messageToComponent("Renderer", "hide", clearEntity);
+    } else if(entity.hasComponent("onDelete")){
+      entity.messageToComponent("onDelete", "onDelete", {doLast: clearEntity});
+    } else {
+      clearEntity();
+    }
 
-    });
+    return true;
   }
 
 
