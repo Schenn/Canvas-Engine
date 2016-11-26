@@ -95,8 +95,15 @@ export class EntityManager {
     }
 
     // Create the entity
-    let entity;
-    entity = new (privateProperties[this].entities.get(type))(params, this);
+    if(!privateProperties[this].entities.has(type)){
+      throw "Invalid type provided:" + type + " Check the Entity List to ensure you've added the entity you're trying to create.";
+    }
+
+    /**
+     * constructor for class determined by 'type'
+     */
+    let constr = privateProperties[this].entities.get(type);
+    let entity= new constr(params, this);
 
     // Attach the click and other event handling components.
     if(utilities.exists(params.onClick) ||
@@ -128,10 +135,12 @@ export class EntityManager {
    * @returns {EntityManager}
    */
   attachComponent(entity, component, params){
+    let thisComConst;
     // component === "componentName"
     if(typeof(component) == "string"){
       if(privateProperties[this].components.has(component)){
-        entity.attachComponent(component, new (privateProperties[this].components.get(component))(params, entity));
+        thisComConst = privateProperties[this].components.get(component);
+        entity.attachComponent(component, new thisComConst(params, entity));
       }
     } else if (component instanceof privateProperties[this].components.get("BaseComponent")){
       entity.attachComponent(component.constructor.name, component);
@@ -141,11 +150,13 @@ export class EntityManager {
           /** component = {"componentName" : {"name to use" : data }} */
           let names = Object.keys(component[com]);
           for(let name of names){
-            entity.attachComponent(name, new (privateProperties[this].components.get(component[com]))(params, entity));
+            thisComConst = privateProperties[this].components.get(com);
+            entity.attachComponent(name, new thisComConst(component[com], entity));
           }
         } else if(typeof(component[com]== "string")){
           /** component = {"componentName" : "name to use"} */
-          entity.attachComponent(component[com], new (privateProperties[this].components.get(com))(params, entity));
+          thisComConst = privateProperties[this].components.get(com);
+          entity.attachComponent(component[com], thisComConst(params, entity));
         }
       }
     }
