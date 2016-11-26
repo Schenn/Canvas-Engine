@@ -38,8 +38,9 @@ export class Entity{
   }
 
   constructor(params, EM){
-    privateProperties[this] = {};
-    privateProperties[this].EntityManager = EM;
+    let name = params.name || utilities.randName();
+    privateProperties[name] = {};
+    privateProperties[name].EntityManager = EM;
     /**
      * @link{CanvasEngine.Components} provide their own self-contained functionality and are used by their parent
      *  entity to perform tasks.
@@ -47,14 +48,14 @@ export class Entity{
      * @inner
      * @type Map
      */
-    privateProperties[this].components = new Map();
+    privateProperties[name].components = new Map();
     /**
      * subEntities are regular @link{CanvasEngine.Entities} which belong to another.
      *
      * @inner
      * @type Map
      */
-    privateProperties[this].subEntities = new Map();
+    privateProperties[name].subEntities = new Map();
 
     Object.defineProperties(this, {
       /**
@@ -68,7 +69,7 @@ export class Entity{
        * @instance
        * @memberof Entity
        */
-      name:properties.lockedProperty(params.name || utilities.randName())
+      name:properties.lockedProperty(name)
     });
     Promise.resolve(Component);
   }
@@ -79,8 +80,8 @@ export class Entity{
    * @param {Component} comp the instantiated component @see{CanvasEngine.Components}
    */
   attachComponent(name, comp){
-    if(!privateProperties[this].components.has(name) && comp instanceof Component){
-      privateProperties[this].components.set(name, comp);
+    if(!privateProperties[this.name].components.has(name) && comp instanceof Component){
+      privateProperties[this.name].components.set(name, comp);
     }
   }
   /**
@@ -95,7 +96,7 @@ export class Entity{
    */
   attachSubEntity(name, entity){
     if(entity instanceof this){
-      privateProperties[this].subEntities.set(name, entity);
+      privateProperties[this.name].subEntities.set(name, entity);
     }
   }
 
@@ -106,7 +107,7 @@ export class Entity{
    * @returns {boolean}
    */
   hasComponent(name) {
-    return privateProperties[this].components.has(name);
+    return privateProperties[this.name].components.has(name);
   }
 
   /**
@@ -116,7 +117,7 @@ export class Entity{
    * @returns {boolean}
    */
   hasSubEntity(name){
-    return privateProperties[this].subEntities.has(name);
+    return privateProperties[this.name].subEntities.has(name);
   }
 
   /**
@@ -127,13 +128,13 @@ export class Entity{
    * @param {*} [args]
    */
   broadcastToComponent(funcName, args){
-    privateProperties[this].components.forEach(function(name, component){
-      if(utilities.isFunction(privateProperties[this].components[funcName])){
+    privateProperties[this.name].components.forEach(function(name, component){
+      if(utilities.isFunction(privateProperties[this.name].components[funcName])){
         component[funcName].call(component,args);
       }
     });
 
-    privateProperties[this].subEntities.forEach(function(name, entity){
+    privateProperties[this.name].subEntities.forEach(function(name, entity){
       entity.broadcastToComponents(funcName,args);
     });
 
@@ -147,13 +148,13 @@ export class Entity{
    * @param {*} [args]
    */
   messageToComponent(componentName, funcName, args){
-    if(utilities.exists(privateProperties[this].components[componentName]) &&
-      utilities.isFunction(privateProperties[this].components[componentName][funcName])){
+    if(utilities.exists(privateProperties[this.name].components[componentName]) &&
+      utilities.isFunction(privateProperties[this.name].components[componentName][funcName])){
 
       if(utilities.exists(args)) {
-        privateProperties[this].components[componentName][funcName].call(privateProperties[this].components[componentName], args);
+        privateProperties[this.name].components[componentName][funcName].call(privateProperties[this.name].components[componentName], args);
       }else {
-        privateProperties[this].components[componentName][funcName].call(privateProperties[this].components[componentName]);
+        privateProperties[this.name].components[componentName][funcName].call(privateProperties[this.name].components[componentName]);
       }
     }
   }
@@ -168,13 +169,13 @@ export class Entity{
    * @returns {*}
    */
   getFromComponent(componentName, funcName, args){
-    if(utilities.exists(privateProperties[this].components[componentName]) &&
-      utilities.isFunction(privateProperties[this].components[componentName][funcName])){
+    if(utilities.exists(privateProperties[this.name].components[componentName]) &&
+      utilities.isFunction(privateProperties[this.name].components[componentName][funcName])){
 
       if(utilities.exists(args)) {
-        return privateProperties[this].components[componentName][funcName].call(privateProperties[this].components[componentName],args);
+        return privateProperties[this.name].components[componentName][funcName].call(privateProperties[this.name].components[componentName],args);
       }else {
-        return privateProperties[this].components[componentName][funcName].call(privateProperties[this].components[componentName]);
+        return privateProperties[this.name].components[componentName][funcName].call(privateProperties[this.name].components[componentName]);
       }
     }
     else {
@@ -191,11 +192,11 @@ export class Entity{
    * @returns {*}
    */
   componentProperty(componentName, propertyName, value){
-    if(utilities.exists(value) && privateProperties[this].components[componentName].hasOwnProperty(propertyName)){
-      privateProperties[this].components[componentName][propertyName] = value;
+    if(utilities.exists(value) && privateProperties[this.name].components[componentName].hasOwnProperty(propertyName)){
+      privateProperties[this.name].components[componentName][propertyName] = value;
     }
 
-    return privateProperties[this].components[componentName][propertyName];
+    return privateProperties[this.name].components[componentName][propertyName];
   }
 
   /**
@@ -206,13 +207,13 @@ export class Entity{
    * @param {*} [args]
    */
   messageToSubEntity(entityName, funcName, args){
-    if(utilities.exists(privateProperties[this].subEntities[entityName]) &&
-      utilities.isFunction(privateProperties[this].subEntities[entityName][funcName])){
+    if(utilities.exists(privateProperties[this.name].subEntities[entityName]) &&
+      utilities.isFunction(privateProperties[this.name].subEntities[entityName][funcName])){
 
       if(utilities.exists(args)) {
-        privateProperties[this].subEntities[entityName][funcName].call(privateProperties[this].subEntities[entityName], args);
+        privateProperties[this.name].subEntities[entityName][funcName].call(privateProperties[this.name].subEntities[entityName], args);
       }else {
-        privateProperties[this].subEntities[entityName][funcName].call(privateProperties[this].subEntities[entityName]);
+        privateProperties[this.name].subEntities[entityName][funcName].call(privateProperties[this.name].subEntities[entityName]);
       }
     }
   }
