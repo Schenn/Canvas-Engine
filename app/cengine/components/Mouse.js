@@ -23,8 +23,7 @@ export class Mouse extends Component {
     privateProperties[this].onMouseUp = [];
     privateProperties[this].onMouseMove = [];
     privateProperties[this].onMouseOut = [];
-
-    let assign = function(name){
+    let assign = (name)=>{
       if(utilities.isFunction(params[name])){
         privateProperties[this][name] = [];
         privateProperties[this][name].push(params[name]);
