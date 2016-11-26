@@ -197,6 +197,7 @@ export class SpriteSheet {
    */
   getSprite(name){
     console.log(privateProperties[this.id].isProcessing);
+    let self = this;
     if(privateProperties[this.id].isProcessing === true){
       console.log("Waiting for spritesheet to finish processing.");
       console.log(this.id);
@@ -205,7 +206,7 @@ export class SpriteSheet {
       ){
         throw "Sprite: " +name + " Not Found in SpriteSheet Data: "+ self.Source;
       }
-      let self = this;
+
       return new Promise((resolve, reject)=>{
         let int= setInterval(()=>{
           if(privateProperties[self.id].isProcessing === false){
