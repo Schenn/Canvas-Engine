@@ -21,17 +21,23 @@ const privateProperties = new WeakMap();
  */
 export class ResourceManager {
   constructor(){
-    privateProperties[this] ={};
-    privateProperties[this].sounds = new Map();
-    privateProperties[this].images = new Map();
-    privateProperties[this].spriteSheets = new Map();
-    privateProperties[this].imagePath = "";
+    let id = "ResourceManager:" + utilities.randName(2);
 
-    privateProperties[this].onLoad = null;
-    privateProperties[this].allAdded = false;
-    privateProperties[this].resourcesLoaded = new Map();
+    Object.defineProperties(this, {
+      id:properties.lockedProperty(id)
+    });
 
-    privateProperties[this].Resources = {
+    privateProperties[this.id] ={};
+    privateProperties[this.id].sounds = new Map();
+    privateProperties[this.id].images = new Map();
+    privateProperties[this.id].spriteSheets = new Map();
+    privateProperties[this.id].imagePath = "";
+
+    privateProperties[this.id].onLoad = null;
+    privateProperties[this.id].allAdded = false;
+    privateProperties[this.id].resourcesLoaded = new Map();
+
+    privateProperties[this.id].Resources = {
       SpriteSheet: SpriteSheet
     };
   }
@@ -40,14 +46,14 @@ export class ResourceManager {
    * @param {string} path
    */
   set ImagePath(path){
-    privateProperties[this].imagePath = path;
+    privateProperties[this.id].imagePath = path;
   }
 
   /**
    * @returns {string}
    */
   get ImagePath(){
-    return privateProperties[this].imagePath;
+    return privateProperties[this.id].imagePath;
   }
 
   /**
@@ -55,8 +61,8 @@ export class ResourceManager {
    * @returns {boolean}
    */
   get ResourcesAreLoaded() {
-    if(privateProperties[this].allAdded) {
-      privateProperties[this].resourcesLoaded.forEach((isLoaded)=>{
+    if(privateProperties[this.id].allAdded) {
+      privateProperties[this.id].resourcesLoaded.forEach((isLoaded)=>{
         if(!isLoaded) {
           return false;
         }
@@ -86,23 +92,23 @@ export class ResourceManager {
    */
   addImage(name, path, load){
     var image = new Image();
-    privateProperties[this].images[name] = image;
-    privateProperties[this].resourcesLoaded.set(name, false);
+    privateProperties[this.id].images[name] = image;
+    privateProperties[this.id].resourcesLoaded.set(name, false);
     var triggerOnLoad = ()=>{
       if(this.ResourcesAreLoaded &&
-        privateProperties[this].resourcesLoaded.get(name) === true){
+        privateProperties[this.id].resourcesLoaded.get(name) === true){
         load.call(image);
         this.triggerCallback();
       }
     };
 
-    image.addEventListener("load", function(){
-      privateProperties[this].resourcesLoaded[name] = true;
+    image.addEventListener("load", ()=>{
+      privateProperties[this.id].resourcesLoaded[name] = true;
       triggerOnLoad();
     });
     image.addEventListener("load", load);
 
-    image.src = privateProperties[this].imagePath +"/"+path;
+    image.src = privateProperties[this.id].imagePath +"/"+path;
 
     if(image.complete){
       if (utilities.isFunction(load)){
@@ -120,12 +126,11 @@ export class ResourceManager {
 * @param {LocalParams~SpriteSheetParams} details The spritesheets details
 */
   addSpriteSheet(name, path, details){
-  console.log(privateProperties[this].Resources);
-    privateProperties[this].spriteSheets[name] = new privateProperties[this].Resources.SpriteSheet(details);
-    privateProperties[this].resourcesLoaded[name+"sheet"] = false;
+    privateProperties[this.id].spriteSheets[name] = new privateProperties[this.id].Resources.SpriteSheet(details);
+    privateProperties[this.id].resourcesLoaded[name+"sheet"] = false;
     this.addImage(name, path, ()=>{
-      privateProperties[this].spriteSheets[name].processSprites(privateProperties[this].images[name]);
-      privateProperties[this].resourcesLoaded[name+"sheet"] = true;
+      privateProperties[this.id].spriteSheets[name].processSprites(privateProperties[this.id].images[name]);
+      privateProperties[this.id].resourcesLoaded[name+"sheet"] = true;
       this.triggerCallback();
     });
 
@@ -137,7 +142,7 @@ export class ResourceManager {
    * @returns {CanvasEngine.Resources.SpriteSheet}
    */
   getSpriteSheet (name){
-    return privateProperties[this].spriteSheets.get(name);
+    return privateProperties[this.id].spriteSheets.get(name);
   }
 
   /**
@@ -146,7 +151,22 @@ export class ResourceManager {
    * @returns {Image}
    */
   getImage(name){
-    return privateProperties[this].images.get(name);
+    if(privateProperties[this.id].resourcesLoaded.get(name) === false){
+      let self = this;
+      return new Promise((resolve, reject)=> {
+        let int = setInterval(()=> {
+          if (privateProperties[self.id].resourcesLoaded.get(name) === true) {
+            clearInterval(int);
+            resolve(privateProperties[self.id].images.get(name));
+          }
+        }, 100);
+      });
+    } else if(privateProperties[this.id].resourcesLoaded.get(name) === true){
+      return privateProperties[this.id].images.get(name);
+    } else if(!utilities.exists(privateProperties[this].images.get(name))){
+      throw "Image not added to this resource manager!";
+    }
+
   }
 
   /**
@@ -155,7 +175,7 @@ export class ResourceManager {
    * @returns {*}
    */
   getSound(name){
-    return privateProperties[this].sounds.get(name);
+    return privateProperties[this.id].sounds.get(name);
   }
 
 
@@ -164,7 +184,10 @@ export class ResourceManager {
    *  by the time the current collection finishes loading.
    */
   finishedAddingResources(){
-    privateProperties[this].allAdded = true;
+    console.log(privateProperties[this.id].spriteSheets);
+    console.log(privateProperties[this.id].images);
+    console.log("Finished Adding Resources");
+    privateProperties[this.id].allAdded = true;
     this.triggerCallback();
   }
 
@@ -174,15 +197,15 @@ export class ResourceManager {
    * @param {Callbacks~onResourcesLoaded} callback
    */
   onResourcesLoaded (callback){
-    privateProperties[this].onLoad = callback;
+    privateProperties[this.id].onLoad = callback;
   }
 
   /**
    * Trigger the resources have loaded callback
    */
   triggerCallback(){
-    if(this.ResourcesAreLoaded && utilities.isFunction(privateProperties[this].onLoad)){
-      privateProperties[this].onLoad();
+    if(this.ResourcesAreLoaded && utilities.isFunction(privateProperties[this.id].onLoad)){
+      privateProperties[this.id].onLoad();
     }
   }
 
