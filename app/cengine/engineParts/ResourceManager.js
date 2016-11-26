@@ -186,9 +186,6 @@ export class ResourceManager {
    *  by the time the current collection finishes loading.
    */
   finishedAddingResources(){
-    console.log(privateProperties[this.id].spriteSheets);
-    console.log(privateProperties[this.id].images);
-    console.log("Finished Adding Resources");
     privateProperties[this.id].allAdded = true;
     this.triggerCallback();
   }
