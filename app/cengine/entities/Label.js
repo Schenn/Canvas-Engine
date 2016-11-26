@@ -19,18 +19,20 @@ import {Entity} from "entities/Entity.js";
 export class Label extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
+    let self = this;
     let myParams = {
       fillStyle: "#fff",
       clearInfo: function(ctx) {
-        return this.textArea(ctx);
+        return self.textArea(ctx);
       },
       draw: function(ctx){
-        ctx.drawText(this.getFromComponent("Text", "asObject"));
+        ctx.drawText(self.getFromComponent("Text", "asObject"));
       }
     };
 
     Object.assign(myParams, params);
     this.EntityManager.attachComponent(this, "Renderer", myParams);
+    this.EntityManager.attachComponent(this, "Text", myParams);
   }
 
   /**
