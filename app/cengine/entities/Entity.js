@@ -196,11 +196,12 @@ export class Entity{
    * @returns {*}
    */
   componentProperty(componentName, propertyName, value){
-    if(utilities.exists(value) && privateProperties[this.name].components[componentName].hasOwnProperty(propertyName)){
-      privateProperties[this.name].components[componentName][propertyName] = value;
+    let comp = privateProperties[this.name].components.get(componentName);
+    if(utilities.exists(value) && typeof comp[propertyName] !== "undefined"){
+      comp[propertyName] = value;
     }
 
-    return privateProperties[this.name].components[componentName][propertyName];
+    return comp[propertyName];
   }
 
   /**
@@ -211,13 +212,14 @@ export class Entity{
    * @param {*} [args]
    */
   messageToSubEntity(entityName, funcName, args){
-    if(utilities.exists(privateProperties[this.name].subEntities[entityName]) &&
-      utilities.isFunction(privateProperties[this.name].subEntities[entityName][funcName])){
+    let subEntity = privateProperties[this.name].subEntities.get(entityName);
+    if(utilities.exists(subEntity) &&
+      utilities.isFunction(subEntity[funcName])){
 
       if(utilities.exists(args)) {
-        privateProperties[this.name].subEntities[entityName][funcName].call(privateProperties[this.name].subEntities[entityName], args);
+        subEntity[funcName].call(subEntity, args);
       }else {
-        privateProperties[this.name].subEntities[entityName][funcName].call(privateProperties[this.name].subEntities[entityName]);
+        subEntity[funcName].call(subEntity);
       }
     }
   }
