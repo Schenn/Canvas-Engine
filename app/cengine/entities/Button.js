@@ -20,12 +20,14 @@ const privateProperties = new WeakMap();
 var makeThing = function(EntityManager, params){
 
   let thing;
-  if(utilities.exists(params.background.spritesheet)){
-    thing = EntityManager.create("SPRITE", Object.assign({}, {fromCenter: true}, params));
-  } else if(utilities.exists(params.background.source)){
-    thing = EntityManager.create("IMAGE", Object.assign({}, {fromCenter: true}, params.source));
+  if(utilities.exists(params.background)){
+    if(utilities.exists(params.background.spritesheet)){
+      thing = EntityManager.create("Sprite", Object.assign({}, {fromCenter: true}, params));
+    } else if(utilities.exists(params.background.source)){
+      thing = EntityManager.create("Image", Object.assign({}, {fromCenter: true}, params.source));
+    }
   } else {
-    thing = EntityManager.create("RECT", Object.assign({}, {fromCenter: true}, params));
+    thing = EntityManager.create("Rect", Object.assign({}, {fromCenter: true}, params));
   }
 
   return thing;
