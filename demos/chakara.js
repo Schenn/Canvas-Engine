@@ -21,7 +21,8 @@ var game = function(){
         type: "Rect",
         height:CanvasEngine.Screen.height,
         width: CanvasEngine.Screen.width,
-        fillStyle: "#000000"
+        fillStyle: "#000000",
+        z_index:0
       },
       {
         type: "Label",
@@ -55,7 +56,6 @@ var game = function(){
     CanvasEngine.clearEntities();
 
     // Show that even though the sprites are in 16 x 16, we can ask for them to be drawn at 32 x 32.
-
     CanvasEngine.addMap([
       {
         type: "TileMap",
@@ -63,7 +63,8 @@ var game = function(){
         tileMap: {
           height: 32, width: 32,
           tiles: randomTileMap
-        }
+        },
+        z_index:0
       },
       {
         type: "Button",
