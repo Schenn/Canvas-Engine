@@ -13,7 +13,6 @@ import {Entity} from "entities/Entity.js";
 export class TileMap extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
-
     EntityManager.attachComponent(this,"TileMap", {
       Click: {
         "TileClick": {
@@ -24,7 +23,12 @@ export class TileMap extends Entity {
         onScroll: ()=>{
           this.messageToComponent("Renderer", "markDirty");
         }
-      }
+      },
+      tileSize: {
+        height: params.tileMap.height,
+        width: params.tileMap.width
+      },
+      tiles: params.tileMap.tiles
     });
 
     // A tilemap needs to reference a spritesheet
@@ -34,8 +38,10 @@ export class TileMap extends Entity {
     EntityManager.attachComponent(this, "Renderer", Object.assign({}, {
       draw: function(ctx){
         // Draw each tile in the tilemap
-        let tiles = this.Entity.getFromComponent("TileMap", "getVisibleTiles", {width: CanvasEngine.Screen.width(), height: CanvasEngine.Screen.height()});
-        let tileSize = this.Entity.getFromComponent("TileMap", "getTileSize");
+        let tiles = this.Entity.getFromComponent("TileMap", "getVisibleTiles", {width: CanvasEngine.Screen.width, height: CanvasEngine.Screen.height});
+        let tileSize = this.Entity.getFromComponent("TileMap", "TileSize");
+        let imgSource = this.Entity.getFromComponent("SpriteSheet", "source");
+
         // for each row
         for(let y =0; y < tiles.length; y++){
           // for each col in row
@@ -43,7 +49,7 @@ export class TileMap extends Entity {
             let spriteName = tiles[y][x];
             let tile = this.Entity.getFromComponent("SpriteSheet", "getSprite", spriteName);
 
-            let imgSource = this.Entity.getFromComponent("SpriteSheet", "source");
+
             let output =Object.assign({},{
               x: x * tileSize.width,
               y: y * tileSize.height,
@@ -69,7 +75,7 @@ export class TileMap extends Entity {
          */
 
         return {
-          x:0, y:0, height: CanvasEngine.Screen.height(), width: CanvasEngine.Screen.width()
+          x:0, y:0, height: CanvasEngine.Screen.height, width: CanvasEngine.Screen.width
         };
       }
     }, params));
