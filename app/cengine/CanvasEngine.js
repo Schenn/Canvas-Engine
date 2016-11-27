@@ -110,7 +110,7 @@ export class CanvasEngine{
     this.EntityTracker.addEntities(entities);
     this.Screen.addZLayers(this.EntityTracker.zIndexes);
 
-    if(start){
+    if(start && privateProperties[this].paused === true){
       privateProperties[this].paused = false;
       this.Loop();
     }
@@ -149,19 +149,17 @@ export class CanvasEngine{
     let ctx = this.Screen.getScreenContext(z);
     if(!privateProperties[this].paused && this.EntityTracker.entityCount > 0) {
       let entities = this.EntityTracker.getEntitiesByZ(z);
-      setTimeout(()=>{
 
-        let ents = this.EntityTracker.getEntities(entities);
-        for(let entity of ents){
-          entity.broadcastToComponents("update");
+      let ents = this.EntityTracker.getEntities(entities);
+      for(let entity of ents){
+        entity.broadcastToComponents("update");
 
-          if(entity.getFromComponent("Renderer", "isDirty")){
-            entity.messageToComponent("Renderer", "clear", ctx);
-            entity.messageToComponent("Renderer", "render", ctx);
-          }
-          entity.broadcastToComponents("postRender");
+        if(entity.getFromComponent("Renderer", "isDirty")){
+          entity.messageToComponent("Renderer", "clear", ctx);
+          entity.messageToComponent("Renderer", "render", ctx);
         }
-      },1);
+        entity.broadcastToComponents("postRender");
+      }
     }
   }
 
