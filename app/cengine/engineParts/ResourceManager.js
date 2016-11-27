@@ -128,10 +128,10 @@ export class ResourceManager {
 * @param {LocalParams~SpriteSheetParams} details The spritesheets details
 */
   addSpriteSheet(name, path, details){
-    privateProperties[this.id].spriteSheets[name] = new privateProperties[this.id].Resources.SpriteSheet(details);
     privateProperties[this.id].resourcesLoaded[name+"sheet"] = false;
     this.addImage(name, path, ()=>{
-      privateProperties[this.id].spriteSheets[name].processSprites(privateProperties[this.id].images[name]);
+      details.source = privateProperties[this.id].images[name];
+      privateProperties[this.id].spriteSheets[name] = new privateProperties[this.id].Resources.SpriteSheet(details);
       privateProperties[this.id].resourcesLoaded[name+"sheet"] = true;
       this.triggerCallback();
     });
@@ -144,7 +144,7 @@ export class ResourceManager {
    * @returns {CanvasEngine.Resources.SpriteSheet}
    */
   getSpriteSheet (name){
-    return privateProperties[this.id].spriteSheets.get(name);
+    return privateProperties[this.id].spriteSheets[name];
   }
 
   /**
