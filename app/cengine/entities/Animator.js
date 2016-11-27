@@ -18,34 +18,34 @@ const privateProperties = new WeakMap();
 export class Animator extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
-    privateProperties[this] = {};
+    privateProperties[this.name] = {};
     if(utilities.exists(params.frames)){
-      privateProperties[this].frames = params.frames;
-      privateProperties[this].frameCount = frames.length;
+      privateProperties[this.name].frames = params.frames;
+      privateProperties[this.name].frameCount = frames.length;
     } else {
-      privateProperties[this].frameCount = utilities.exists(params.frameCount) ? params.frameCount : 1;
-      privateProperties[this].frames = [];
+      privateProperties[this.name].frameCount = utilities.exists(params.frameCount) ? params.frameCount : 1;
+      privateProperties[this.name].frames = [];
       for(var i =0; i < privateProperties[this].frameCount; i++){
-        privateProperties[this].frames.push(i);
+        privateProperties[this.name].frames.push(i);
       }
     }
 
-    privateProperties[this].baseDuration = params.duration;
-    privateProperties[this].duration = (privateProperties[this].baseDuration > 0) ?
-      privateProperties[this].baseDuration / privateProperties[this].frameCount :
+    privateProperties[this.name].baseDuration = params.duration;
+    privateProperties[this.name].duration = (privateProperties[this.name].baseDuration > 0) ?
+      privateProperties[this.name].baseDuration / privateProperties[this.name].frameCount :
       0;
 
-    privateProperties[this].currentFrame = 0;
+    privateProperties[this.name].currentFrame = 0;
 
     EntityManager.attachComponent(this,"Timer",
       {
-        duration: privateProperties[this].duration,
+        duration: privateProperties[this.name].duration,
         onElapsed: function(){
-          privateProperties[this].currentFrame++;
-          if(privateProperties[this].currentFrame > privateProperties[this].frameCount-1){
-            privateProperties[this].currentFrame = 0;
+          privateProperties[this.name].currentFrame++;
+          if(privateProperties[this.name].currentFrame > privateProperties[this.name].frameCount-1){
+            privateProperties[this.name].currentFrame = 0;
           }
-          onFrameChange(privateProperties[this].frames[privateProperties[this].currentFrame]);
+          onFrameChange(privateProperties[this.name].frames[privateProperties[this.name].currentFrame]);
         }
       }
     );

@@ -26,13 +26,13 @@ const privateProperties = new WeakMap();
 export class Sprite extends Entity {
   constructor(params, EntityManager){
     super(params,EntityManager);
-    privateProperties[this] = {};
-    privateProperties[this].currentSpriteName = "";
-    privateProperties[this].currentSheet = "default";
+    privateProperties[this.name] = {};
+    privateProperties[this.name].currentSpriteName = "";
+    privateProperties[this.name].currentSheet = "default";
 
     var myParams = {
       draw: ctx => {
-        ctx.drawImage(this.getFromComponent(privateProperties[this].currentSheet+"Image", "asObject"));
+        ctx.drawImage(this.getFromComponent(privateProperties[this.name].currentSheet+"Image", "asObject"));
       }
     };
     Object.assign(myParams, params);
@@ -61,23 +61,23 @@ export class Sprite extends Entity {
   }
 
   set Sprite(name){
-    privateProperties[this].currentSpriteName = name;
+    privateProperties[this.name].currentSpriteName = name;
     // Set the current sprite image to nextFrame
-    this.messageToComponent(privateProperties[this].currentSheet+"Image",
+    this.messageToComponent(privateProperties[this.name].currentSheet+"Image",
       "setSprite",
-      sprite.getFromComponent(privateProperties[this].currentSheet+"Sheet", "getSprite", name)
+      sprite.getFromComponent(privateProperties[this.name].currentSheet+"Sheet", "getSprite", name)
     );
   }
 
   get Sprite(){
-    return privateProperties[this].currentSpriteName;
+    return privateProperties[this.name].currentSpriteName;
   }
 
   set Sheet(sheet){
-    privateProperties[this].currentSheet = sheet;
+    privateProperties[this.name].currentSheet = sheet;
   }
 
   get Sheet(){
-    return privateProperties[this].sheet;
+    return privateProperties[this.name].sheet;
   }
 }

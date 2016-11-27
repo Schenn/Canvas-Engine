@@ -15,7 +15,7 @@ export class AnimatedSprite extends Sprite {
    * @returns {string}
    */
   get CurrentAnimation(){
-    return privateProperties[this].currentAnimation;
+    return privateProperties[this.name].currentAnimation;
   }
 
   /**
@@ -23,18 +23,18 @@ export class AnimatedSprite extends Sprite {
    * @param {string} animation
    */
   set CurrentAnimation(animation){
-    if(utilities.exists(privateProperties[this].animations.has(animation))){
-      this.messageToSubEntity(privateProperties[this].currentAnimation, "disable");
-      privateProperties[this].currentAnimation = animation;
-      this.messageToSubEntity(privateProperties[this].currentAnimation, "enable");
+    if(utilities.exists(privateProperties[this.name].animations.has(animation))){
+      this.messageToSubEntity(privateProperties[this.name].currentAnimation, "disable");
+      privateProperties[this.name].currentAnimation = animation;
+      this.messageToSubEntity(privateProperties[this.name].currentAnimation, "enable");
     }
   }
 
   constructor(params, EntityManager){
     super(params, EntityManager);
-    privateProperties[this] = {};
-    privateProperties[this].animations = new Map();
-    privateProperties[this].currentAnimation = "default";
+    privateProperties[this.name] = {};
+    privateProperties[this.name].animations = new Map();
+    privateProperties[this.name].currentAnimation = "default";
 
     for(var {[name]:animation} of params.animations) {
       this.addAnimation(name, animation);
@@ -46,7 +46,7 @@ export class AnimatedSprite extends Sprite {
         name: name,
         // When the sprite's frame has changed, tell the entity to set the sprite to the next frame.
         onFrameChange: nextFrame=>{
-          if(privateProperties[this].currentAnimation === name){
+          if(privateProperties[this.name].currentAnimation === name){
             this.setSprite(nextFrame);
           }
         }
@@ -56,7 +56,7 @@ export class AnimatedSprite extends Sprite {
       animator.disable();
     }
 
-    privateProperties[this].animations[name] = true;
+    privateProperties[this.name].animations[name] = true;
 
     this.attachSubEntity(name, animator);
   }

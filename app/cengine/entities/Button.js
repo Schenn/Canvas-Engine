@@ -48,7 +48,7 @@ export class Button extends Entity {
    * @type {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect }
    */
   get Background(){
-    return privateProperties[this].background;
+    return privateProperties[this.name].background;
   }
 
   /**
@@ -56,7 +56,7 @@ export class Button extends Entity {
    * @type {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect }
    */
   set Background(background){
-    privateProperties[this].background = makeThing(this.EntityManager, background);
+    privateProperties[this.name].background = makeThing(this.EntityManager, background);
   }
 
   /**
@@ -64,7 +64,7 @@ export class Button extends Entity {
    * @type {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect }
    */
   get Hover(){
-    return privateProperties[this].hover;
+    return privateProperties[this.name].hover;
   }
 
   /**
@@ -72,12 +72,12 @@ export class Button extends Entity {
    * @type {CanvasEngine.Entities.Sprite | CanvasEngine.Entities.Image | CanvasEngine.Entities.Rect }
    */
   set Hover(hover){
-    privateProperties[this].hover = makeThing(this.EntityManager, hover);
+    privateProperties[this.name].hover = makeThing(this.EntityManager, hover);
   }
 
   constructor(params, EntityManager){
     super(params, EntityManager);
-    privateProperties[this] = {};
+    privateProperties[this.name] = {};
 
     this.Background = params.background;
 
@@ -85,17 +85,17 @@ export class Button extends Entity {
       this.Hover = params.hover;
     }
 
-    privateProperties[this].padding = params.padding;
-    privateProperties[this].isHovering = false;
+    privateProperties[this.name].padding = params.padding;
+    privateProperties[this.name].isHovering = false;
 
     EntityManager.attachComponent(this,  {
       "Mouse":{
         "HoverMouse": {
           onMouseOver: ()=> {
-            privateProperties[this].isHovering = true;
+            privateProperties[this.name].isHovering = true;
             this.messageToComponent("Renderer", "markDirty");
           }, onMouseOut: ()=> {
-            privateProperties[this].isHovering = false;
+            privateProperties[this.name].isHovering = false;
             this.messageToComponent("Renderer", "markDirty");
           }
         }
@@ -144,7 +144,7 @@ export class Button extends Entity {
 
         var target;
 
-        if(privateProperties[this].isHovering && utilities.exists(this.Entity.Hover)){
+        if(privateProperties[this.name].isHovering && utilities.exists(this.Entity.Hover)){
           target = this.Entity.Hover;
 
         } else {
