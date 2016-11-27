@@ -78,9 +78,10 @@ export class EntityManager {
     if(utilities.exists(params.image)){
       params.image = privateProperties[this].ResourceManager.getImage(params.image);
     }
-
     if(utilities.exists(params.spritesheet) && typeof(params.spritesheet) === "string"){
-      params.spritesheet = privateProperties[this].ResourceManager.getSpriteSheet(params.spritesheet);
+      let sheetName = params.spritesheet;
+      params.spritesheet= {};
+      params.spritesheet[sheetName] = privateProperties[this].ResourceManager.getSpriteSheet(sheetName);
     } else if(utilities.exists(params.spritesheets)){
       params.spritesheets.forEach((sheetName, refName)=>{
         if(typeof(sheetName) === 'string') {
