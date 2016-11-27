@@ -196,11 +196,8 @@ export class SpriteSheet {
    * @todo Wait for spritesheet to finish building
    */
   getSprite(name){
-    console.log(privateProperties[this.id].isProcessing);
     let self = this;
     if(privateProperties[this.id].isProcessing === true){
-      console.log("Waiting for spritesheet to finish processing.");
-      console.log(this.id);
       if(utilities.exists(privateProperties[this.id].spriteCache) &&
         !utilities.exists(privateProperties[this.id].spriteCache[name])
       ){
@@ -211,7 +208,6 @@ export class SpriteSheet {
         let int= setInterval(()=>{
           if(privateProperties[self.id].isProcessing === false){
             clearInterval(int);
-            console.log(privateProperties[self.id].sprites);
             if(!utilities.exists(privateProperties[this.id].sprites[name])){
               reject(new Error("Sprite: " +name + " Not Found on SpriteSheet: "+ this.Source));
             }
@@ -222,7 +218,6 @@ export class SpriteSheet {
 
       });
     }
-    console.log(privateProperties[this.id].sprites);
     if(!utilities.exists(privateProperties[this.id].sprites[name])){
       throw "Sprite: " +name + " Not Found on SpriteSheet: "+ this.Source;
     }
