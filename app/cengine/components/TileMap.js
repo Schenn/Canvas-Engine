@@ -51,7 +51,8 @@ export class TileMap extends Component {
     privateProperties[this.id].tiles = utilities.exists(params.tiles) ? params.tiles :[];
     privateProperties[this.id].scrollOffset = {};
     privateProperties[this.id].tileSize = {
-      width: params.width, height: params.height
+      width: params.tileSize.width,
+      height: params.tileSize.height
     };
 
     if(utilities.isFunction(params.onTileClick)) {
@@ -105,12 +106,13 @@ export class TileMap extends Component {
 
     let maxY = privateProperties[this.id].scrollOffset.y + Math.round(area.height / privateProperties[this.id].tileSize.height);
     let maxX = privateProperties[this.id].scrollOffset.x + Math.round(area.width / privateProperties[this.id].tileSize.width);
+
     for(let y = privateProperties[this.id].scrollOffset.y; y < maxY; y++) {
       tiles[yI] = [];
       xI= 0;
       // x position in tileMap
       for (let x = privateProperties[this.id].scrollOffset.x; x < maxX; x++) {
-        tiles[yI][xI] = this[tiles][y][x];
+        tiles[yI][xI] = privateProperties[this.id].tiles[y][x];
         xI++;
       }
       yI++;
