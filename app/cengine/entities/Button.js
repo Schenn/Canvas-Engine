@@ -75,6 +75,14 @@ export class Button extends Entity {
     privateProperties[this.name].hover = makeThing(this.EntityManager, hover);
   }
 
+  get isHovering(){
+    return privateProperties[this.name].isHovering;
+  }
+
+  set isHovering(hover){
+    privateProperties[this.name].isHovering = hover;
+  }
+
   constructor(params, EntityManager){
     super(params, EntityManager);
     privateProperties[this.name] = {};
@@ -84,18 +92,18 @@ export class Button extends Entity {
     if(utilities.exists(params.hover)){
       this.Hover = params.hover;
     }
-
-    privateProperties[this.name].padding = params.padding;
-    privateProperties[this.name].isHovering = false;
+    let name = this.name;
+    privateProperties[name].padding = params.padding;
+    privateProperties[name].isHovering = false;
 
     EntityManager.attachComponent(this,  {
       "Mouse":{
         "HoverMouse": {
           onMouseOver: ()=> {
-            privateProperties[this.name].isHovering = true;
+            this.Entity.isHovering = true;
             this.messageToComponent("Renderer", "markDirty");
           }, onMouseOut: ()=> {
-            privateProperties[this.name].isHovering = false;
+            this.Entity.isHovering = false;
             this.messageToComponent("Renderer", "markDirty");
           }
         }
@@ -130,7 +138,6 @@ export class Button extends Entity {
        */
       draw: function(ctx){
       // Resize the background based on the height and width of the text, adjusted by the padding params.
-
         let text = this.Entity.getFromComponent("Text","asObject");
         let size = {
           width : (ctx.measureText({font: text.font, text:text.text}).width)+4,
@@ -144,7 +151,7 @@ export class Button extends Entity {
 
         var target;
 
-        if(privateProperties[this.name].isHovering && utilities.exists(this.Entity.Hover)){
+        if(this.Entity.isHovering && utilities.exists(this.Entity.Hover)){
           target = this.Entity.Hover;
 
         } else {
@@ -168,12 +175,12 @@ export class Button extends Entity {
         // Draw the background
         target.messageToComponent("Renderer", "render", ctx);
 
+        target.messageToComponent("Renderer", "resize", size);
 
-        this.resize(size);
 
         // Draw the text
-        ctx.setDefaults(this.asObject());
-        ctx.drawText(Object.assign({}, this, Button.getFromComponent("Text", "asObject")));
+        ctx.setDefaults(this);
+        ctx.drawText(Object.assign({}, this, this.Entity.getFromComponent("Text", "asObject")));
       }
     },{x: params.x, y: params.y, fillStyle: params.fillStyle}));
   }
