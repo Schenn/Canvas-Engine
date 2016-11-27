@@ -25,7 +25,7 @@ export class EntityTracker {
     let count = 0;
 
     for(let z of this.zIndexes){
-      count += privateProperties[this].entitiesByZ[z].size;
+      count += (utilities.exists(privateProperties[this].entitiesByZ[z])) ? privateProperties[this].entitiesByZ[z].size : 0;
     }
     return count;
   }
@@ -169,9 +169,12 @@ export class EntityTracker {
    */
   getEntitiesByZ(z){
     var ents = [];
-    for(let name of privateProperties[this].entitiesByZ[z]){
-      ents.push(privateProperties[this].entities.get(name));
+    if(utilities.exists(privateProperties[this].entitiesByZ[z])){
+      for(let name of privateProperties[this].entitiesByZ[z]){
+        ents.push(privateProperties[this].entities.get(name));
+      }
     }
+
     return ents;
   }
 
@@ -191,7 +194,7 @@ export class EntityTracker {
     for(let i =0; i< zIndexes.length; i++){
       let z = zIndexes[i];
       if (!(privateProperties[this].zExcludedFromInteractions[z])) {
-        for(let entity in this.getEntitiesByZ(z)) {
+        for(let entity of this.getEntities(this.getEntitiesByZ(z))) {
           let containsPixel = false;
           containsPixel = entity.getFromComponent("Renderer", "containsPixel", p);
 
