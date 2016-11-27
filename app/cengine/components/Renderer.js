@@ -388,7 +388,6 @@ export class Renderer extends Component {
    */
   render (ctx) {
     ctx.setDefaults(Object.assign({}, this));
-    console.log("Beep");
     if(!privateProperties[this.id].hidden) {
       this.draw(ctx);
       privateProperties[this.id].isDirty = false;
