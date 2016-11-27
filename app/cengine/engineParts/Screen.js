@@ -48,10 +48,18 @@ export class Screen {
     privateProperties[this.id].baseCanvas = canvas;
     let self = this;
     privateProperties[this.id].baseCanvas.parent().on({
-      click:(e)=>{self.onClick(e);},
-      mousedown: (e)=>{self.onMouseDown(e);},
-      mouseup:(e)=>{self.onMouseUp(e);},
-      mousemove: (e)=>{self.onMouseMove(e);}
+      click:(e)=>{
+        self.onClick(e);
+      },
+      mousedown: (e)=>{
+        self.onMouseDown(e);
+      },
+      mouseup:(e)=>{
+        self.onMouseUp(e);
+      },
+      mousemove: (e)=>{
+        self.onMouseMove(e);
+      }
     }, "canvas");
   }
 
