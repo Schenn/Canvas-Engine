@@ -180,6 +180,7 @@ export class Entity{
         } else {
           return comp[funcName].call(comp);
         }
+
       } else if(typeof comp[funcName] !== "undefined"){
           return comp[funcName];
       }
