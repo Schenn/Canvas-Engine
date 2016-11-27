@@ -17,8 +17,8 @@ export class SpriteSheetWrapper extends Component{
    */
   constructor(params, entity){
     super(entity);
-    privateProperties[this] = {};
-    privateProperties[this].sheet = params.spritesheet;
+    privateProperties[this.id] = {};
+    privateProperties[this.id].sheet = params.spritesheet;
   }
 
   /**
@@ -28,7 +28,7 @@ export class SpriteSheetWrapper extends Component{
    * @returns {GeneralTypes~Sprite}
    */
   getSprite(name){
-    return privateProperties[this].sheet.getSprite(name);
+    return privateProperties[this.id].sheet.getSprite(name);
   }
 
   /**
@@ -36,7 +36,7 @@ export class SpriteSheetWrapper extends Component{
    * @returns {number}
    */
   sHeight(){
-    return privateProperties[this].sheet.sHeight();
+    return privateProperties[this.id].sheet.sHeight();
   }
 
   /**
@@ -44,7 +44,7 @@ export class SpriteSheetWrapper extends Component{
    * @returns {number}
    */
   sWidth(){
-    return privateProperties[this].sheet.sWidth();
+    return privateProperties[this.id].sheet.sWidth();
   }
 
   /**
@@ -52,6 +52,6 @@ export class SpriteSheetWrapper extends Component{
    * @returns {Image}
    */
   source(){
-    return privateProperties[this].sheet.source();
+    return privateProperties[this.id].sheet.source();
   }
 }

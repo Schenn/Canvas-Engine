@@ -20,7 +20,7 @@ export class Timer extends Component{
    * @return {number}
    */
   get MS(){
-    return privateProperties[this].date.getTime();
+    return privateProperties[this.id].date.getTime();
   }
 
   /**
@@ -28,7 +28,7 @@ export class Timer extends Component{
    * @return {number}
    */
   get S(){
-    return (Math.round(privateProperties[this].date.getTime() / 1000));
+    return (Math.round(privateProperties[this.id].date.getTime() / 1000));
   }
 
   /**
@@ -37,20 +37,20 @@ export class Timer extends Component{
    *
    */
   get deltaTime() {
-    return ((privateProperties[this].date.getTime() - privateProperties[this].delta.getTime()) / 1000);
+    return ((privateProperties[this.id].date.getTime() - privateProperties[this.id].delta.getTime()) / 1000);
   }
 
   constructor(params, entity){
     super(entity);
-    privateProperties[this] = {};
-    privateProperties[this].date = new Date();
-    privateProperties[this].delta = new Date();
-    privateProperties[this].isActive = true;
+    privateProperties[this.id] = {};
+    privateProperties[this.id].date = new Date();
+    privateProperties[this.id].delta = new Date();
+    privateProperties[this.id].isActive = true;
 
-    privateProperties[this].onBeep = utilities.isFunction(params.onElapsed) ? params.onElapsed : null;
-    privateProperties[this].onUpdate = utilities.isFunction(params.onUpdate) ? params.onUpdate : null;
-    privateProperties[this].timeUntilBeep = utilities.exists(params.duration) ? params.duration : 0;
-    privateProperties[this].beep = privateProperties[this].date.getDate() + privateProperties[this].timeUntilBeep;
+    privateProperties[this.id].onBeep = utilities.isFunction(params.onElapsed) ? params.onElapsed : null;
+    privateProperties[this.id].onUpdate = utilities.isFunction(params.onUpdate) ? params.onUpdate : null;
+    privateProperties[this.id].timeUntilBeep = utilities.exists(params.duration) ? params.duration : 0;
+    privateProperties[this.id].beep = privateProperties[this.id].date.getDate() + privateProperties[this.id].timeUntilBeep;
 
   }
 
@@ -58,20 +58,20 @@ export class Timer extends Component{
    * Update the date information.
    */
   update(){
-    if(privateProperties[this].isActive === true) {
-      privateProperties[this].delta = privateProperties[this].date;
-      privateProperties[this].date = new Date();
+    if(privateProperties[this.id].isActive === true) {
+      privateProperties[this.id].delta = privateProperties[this.id].date;
+      privateProperties[this.id].date = new Date();
       // Only beep if we have all the information we need to beep.
-      if (utilities.isFunction(privateProperties[this].onBeep) &&
-        privateProperties[this].timeUntilBeep > 0 &&
-        this.MS >= privateProperties[this].beep) {
+      if (utilities.isFunction(privateProperties[this.id].onBeep) &&
+        privateProperties[this.id].timeUntilBeep > 0 &&
+        this.MS >= privateProperties[this.id].beep) {
 
-        privateProperties[this].onBeep(this.deltaTime);
-        privateProperties[this].beep = this.MS+ privateProperties[this].timeUntilBeep;
+        privateProperties[this.id].onBeep(this.deltaTime);
+        privateProperties[this.id].beep = this.MS+ privateProperties[this.id].timeUntilBeep;
       }
 
-      if (utilities.isFunction(privateProperties[this].onUpdate)) {
-        privateProperties[this].onUpdate(this.deltaTime);
+      if (utilities.isFunction(privateProperties[this.id].onUpdate)) {
+        privateProperties[this.id].onUpdate(this.deltaTime);
       }
     }
   }
@@ -80,14 +80,14 @@ export class Timer extends Component{
    * Stop doing things
    */
   disable(){
-    privateProperties[this].isActive = false;
+    privateProperties[this.id].isActive = false;
   }
 
   /**
    * Do things again
    */
   enable(){
-    privateProperties[this].isActive = true;
+    privateProperties[this.id].isActive = true;
     this.update();
   }
 }

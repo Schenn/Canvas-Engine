@@ -79,10 +79,10 @@ export class Renderer extends Component {
    */
   constructor(params, entity) {
     super(entity, ()=>{this.markDirty();});
-    privateProperties[this] = {};
-    privateProperties[this].isDirty = true;
-    privateProperties[this].hidden = false;
-    privateProperties[this].postRender = null;
+    privateProperties[this.id] = {};
+    privateProperties[this.id].isDirty = true;
+    privateProperties[this.id].hidden = false;
+    privateProperties[this.id].postRender = null;
 
     // Private Properties
     var { angle = 0,
@@ -326,13 +326,13 @@ export class Renderer extends Component {
     delete params.draw;
 
     if(utilities.exists(params.clearInfo)){
-      privateProperties[this].clearInfo = params.clearInfo;
-      privateProperties[this].clearInfo.bind(this);
+      privateProperties[this.id].clearInfo = params.clearInfo;
+      privateProperties[this.id].clearInfo.bind(this);
     }
 
     if ((utilities.isFunction(params.clear))) {
-      privateProperties[this].clear = params.clear;
-      privateProperties[this].clear.bind(this);
+      privateProperties[this.id].clear = params.clear;
+      privateProperties[this.id].clear.bind(this);
     }
 
   }
@@ -343,7 +343,7 @@ export class Renderer extends Component {
    * @returns {{x: (number), y: (number), height: (number), width: (number), fromCenter: boolean}}
    */
   clearInfo(ctx){
-    return (utilities.exists(privateProperties[this].clearInfo)) ? privateProperties[this].clearInfo(ctx) :{
+    return (utilities.exists(privateProperties[this.id].clearInfo)) ? privateProperties[this.id].clearInfo(ctx) :{
       x: this.x,
       y: this.y,
       height: this.height,
@@ -357,27 +357,27 @@ export class Renderer extends Component {
    * @param {Canvas.enhancedContext} ctx
    */
   clear(ctx) {
-    if(utilities.exists(privateProperties[this].clear)){
-      privateProperties[this].clear(ctx);
+    if(utilities.exists(privateProperties[this.id].clear)){
+      privateProperties[this.id].clear(ctx);
     } else {
-      if (!utilities.exists(privateProperties[this].clearShadow)) {
-        privateProperties[this].clearShadow = this.clearInfo(ctx);
+      if (!utilities.exists(privateProperties[this.id].clearShadow)) {
+        privateProperties[this.id].clearShadow = this.clearInfo(ctx);
       }
-      ctx.clear(privateProperties[this].clearShadow);
+      ctx.clear(privateProperties[this.id].clearShadow);
     }
   }
 
   markDirty () {
-    privateProperties[this].isDirty = true;
+    privateProperties[this.id].isDirty = true;
   }
 
   get isDirty(){
-    return privateProperties[this].isDirty === true;
+    return privateProperties[this.id].isDirty === true;
   }
 
   hide(callback){
-    privateProperties[this].hidden = true;
-    privateProperties[this].postRender = callback;
+    privateProperties[this.id].hidden = true;
+    privateProperties[this.id].postRender = callback;
   }
 
   /**
@@ -388,16 +388,17 @@ export class Renderer extends Component {
    */
   render (ctx) {
     ctx.setDefaults(Object.assign({}, this));
-    if(!privateProperties[this].hidden) {
+    console.log("Beep");
+    if(!privateProperties[this.id].hidden) {
       this.draw(ctx);
-      privateProperties[this].isDirty = false;
-      privateProperties[this].clearShadow = this.clearInfo(ctx);
+      privateProperties[this.id].isDirty = false;
+      privateProperties[this.id].clearShadow = this.clearInfo(ctx);
     }
   }
 
   postRender(){
-    if(utilities.isFunction(privateProperties[this].postRender)){
-      privateProperties[this].postRender();
+    if(utilities.isFunction(privateProperties[this.id].postRender)){
+      privateProperties[this.id].postRender();
     }
   }
 

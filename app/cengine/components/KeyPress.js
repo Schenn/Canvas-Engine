@@ -31,8 +31,8 @@ const privateProperties = new WeakMap();
 export class KeyPress extends Component{
   constructor(params, entity){
     super(entity);
-    privateProperties[this] = {};
-    privateProperties[this].keyCallbacks = {};
+    privateProperties[this.id] = {};
+    privateProperties[this.id].keyCallbacks = {};
 
     this.onKeys(params.keys);
     let self=this;
@@ -52,8 +52,8 @@ export class KeyPress extends Component{
   }
 
   onKeyDown(key){
-    if(utilities.isFunction(privateProperties[this].keyCallbacks[key])){
-      privateProperties[this].keyCallbacks[key].call(this.Entity);
+    if(utilities.isFunction(privateProperties[this.id].keyCallbacks[key])){
+      privateProperties[this.id].keyCallbacks[key].call(this.Entity);
     }
   }
 
@@ -64,7 +64,7 @@ export class KeyPress extends Component{
    * @param {Callbacks~onKeyPress} callback
    */
   onKey(key, callback){
-    privateProperties[this].keyCallbacks[key] = callback;
+    privateProperties[this.id].keyCallbacks[key] = callback;
   }
 
   /**

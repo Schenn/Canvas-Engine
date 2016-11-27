@@ -27,8 +27,8 @@ export class PointPlotter extends Component {
    */
   constructor(params, entity){
     super(entity, params.callback);
-    privateProperties[this] = {};
-    privateProperties[this].coordinateArray = [];
+    privateProperties[this.id] = {};
+    privateProperties[this.id].coordinateArray = [];
     let coordinateObj = {};
     this.setProperty("coords", coordinateObj);
     if(utilities.exists(params.coords)){
@@ -41,7 +41,7 @@ export class PointPlotter extends Component {
    * @param {GeneralTypes~coords[]} coords
    */
   plot(coords){
-    privateProperties[this].coordinateArray = coords;
+    privateProperties[this.id].coordinateArray = coords;
     for (var i = 1; i <= coords.length; i++) {
 
       // If we don't have the x coordinate property, create it.
@@ -71,18 +71,18 @@ export class PointPlotter extends Component {
     var smallY = 0;
     var bigX = 0;
     var bigY = 0;
-    for (var i = 0; i < privateProperties[this].coordinateArray.length; i++) {
-      if (privateProperties[this].coordinateArray[i].x <= smallX) {
-        smallX = privateProperties[this].coordinateArray[i].x;
+    for (var i = 0; i < privateProperties[this.id].coordinateArray.length; i++) {
+      if (privateProperties[this.id].coordinateArray[i].x <= smallX) {
+        smallX = privateProperties[this.id].coordinateArray[i].x;
       }
-      if (privateProperties[this].coordinateArray[i].y <= smallX) {
-        smallY = privateProperties[this].coordinateArray[i].y;
+      if (privateProperties[this.id].coordinateArray[i].y <= smallX) {
+        smallY = privateProperties[this.id].coordinateArray[i].y;
       }
-      if (privateProperties[this].coordinateArray[i].x >= bigX) {
-        bigX = privateProperties[this].coordinateArray[i].x;
+      if (privateProperties[this.id].coordinateArray[i].x >= bigX) {
+        bigX = privateProperties[this.id].coordinateArray[i].x;
       }
-      if (privateProperties[this].coordinateArray[i].y >= bigY) {
-        bigY = privateProperties[this].coordinateArray[i].y;
+      if (privateProperties[this.id].coordinateArray[i].y >= bigY) {
+        bigY = privateProperties[this.id].coordinateArray[i].y;
       }
     }
 
@@ -93,7 +93,7 @@ export class PointPlotter extends Component {
   }
 
   get CoordinateArray(){
-    return properties.proxy(privateProperties[this].coordinateArray);
+    return properties.proxy(privateProperties[this.id].coordinateArray);
   }
 
   get Coordinates(){

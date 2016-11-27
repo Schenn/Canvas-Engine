@@ -42,28 +42,28 @@ const privateProperties = new WeakMap();
  */
 export class TileMap extends Component {
   get TileSize(){
-    return privateProperties[this].tileSize;
+    return privateProperties[this.id].tileSize;
   }
 
   constructor(params, entity){
     super(entity);
-    privateProperties[this] = {};
-    privateProperties[this].tiles = utilities.exists(params.tiles) ? params.tiles :[];
-    privateProperties[this].scrollOffset = {};
-    privateProperties[this].tileSize = {
+    privateProperties[this.id] = {};
+    privateProperties[this.id].tiles = utilities.exists(params.tiles) ? params.tiles :[];
+    privateProperties[this.id].scrollOffset = {};
+    privateProperties[this.id].tileSize = {
       width: params.width, height: params.height
     };
 
     if(utilities.isFunction(params.onTileClick)) {
-      privateProperties[this].onTileClick= params.onTileClick;
+      privateProperties[this.id].onTileClick= params.onTileClick;
     }
 
-    properties.observe({name: "x", value: 0, callback: params.onScroll}, privateProperties[this].scrollOffset);
-    properties.observe({name: "y", value: 0, callback: params.onScroll}, privateProperties[this].scrollOffset);
+    properties.observe({name: "x", value: 0, callback: params.onScroll}, privateProperties[this.id].scrollOffset);
+    properties.observe({name: "y", value: 0, callback: params.onScroll}, privateProperties[this.id].scrollOffset);
   }
 
   asObject(){
-    return properties.proxy(privateProperties[this].tiles);
+    return properties.proxy(privateProperties[this.id].tiles);
   }
 
   /**
@@ -71,11 +71,11 @@ export class TileMap extends Component {
    * @param {GeneralTypes~coords} direction
    */
   scroll(direction){
-    var actualX = Math.round(direction.x / privateProperties[this].tileSize.width);
-    var actualY = Math.round(direction.y / privateProperties[this].tileSize.height);
+    var actualX = Math.round(direction.x / privateProperties[this.id].tileSize.width);
+    var actualY = Math.round(direction.y / privateProperties[this.id].tileSize.height);
     // Change our initial tile position based on the distance in pixels over the size of a tile.
-    privateProperties[this].scrollOffset.x += actualX;
-    privateProperties[this].scrollOffset.y += actualY;
+    privateProperties[this.id].scrollOffset.x += actualX;
+    privateProperties[this.id].scrollOffset.y += actualY;
 
     // Tell the CanvasEngine event manager to fire a scrollMap event.
     // If there's a scrollMap event, living, non-gui entities should be forced
@@ -90,7 +90,7 @@ export class TileMap extends Component {
    * @returns {Array}
    */
   getVisibleTiles(area){
-    if(privateProperties[this].tileSize.height === 0 || privateProperties[this].tileSize.width ===0){
+    if(privateProperties[this.id].tileSize.height === 0 || privateProperties[this.id].tileSize.width ===0){
       return [];
     }
 
@@ -103,13 +103,13 @@ export class TileMap extends Component {
     // scrollOffset.y = firstColumn
     // scrollOffset.y + Math.round(area.height / tileSize.height) = maxY?
 
-    let maxY = privateProperties[this].scrollOffset.y + Math.round(area.height / privateProperties[this].tileSize.height);
-    let maxX = privateProperties[this].scrollOffset.x + Math.round(area.width / privateProperties[this].tileSize.width);
-    for(let y = privateProperties[this].scrollOffset.y; y < maxY; y++) {
+    let maxY = privateProperties[this.id].scrollOffset.y + Math.round(area.height / privateProperties[this.id].tileSize.height);
+    let maxX = privateProperties[this.id].scrollOffset.x + Math.round(area.width / privateProperties[this.id].tileSize.width);
+    for(let y = privateProperties[this.id].scrollOffset.y; y < maxY; y++) {
       tiles[yI] = [];
       xI= 0;
       // x position in tileMap
-      for (let x = privateProperties[this].scrollOffset.x; x < maxX; x++) {
+      for (let x = privateProperties[this.id].scrollOffset.x; x < maxX; x++) {
         tiles[yI][xI] = this[tiles][y][x];
         xI++;
       }
@@ -126,14 +126,14 @@ export class TileMap extends Component {
    * @returns {{tile: *, x: number, y: number, row: number, col: number}}
    */
   pixelToTile(coord){
-    let row = Math.floor(coord.y / privateProperties[this].tileSize.height) + privateProperties[this].scrollOffset.y;
-    let col = Math.floor(coord.x / privateProperties[this].tileSize.width);
+    let row = Math.floor(coord.y / privateProperties[this.id].tileSize.height) + privateProperties[this.id].scrollOffset.y;
+    let col = Math.floor(coord.x / privateProperties[this.id].tileSize.width);
 
-    if (utilities.exists(privateProperties[this].tiles[row]) && utilities.exists(privateProperties[this].tiles[row][col])) {
+    if (utilities.exists(privateProperties[this.id].tiles[row]) && utilities.exists(privateProperties[this.id].tiles[row][col])) {
       return {
-        tile: privateProperties[this].tiles[row][col],
-        x: col * privateProperties[this].tileSize.width,
-        y: row * privateProperties[this].tileSize.height,
+        tile: privateProperties[this.id].tiles[row][col],
+        x: col * privateProperties[this.id].tileSize.width,
+        y: row * privateProperties[this.id].tileSize.height,
         row: row,
         col: col
       };
@@ -149,9 +149,9 @@ export class TileMap extends Component {
    *
    */
   TileClick(coord){
-    if(utilities.isFunction(privateProperties[this].onTileClick)){
+    if(utilities.isFunction(privateProperties[this.id].onTileClick)){
       var tile = this.pixelToTile(coord);
-      privateProperties[this].onTileClick.call(tile);
+      privateProperties[this.id].onTileClick.call(tile);
     }
   }
 
@@ -162,8 +162,8 @@ export class TileMap extends Component {
    * @param {*} newName - Should just be a string or number but realistically could be anything.
    */
   setTile(coord, newName){
-    if(utilities.exists(privateProperties[this].tiles[coord.y][coord.x])) {
-      privateProperties[this].tiles[coord.y][coord.x] = newName;
+    if(utilities.exists(privateProperties[this.id].tiles[coord.y][coord.x])) {
+      privateProperties[this.id].tiles[coord.y][coord.x] = newName;
     }
   }
 }
