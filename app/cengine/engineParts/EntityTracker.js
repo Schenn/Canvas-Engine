@@ -134,7 +134,6 @@ export class EntityTracker {
     let entity = null;
     for(let z of privateProperties[this].entitiesByZ){
       for(let ent of z){
-        console.log(ent);
         if(ent.name === name) {
           entity = ent;
         }
