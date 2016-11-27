@@ -26,7 +26,8 @@ export class Label extends Entity {
         return self.textArea(ctx);
       },
       draw: function(ctx){
-        ctx.drawText(self.getFromComponent("Text", "asObject"));
+        ctx.setDefaults(this);
+        ctx.drawText(Object.assign({}, this, this.Entity.getFromComponent("Text", "asObject")));
       }
     };
 
