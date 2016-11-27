@@ -17,8 +17,9 @@ export class SpriteSheetWrapper extends Component{
    */
   constructor(params, entity){
     super(entity);
+    let name = Object.keys(params.spritesheet)[0];
     privateProperties[this.id] = {};
-    privateProperties[this.id].sheet = params.spritesheet;
+    privateProperties[this.id].sheet = params.spritesheet[name];
   }
 
   /**
@@ -52,6 +53,6 @@ export class SpriteSheetWrapper extends Component{
    * @returns {Image}
    */
   source(){
-    return privateProperties[this.id].sheet.source();
+    return privateProperties[this.id].sheet.Source;
   }
 }
