@@ -2,8 +2,9 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 
-import {Component} from "components/Component.js";
-import * as utilities from "engineParts/utilities.js";
+import {Component} from "../components/Component.js";
+import * as utilities from "../engineParts/utilities.js";
+import {properties} from "../engineParts/propertyDefinitions.js";
 
 /**
  * @typedef {object} GeneralTypes~Sprite
@@ -13,6 +14,8 @@ import * as utilities from "engineParts/utilities.js";
  * @property {number} width
  */
 
+
+const privateProperties = new WeakMap();
 
 /**
  * Constructs an Image Component
@@ -42,19 +45,71 @@ export class ImageWrapper extends Component{
    */
   constructor(params, entity){
     super(entity, params.callback);
-    let source = params.source,
-      sx= utilities.exists(params.sx) ? params.sx : 0,
-      sy= utilities.exists(params.sy) ? params.sy : 0,
-      sw= utilities.exists(params.sWidth) ? params.sWidth : 0,
-      sh= utilities.exists(params.sHeight) ? params.sHeight : 0,
-      cropFromCenter = utilities.exists(params.cropFromCenter) ? params.cropFromCenter : false;
 
-    this.setProperty("source", source);
-    this.setProperty("sx", sx);
-    this.setProperty("sy", sy);
-    this.setProperty("sWidth", sw);
-    this.setProperty("sHeight", sh);
-    this.setProperty("cropFromCenter", cropFromCenter);
+    privateProperties[this.name] = {};
+    privateProperties[this.name].sx = 0;
+    privateProperties[this.name].sy = 0;
+    privateProperties[this.name].sw = 0;
+    privateProperties[this.name].sh = 0;
+    privateProperties[this.name].cropFromCenter = false;
+    privateProperties[this.name].source = "";
+
+    let setProps = (sprite)=>{
+      if(utilities.exists(sprite.sx)){
+        privateProperties[this.name].sx = sprite.sx;
+      } else if (utilities.exists(sprite.x)){
+        privateProperties[this.name].sx = sprite.x;
+      }
+
+      if(utilities.exists(sprite.sy)){
+        privateProperties[this.name].sy = sprite.sy;
+      } else if (utilities.exists(sprite.y)){
+        privateProperties[this.name].sy = sprite.y;
+      }
+
+      if(utilities.exists(sprite.sWidth)){
+        privateProperties[this.name].sw = sprite.sWidth;
+      } else if(utilities.exists(sprite.width)){
+        privateProperties[this.name].sw = sprite.width;
+      }
+
+
+      if(utilities.exists(sprite.sHeight)){
+        privateProperties[this.name].sh = sprite.sHeight;
+      } else if(utilities.exists(sprite.height)){
+        privateProperties[this.name].sh = sprite.height;
+      }
+
+      if(utilities.exists(sprite.cropFromCenter)){
+        privateProperties[this.name].cropFromCenter = sprite.cropFromCenter;
+      }
+    };
+
+    if(utilities.exists(params.source)){
+      privateProperties[this.name].source = params.source;
+
+      setProps(params);
+    } else {
+      let keys = Object.keys(params);
+      if(keys.length === 1 && utilities.exists(params[keys].source)){
+        privateProperties[this.name].source = params[keys].source;
+        setProps(params[keys]);
+      }
+    }
+
+    if(privateProperties[this.name].source === "") {
+      console.log(params);
+      throw "Source missing from Image Component";
+    }
+
+    Object.defineProperties(this, {
+      source: properties.defaultProperty(privateProperties[this.name].source, this.propertyCallback),
+      sx: properties.defaultProperty(privateProperties[this.name].sx, this.propertyCallback),
+      sy: properties.defaultProperty(privateProperties[this.name].sy, this.propertyCallback),
+      sWidth: properties.defaultProperty(privateProperties[this.name].sw, this.propertyCallback),
+      sHeight: properties.defaultProperty(privateProperties[this.name].sh, this.propertyCallback),
+      cropFromCenter: properties.defaultProperty(privateProperties[this.name].cropFromCenter, this.propertyCallback)
+    });
   }
 
   /**
