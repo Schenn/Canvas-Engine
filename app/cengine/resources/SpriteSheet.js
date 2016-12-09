@@ -101,7 +101,7 @@ export class SpriteSheet {
    * @returns {Image}
    */
   get Source(){
-    return privateProperties[this.id].source.src;
+    return privateProperties[this.id].source;
   }
 
   get Sprites(){
