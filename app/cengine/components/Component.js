@@ -1,8 +1,8 @@
 /**
  * Created by schenn on 6/23/16.
  */
-import {properties} from "engineParts/propertyDefinitions.js";
-import * as utilities from "engineParts/utilities.js";
+import {properties} from "../engineParts/propertyDefinitions.js";
+import * as utilities from "../engineParts/utilities.js";
 const privateProperties = new WeakMap();
 
 
