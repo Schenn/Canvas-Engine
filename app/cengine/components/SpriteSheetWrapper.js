@@ -3,6 +3,7 @@
  */
 
 import {Component} from "components/Component.js";
+import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 
@@ -17,9 +18,30 @@ export class SpriteSheetWrapper extends Component{
    */
   constructor(params, entity){
     super(entity);
-    let name = Object.keys(params.spritesheet)[0];
     privateProperties[this.id] = {};
-    privateProperties[this.id].sheet = params.spritesheet[name];
+    if(utilities.exists(params.sprites) && utilities.exists(params.source)){
+      privateProperties[this.id].sheet = params;
+    } else {
+      if(utilities.exists(params.spritesheet)){
+        if(utilities.exists(params.spritesheet.sprites) && utilities.exists(params.spritesheet.source)){
+          privateProperties[this.id].sheet = params.spritesheet;
+        } else {
+          let name = Object.keys(params.spritesheet)[0];
+          privateProperties[this.id].sheet = params.spritesheet[name];
+        }
+      }  else {
+        let keys = Object.keys(params);
+        if(keys.length === 1){
+          let name = keys[0];
+          let content = params[name];
+          if(utilities.exists(content.sprites) && utilities.exists(content.source)){
+            privateProperties[this.id].sheet = content;
+          } else if(utilities.exists(content.spritesheet)){
+            privateProperties[this.id].sheet = content.spritesheet;
+          }
+        }
+      }
+    }
   }
 
   /**
