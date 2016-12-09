@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Canvas Engine QUnit Tests</title>
-  <link rel="stylesheet" href="../app/dependencies/qunit-2.0.1.css">
+  <link rel="stylesheet" href="../../app/dependencies/qunit-2.0.1.css">
 </head>
 <body>
 <div id="qunit"></div>
 <div id="qunit-fixture"></div>
-<script src="../app/dependencies/qunit-2.0.1.js"></script>
-<script src="../js/lib.min.js"></script>
-<script src="../app/dependencies/systemjs-0.19.31/dist/system.js"></script>
+<script src="../../app/dependencies/qunit-2.0.1.js"></script>
+<script src="../../js/lib.min.js"></script>
+<script src="../../app/dependencies/systemjs-0.19.31/dist/system.js"></script>
 
 <script>
   // set our baseURL reference path
@@ -27,10 +27,7 @@
 <script>
   QUnit.config.autostart = false;
   let testMap = {
-    utilities:false,
-    ResourceManager: false,
-    EntityTracker: false,
-    EntityManager: false
+    Entity: false
   };
 
   let doneLoading = function(name){
@@ -51,22 +48,10 @@
 
   (function(){
 
-    let testPath = "../tests/engineparts/";
+    let testPath = "../tests/entities/";
 
-    SystemJS.import(testPath + "utilitiesTests.js").then(function(){
-      doneLoading('utilities');
-    });
-
-    SystemJS.import(testPath + "EntityTrackerTests.js").then(function(){
-      doneLoading('EntityTracker');
-    });
-
-    SystemJS.import(testPath + "ResourceManagerTests.js").then(function(){
-      doneLoading('ResourceManager');
-    });
-
-    SystemJS.import(testPath + "EntityManagerTests.js").then(function(){
-      doneLoading('EntityManager');
+    SystemJS.import(testPath + "entityTests.js").then(function(){
+      doneLoading('Entity');
     });
 
   })();
