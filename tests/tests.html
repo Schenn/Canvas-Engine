@@ -32,6 +32,7 @@
     EntityTracker: false,
     EntityManager: false,
     Component: false,
+    text: false,
     Entity: false,
     SpriteSheet: false
   };
@@ -61,10 +62,6 @@
       doneLoading('utilities');
     });
 
-    SystemJS.import(testPath + "engineparts/PropertyTests.js").then(function(){
-      doneLoading('utilities');
-    });
-
     SystemJS.import(testPath + "engineparts/EntityTrackerTests.js").then(function(){
       doneLoading('EntityTracker');
     });
@@ -79,6 +76,10 @@
 
     SystemJS.import(testPath + "components/ComponentTests.js").then(function(){
       doneLoading('Component');
+    });
+
+    SystemJS.import(testPath + "components/TextTests.js").then(function(){
+      doneLoading('text');
     });
 
     SystemJS.import(testPath + "entities/EntityTests.js").then(function(){
