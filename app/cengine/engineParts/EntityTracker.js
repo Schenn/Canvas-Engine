@@ -196,7 +196,7 @@ export class EntityTracker {
         for(let entity of this.getEntities(this.getEntitiesByZ(z))) {
           let containsPixel = false;
           containsPixel = entity.getFromComponent("Renderer", "containsPixel", p);
-
+          // If we didn't find it, but we're searching an area larger than one, expand the search radius.
           if (!containsPixel) {
             if (w > 1) {
               let tempCoord = Object.assign({}, p);
