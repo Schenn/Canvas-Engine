@@ -83,9 +83,16 @@ export class EntityManager {
       params.spritesheet= {};
       params.spritesheet[sheetName] = privateProperties[this].ResourceManager.getSpriteSheet(sheetName);
     } else if(utilities.exists(params.spritesheets)){
-      params.spritesheets.forEach((sheetName, refName)=>{
+      let refNames = Object.keys(params.spritesheets);
+
+      refNames.forEach((refName, index)=>{
+        let sheetName = params.spritesheets[refName];
+
         if(typeof(sheetName) === 'string') {
           params.spritesheets[refName] = privateProperties[this].ResourceManager.getSpriteSheet(sheetName);
+        } else {
+          console.log(sheetName);
+          console.log(refName);
         }
       });
     }
