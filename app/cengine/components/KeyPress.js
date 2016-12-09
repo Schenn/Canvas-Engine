@@ -34,7 +34,7 @@ export class KeyPress extends Component{
     privateProperties[this.id] = {};
     privateProperties[this.id].keyCallbacks = {};
 
-    this.onKeys(params.keys);
+    this.onKeys(params);
     let self=this;
 
     /**
