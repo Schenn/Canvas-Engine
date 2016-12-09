@@ -4,37 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Canvas Engine QUnit Tests</title>
-  <link rel="stylesheet" href="../app/dependencies/qunit-2.0.1.css">
+  <link rel="stylesheet" href="../../app/dependencies/qunit-2.0.1.css">
 </head>
 <body>
 <div id="qunit"></div>
 <div id="qunit-fixture"></div>
-<script src="../app/dependencies/qunit-2.0.1.js"></script>
-<script src="../js/lib.min.js"></script>
-<script src="../app/dependencies/systemjs-0.19.31/dist/system.js"></script>
+<script src="../../app/dependencies/qunit-2.0.1.js"></script>
+<script src="../../js/lib.min.js"></script>
+<script src="../../app/dependencies/systemjs-0.19.31/dist/system.js"></script>
 
 <script>
   // set our baseURL reference path
   SystemJS.config({
     map: {
-      'plugin-babel': '../app/dependencies/plugin-babel-0.0.12/plugin-babel.js',
-      'systemjs-babel-build': '../app/dependencies/plugin-babel-0.0.12/systemjs-babel-browser.js'
+      'plugin-babel': '../../app/dependencies/plugin-babel-0.0.12/plugin-babel.js',
+      'systemjs-babel-build': '../../app/dependencies/plugin-babel-0.0.12/systemjs-babel-browser.js'
     },
     transpiler: 'plugin-babel',
-    baseURL: '../app/cengine'
+    baseURL: '../../app/cengine'
   });
 </script>
 <script>
   QUnit.config.autostart = false;
   let testMap = {
-    utilities:false,
-    ResourceManager: false,
-    EntityTracker: false,
-    EntityManager: false,
     Component: false,
-    text: false,
-    Entity: false,
-    SpriteSheet: false
+    text: false
   };
 
   let doneLoading = function(name){
@@ -55,39 +49,14 @@
 
   (function(){
 
-    let testPath = "../tests/";
+    let testPath = "../components/";
 
-
-    SystemJS.import(testPath + "engineparts/utilitiesTests.js").then(function(){
-      doneLoading('utilities');
-    });
-
-    SystemJS.import(testPath + "engineparts/EntityTrackerTests.js").then(function(){
-      doneLoading('EntityTracker');
-    });
-
-    SystemJS.import(testPath + "engineparts/ResourceManagerTests.js").then(function(){
-      doneLoading('ResourceManager');
-    });
-
-    SystemJS.import(testPath + "engineparts/EntityManagerTests.js").then(function(){
-      doneLoading('EntityManager');
-    });
-
-    SystemJS.import(testPath + "components/ComponentTests.js").then(function(){
+    SystemJS.import(testPath + "ComponentTests.js").then(function(){
       doneLoading('Component');
     });
 
-    SystemJS.import(testPath + "components/TextTests.js").then(function(){
+    SystemJS.import(testPath + "TextTests.js").then(function(){
       doneLoading('text');
-    });
-
-    SystemJS.import(testPath + "entities/EntityTests.js").then(function(){
-      doneLoading('Entity');
-    });
-
-    SystemJS.import(testPath + "resources/SpriteSheetTests.js").then(function(){
-      doneLoading('SpriteSheet');
     });
 
   })();
