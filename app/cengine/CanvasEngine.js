@@ -215,9 +215,9 @@ export class CanvasEngine{
    * @param {boolean} forceIt
    */
   pause(forceIt){
-    paused = (CanvasEngine.utilities.exists(forceIt)) ? forceIt : !paused;
+    privateProperties[this].paused = (CanvasEngine.utilities.exists(forceIt)) ? forceIt : !this.paused;
 
-    if(!paused){
+    if(!this.paused){
       this.Loop();
     }
   }
@@ -248,7 +248,7 @@ export class CanvasEngine{
    * @returns {boolean}
    */
   isPaused(){
-    return paused;
+    return this.paused;
   }
 
   /**
@@ -268,7 +268,14 @@ export class CanvasEngine{
 
     let zPixels =this.Screen.atPixel(p.x, p.y, h, w, true);
     if (zPixels.length > 0) {
-      return this.EntityTracker.positionsAtPixel(p,w,h, Object.keys(zPixels), hasComponent);
+      let found = [];
+      zPixels.forEach((value, index)=>{
+        if(value){
+          found.push(index);
+        }
+      });
+
+      return this.EntityTracker.positionsAtPixel(p,w,h, found, hasComponent);
     } else {
       return [];
     }
