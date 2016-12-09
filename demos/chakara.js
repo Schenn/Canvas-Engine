@@ -8,6 +8,7 @@ var game = function(){
     CanvasEngine.ResourceManager.ImagePath = "demos/chakara_graphics";
     CanvasEngine.Screen.attachToCanvas(canvas);
     CanvasEngine.Screen.maximize();
+    CanvasEngine.EntityTracker.excludeZ([0]);
 
     for(var y=0; (y * 32) < CanvasEngine.Screen.height;y++){
       randomTileMap[y]=[];
@@ -74,6 +75,7 @@ var game = function(){
         text: "Add Movable Entity",
         padding: 2,
         onClick: function(){
+          console.log("Clicked");
           chakara.addMovable();
         },
         background: {
@@ -94,9 +96,7 @@ var game = function(){
         type: "MobileSprite",
         x: 98, y:98,
         z_index: 2,
-        spritesheets: {
-          default: "medieval"
-        },
+        spritesheets: {"default":"medieval"},
         animations: {
           default:{
             duration: 0,

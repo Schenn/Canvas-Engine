@@ -54,14 +54,14 @@ var game = function(){
 
     // Black background box
     gamePieces[0] = {
-      type: "RECT",
+      type: "Rect",
       height:CanvasEngine.Screen.height(),
       width: CanvasEngine.Screen.width(),
       fillStyle: "#000000"
     };
 
     gamePieces[1] = {
-      type: "LABEL",
+      type: "Label",
       name: "Loading",
       text: "Loading...",
       x: CanvasEngine.Screen.width()/2,
@@ -86,7 +86,7 @@ var game = function(){
 
     // Black background box
     gamePieces[0] = {
-      type: "RECT",
+      type: "Rect",
       height:screenHeight,
       width: screenWidth,
       fillStyle: "#000000"
@@ -94,7 +94,7 @@ var game = function(){
 
     // the basic grey box for the tokens to go in
     var position = {
-      type: "SPRITE",
+      type: "Sprite",
       spritesheets: {
         default: "ticTacSprites"
       },
@@ -144,7 +144,7 @@ var game = function(){
       align: 'left',
       text: "Player 1 Wins: ",
       z_index: 1,
-      type: "LABEL"
+      type: "Label"
     });
     gamePieces.push({
       name: "score1",
@@ -153,7 +153,7 @@ var game = function(){
       align: "left",
       text: this.player1Wins.toString(),
       z_index: 1,
-      type: "LABEL"
+      type: "Label"
     });
 
     //player 2 score labels
@@ -164,7 +164,7 @@ var game = function(){
       align: 'left',
       text: "Player 2 Wins: ",
       z_index: 1,
-      type: "LABEL"
+      type: "Label"
     });
 
     gamePieces.push({
@@ -174,7 +174,7 @@ var game = function(){
       align: "left",
       text: this.player2Wins.toString(),
       z_index: 1,
-      type: "LABEL"
+      type: "Label"
     });
 
     CanvasEngine.addMap(gamePieces);
@@ -201,7 +201,7 @@ var game = function(){
       var token = {
         x:positionData.x,
         y:positionData.y,
-        type: "SPRITE",
+        type: "Sprite",
         spritesheets: {
           default: "ticTacSprites"
         },
