@@ -133,11 +133,8 @@ export class Screen {
     var zs = privateProperties[this.id].canvases.keys();
 
     for(let zIndex of zs){
-      if(privateProperties[this.id].canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent)){
-        pixelHits[zIndex] = true;
-      }
+      pixelHits[zIndex] = privateProperties[this.id].canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent);
     }
-
     return pixelHits;
   }
 
