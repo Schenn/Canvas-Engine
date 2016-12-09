@@ -95,7 +95,7 @@ export class Entity{
    * @param {Entity} entity
    */
   attachSubEntity(name, entity){
-    if(entity instanceof this){
+    if(entity instanceof Entity){
       privateProperties[this.name].subEntities.set(name, entity);
     }
   }
@@ -128,14 +128,14 @@ export class Entity{
    * @param {*} [args]
    */
   broadcastToComponents(funcName, args){
-    let self = this;
-    privateProperties[this.name].components.forEach((name, component)=>{
+    privateProperties[this.name].components.forEach((component, name)=>{
+
       if(utilities.isFunction(component[funcName])){
         component[funcName].call(component,args);
       }
     });
 
-    privateProperties[this.name].subEntities.forEach((name, entity)=>{
+    privateProperties[this.name].subEntities.forEach((entity, name)=>{
       entity.broadcastToComponents(funcName,args);
     });
 
