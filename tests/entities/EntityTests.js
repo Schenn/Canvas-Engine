@@ -18,4 +18,13 @@ SystemJS.import('entities/Entity.js').then(function(m) {
     }, "Entity WILL construct with a plain object as an argument");
   });
 
+  QUnit.test("Entity Properties are unique to Entity", function(assert){
+    let a = new m.Entity({},{p:"a"});
+    let b = new m.Entity({}, {p:"b"});
+
+    assert.equal(a.EntityManager.p, "a", "A.EntityManager, a property on A, should be unique to A.");
+    assert.equal(b.EntityManager.p, "b", "A.EntityManager, a property on B, should be unique to B.");
+
+  });
+
 });
