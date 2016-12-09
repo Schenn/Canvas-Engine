@@ -409,19 +409,20 @@ export class Renderer extends Component {
    */
   containsPixel(coords) {
     // if we contain the pixel position
-    let leftBoundary = this.x;
-    let rightBoundary = this.x;
-    let topBoundary = this.y;
-    let bottomBoundary = this.y;
+    let area = privateProperties[this.id].clearShadow;
+    let leftBoundary = area.x;
+    let rightBoundary = area.x;
+    let topBoundary = area.y;
+    let bottomBoundary = area.y;
     if (this.fromCenter) {
-      leftBoundary -= (0.5 * this.width);
-      rightBoundary += (0.5 * this.width);
-      topBoundary -= (0.5 * this.height);
-      bottomBoundary += (0.5 * this.height);
+      leftBoundary -= (0.5 * area.width);
+      rightBoundary += (0.5 * area.width);
+      topBoundary -= (0.5 * area.height);
+      bottomBoundary += (0.5 * area.height);
     }
     else {
-      rightBoundary += this.width;
-      bottomBoundary += this.height;
+      rightBoundary += area.width;
+      bottomBoundary += area.height;
     }
 
     return ((coords.x >= leftBoundary) && (coords.x <= rightBoundary) &&
