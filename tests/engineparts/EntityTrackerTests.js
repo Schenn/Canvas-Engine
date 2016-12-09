@@ -79,9 +79,4 @@ import {EntityTracker} from "engineParts/EntityTracker.js";
       });
      */
 
-    /**
-     QUnit.test("When searching for pixel interactions, Entity Tracker ignores excluded z-indexes.", function(assert){
-
-      });
-     */
   });
