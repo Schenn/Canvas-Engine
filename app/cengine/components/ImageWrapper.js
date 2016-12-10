@@ -68,15 +68,27 @@ export class ImageWrapper extends Component{
       }
 
       if(utilities.exists(sprite.sWidth)){
+        if(sprite.sWidth < 0){
+          throw "Got a negative height for this Image Component.";
+        }
         privateProperties[this.name].sw = sprite.sWidth;
       } else if(utilities.exists(sprite.width)){
+        if(sprite.width < 0){
+          throw "Got a negative height for this Image Component.";
+        }
         privateProperties[this.name].sw = sprite.width;
       }
 
 
       if(utilities.exists(sprite.sHeight)){
+        if(sprite.sHeight < 0){
+          throw "Got a negative height for this Image Component.";
+        }
         privateProperties[this.name].sh = sprite.sHeight;
       } else if(utilities.exists(sprite.height)){
+        if(sprite.height < 0){
+          throw "Got a negative height for this Image Component.";
+        }
         privateProperties[this.name].sh = sprite.height;
       }
 
@@ -135,6 +147,9 @@ export class ImageWrapper extends Component{
    * @param {GeneralTypes~Sprite} sprite
    */
   setSprite(sprite){
+    if(sprite.height < 0 || sprite.width < 0){
+      throw "Got a negative number when setting an image's sprite width or sprite height.";
+    }
     this.sx = sprite.x;
     this.sy = sprite.y;
     this.sWidth = sprite.width;
