@@ -1,41 +1,82 @@
-SystemJS.import('components/Text.js').then(function(m) {
+SystemJS.import('components/ImageWrapper.js').then(function(m) {
   /**
    * We're testing the Base Component object
    * @module CanvasEngine/tests/Entities/Entity
    */
-  QUnit.module("Components/Text");
+  QUnit.module("Components/ImageWrapper");
 
-  QUnit.test("Can construct Text Component", function(assert){
-    let txt = new m.Text({},{});
-
-    assert.ok(txt, "Text component constructed ok.");
+  // Can't construct
+  QUnit.test("ImageWrapper requires source parameter.", function(assert){
+    assert.throws(function(){
+      let em = new m.ImageWrapper({},{});
+    }, /Source/, "ImageWrapper won't construct without a source.");
   });
 
-  QUnit.test("Text component can get and set font", function(assert){
-    let txt = new m.Text({},{});
+  // Can construct
+  QUnit.test("Can construct.", function(assert){
+    let img = new m.ImageWrapper({
+      'source': "../images/arrowsprites.png"
+    },{});
 
-    assert.equal(txt.fontFamily, "sans-serif", "Does Text font family match expected default?");
-    assert.equal(txt.fontSize, '12pt', "Does Text font size match expected default?");
-    assert.equal(txt.fontWeight, 'normal', "Does Text font weight match expected default?");
-
-    txt.font = "Times New Roman 18px bold";
-
-    assert.equal(txt.fontFamily, "Times New Roman", "Does Text font family match changed value?");
-    assert.equal(txt.fontSize, '18px', "Does Text font size match changed value?");
-    assert.equal(txt.fontWeight, 'bold', "Does Text font weight match changed value?");
-
-    // Notice the change to the structure.
-    // This is how the font will be returned when asked for and when sent to the canvas for drawing.
-    assert.equal(txt.font, "bold 18px Times New Roman", "Does Text font match changed value?");
+    assert.ok(img, "Did ImageWrapper construct ok?");
 
   });
 
-  QUnit.test("Text Component can get and set text", function(assert){
-    let txt = new m.Text({},{});
-    assert.equal(txt.text, "", "Text has no default value.");
 
-    txt.text = "A new value!";
-    assert.equal(txt.text, "A new value!", "Text should change.");
+  // Gets correct information regarding image
+  QUnit.test("Returns accurate Information", function(assert){
+    let img = new m.ImageWrapper({
+      'source': "../images/arrowsprites.png"
+    },{});
+
+    assert.equal(img.source, "../images/arrowsprites.png", "Does image return correct source string?");
+
+    let b = new m.ImageWrapper({
+      'source': "../images/arrowsprites.png",
+      sx:50, sy:75,
+      sWidth: 25, sHeight: 35
+    },{});
+
+    assert.equal(b.sx, 50, "Does image return correct property value?");
+
+    let c = new m.ImageWrapper({
+      'source': "../images/arrowsprites.png",
+      x:50, y:75,
+      width: 25, height: 35
+    },{});
+
+    assert.equal(c.sx, 50, "Does image return correct property value, even when passed in as a sprite object?");
+  });
+
+  // Can set sprite dimensions
+  QUnit.test("Can Set Sprite Dimensions", function(assert){
+    let img = new m.ImageWrapper({
+      'source': "../images/arrowsprites.png"
+    },{});
+
+    img.setSprite({
+      x: 50, y: 100, height: 100, width: 100
+    });
+    assert.equal(img.sx, 50, "Does the image wrapper return the value after changing?");
+  });
+
+  // Can't set negative numbers on important values
+  QUnit.test("Can't set negative numbers on important values", function(assert){
+    assert.throws(function(){new m.ImageWrapper({
+      'source': "../images/arrowsprites.png",
+      x:50, y:75,
+      width: -25, height: -35
+    },{})}, /negative/, "Did ImageWrapper catch the negative width and height?");
+
+    let img = new m.ImageWrapper({
+      'source': "../images/arrowsprites.png"
+    },{});
+
+    assert.throws(function(){img.setSprite({
+      x:50, y:75,
+      width: -25, height: -35
+    })}, /negative/, "Did ImageWrapper catch the negative width and height when setting a sprite?");
+
 
   });
 
