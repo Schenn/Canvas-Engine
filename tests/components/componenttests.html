@@ -27,8 +27,10 @@
 <script>
   QUnit.config.autostart = false;
   let testMap = {
-    Component: false,
-    text: false
+    component: false,
+    text: false,
+    image: false,
+    timer: false
   };
 
   let doneLoading = function(name){
@@ -52,11 +54,19 @@
     let testPath = "../components/";
 
     SystemJS.import(testPath + "ComponentTests.js").then(function(){
-      doneLoading('Component');
+      doneLoading('component');
     });
 
     SystemJS.import(testPath + "TextTests.js").then(function(){
       doneLoading('text');
+    });
+
+    SystemJS.import(testPath + "ImageWrapperTests.js").then(function(){
+      doneLoading('image');
+    });
+
+    SystemJS.import(testPath + "TimerTests.js").then(function(){
+      doneLoading('timer');
     });
 
   })();
@@ -66,6 +76,5 @@
 <div id="loading">
   <b>Loading Tests...</b>
 </div>
-
 </body>
 </html>
