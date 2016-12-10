@@ -8,84 +8,98 @@
  */
 
 
-SystemJS.import('components/Component.js').then(function(m) {
+SystemJS.import('components/Timer.js').then(function(m) {
   /**
    * We're testing the Base Component object
    * @module CanvasEngine/tests/Components/Component
    */
-  QUnit.module("Components/Component");
-  /**
-   * The Base Component Object has the ability to take a property and value.
-   *  Those properties can be locked so that they cannot be altered.
-   *  These properties have public access, so they can be accessed through normal getter/setter methods (e.g. component.property)
-   *
-   *  This tests whether or not component properties work as intended.
-   */
-  QUnit.test("Setting and getting a Property", function(assert){
-    let component = new m.Component({}, ()=>{});
+  QUnit.module("Components/Timer");
 
-    component.setProperty("x", 10);
-
-    assert.equal(component.x, 10, "x is a property of the component");
-    component.x += 10;
-    assert.equal(component.x, 20, "x can have its value changed as its not a locked property.");
-
-    component.setProperty("y", 10, true);
-    assert.equal(component.y, 10, "y is a property of the component");
-    component.y +=10;
-    assert.notEqual(component.y, 20, "y is a locked property and cannot have its value changed.");
+  QUnit.test("Can Construct a Timer", function(assert){
+    assert.ok(new m.Timer({},{}), "Can construct a timer.");
   });
 
-  /**
-   * When you create a Component,
-   *  you can assign it a callback function which is called whenever a property has it's value changed.
-   *  The callback is also called when a locked property is attempted to be changed,
-   *    however, the value is still protected from change.
-   *
-   * This tests that the callback is fired and that the value and property are the same value.
-   *
-   */
-  QUnit.test("Callback on Property Change", function(assert){
+  QUnit.test("Timer updates on update", function(assert){
+    let t = new Date();
+    let upd = new m.Timer({},{});
+    let d = assert.async();
+    setTimeout(()=>{
+      upd.update();
 
-    let initial = 10;
+      assert.notEqual(t.getTime(), upd.MS, "Timer has moved ahead by a second or so.");
 
-    let component = new m.Component({}, (value)=>{
-      assert.notEqual(value, initial, "The property changed callback takes the new value as its argument.");
-      assert.equal(component.x, value, "The property changed callback takes place after the property is set.");
-    });
-
-    component.setProperty("x", 10);
-    component.x += 10;
-
+      d();
+    }, 1000);
   });
 
-  /**
-   * Components are es6 classes.
-   *
-   * This tests that the component class can be extended.
-   */
-  QUnit.test("Extending the class", function(assert){
+  QUnit.test("Timer's delta time returns the difference between now and then", function(assert){
+    let t = new Date();
+    let delt = new m.Timer({},{});
+    let d = assert.async();
+    setTimeout(()=>{
+      delt.update();
 
-    class myComponent extends m.Component {
-      constructor(entity){
-        super(entity, ()=>{});
+      assert.notEqual(t.getTime(), delt.MS, "Timer has moved ahead by a second or so.");
 
-        this.setProperty("x",10);
+      let delta = (delt.MS - t.getTime())/1000;
+      assert.ok(delt.deltaTime <= delta + 0.01 && delt.deltaTime >= delta - 0.01, "Does the timer delta time return the correct ms difference?");
+
+      d();
+    }, 1000);
+  });
+
+  QUnit.test("Timer can do something when time has elapsed.", function(assert){
+    let t = new Date();
+    let d = assert.async();
+    let duration = 1000;
+
+    let elp = new m.Timer({
+      duration: duration,
+      onElapsed: (s)=>{
+        assert.ok(s, "Was triggered after elapsed time!");
+        let delta = (elp.MS - t.getTime())/1000;
+        assert.equal(s, 0.5, "Got passed time since last update called in onElapsed.");
+        assert.ok(s*1000 <= 505 && s*1000 >= 495, "Delta time passed in is since last update was called.");
+        assert.ok(delta *1000 >= duration, "Timers Duration determines when the onElapsed method will fire.");
+        clearInterval(i);
+        d();
       }
+    },{});
 
-      increment() {
-        this.x++;
-      }
-    }
-
-    let myC = new myComponent({});
-
-    assert.ok(myC instanceof m.Component, "myComponent is an instance of Component");
-    assert.ok(myC instanceof myComponent, "myComponent is an instance of myComponent" );
-    assert.equal(myC.x, 10, "myComponent has the assigned property");
-    myC.increment();
-    assert.equal(myC.x, 11, "the assigned property changes based on internal class method.");
-
+    let i = setInterval(()=>{
+      elp.update();
+    }, 500);
   });
 
+
+  QUnit.test("Timer can do something repeatedly.", function(assert){
+    let d = assert.async();
+    let duration = 1000;
+
+    let count = 0;
+    let lastCount = 0;
+
+    let rpt = new m.Timer({
+      duration: duration,
+      onUpdate: (s)=>{
+        assert.ok(s, "Was triggered after elapsed time!");
+
+        assert.ok(s >= 0.49 && s <= 0.51, "Got passed time since last update called in onUpdate.");
+
+        lastCount = count;
+        count++;
+        assert.notEqual(count, lastCount, "Count should have incremented.");
+        if(count >=5){
+          assert.ok(true, "Did same task multiple times. Lets stop updating.");
+          clearInterval(j);
+          d();
+        }
+
+      }
+    },{});
+
+    let j = setInterval(()=>{
+      rpt.update();
+    }, 500);
+  });
 });
