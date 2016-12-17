@@ -120,10 +120,10 @@ export class Mouse extends Component {
    */
   addMouseMethods(methodContainer){
     let mouseMethods = Object.keys(methodContainer);
-    for(let method in mouseMethods){
-      if(utilities.isArray(this[method])) {
+    mouseMethods.forEach((method, index)=>{
+      if(utilities.isArray(privateProperties[this.id][method])) {
         privateProperties[this.id][method].push(methodContainer[method]);
       }
-    }
+    });
   }
 }
