@@ -30,7 +30,9 @@
     component: false,
     text: false,
     image: false,
-    timer: false
+    timer: false,
+    keypress: false,
+    mouse: false
   };
 
   let doneLoading = function(name){
@@ -67,6 +69,14 @@
 
     SystemJS.import(testPath + "TimerTests.js").then(function(){
       doneLoading('timer');
+    });
+
+    SystemJS.import(testPath + "KeyPressTests.js").then(function(){
+      doneLoading('keypress');
+    });
+
+    SystemJS.import(testPath + "MouseTests.js").then(function(){
+      doneLoading('mouse');
     });
 
   })();
