@@ -14,9 +14,9 @@
  * @see {CanvasEngine.Components.getDirection}
  */
 
-import {Component} from "components/Component.js";
-import {properties} from "engineParts/propertyDefinitions.js";
-import * as utilities from "engineParts/utilities.js";
+import {Component} from "../components/Component.js";
+import {properties} from "../engineParts/propertyDefinitions.js";
+import * as utilities from "../engineParts/utilities.js";
 const privateProperties = new WeakMap();
 
 /**
@@ -43,6 +43,9 @@ export class Movement extends Component {
   constructor(params, entity) {
     super(entity);
     privateProperties[this.id] = {};
+    if(!utilities.exists(params.x) || !utilities.exists(params.y)){
+      throw "Movement component did not get point of origin in constructor.";
+    }
     privateProperties[this.id].currentX = params.x;
     privateProperties[this.id].currentY = params.y;
     privateProperties[this.id].xSpeed = utilities.exists(params.xSpeed) ? params.xSpeed : 0;
@@ -66,6 +69,10 @@ export class Movement extends Component {
    * @param {number} delta The seconds as a decimal since the last render call.
    */
   move(delta) {
+    if(!utilities.exists(delta)){
+      delta = 1;
+    }
+
     this.x += (privateProperties[this.id].xSpeed !== 0) ? privateProperties[this.id].xSpeed * delta : 0;
     this.y += (privateProperties[this.id].ySpeed !== 0) ? privateProperties[this.id].ySpeed * delta : 0;
 
