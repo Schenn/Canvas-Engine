@@ -45,8 +45,12 @@ export class KeyPress extends Component{
        * @listens keyboard#keypress
        */
       (event)=>{
-        let keyCode = event.keyCode || event.which;
-        self.onKeyDown(String.fromCharCode(keyCode));
+        if(utilities.exists(event.key)){
+          self.onKeyDown(event.key);
+        } else {
+          let keyCode = event.keyCode || event.which;
+          self.onKeyDown(String.fromCharCode(keyCode));
+        }
       }
     );
   }
