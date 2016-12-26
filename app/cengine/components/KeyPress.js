@@ -31,8 +31,9 @@ const privateProperties = new WeakMap();
 export class KeyPress extends Component{
   constructor(params, entity){
     super(entity);
-    privateProperties[this.id] = {};
-    privateProperties[this.id].keyCallbacks = {};
+    privateProperties[this.id] = {
+      keyCallbacks: {}
+    };
 
     this.onKeys(params);
     let self=this;
