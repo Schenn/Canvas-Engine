@@ -23,7 +23,8 @@ SystemJS.import('components/KeyPress.js').then(function(m) {
       },{});
 
       setTimeout(()=>{
-        alert("Press 'a' to continue");
+        var p = $.Event("keypress", {keyCode: 97, which:97});
+        $(document).trigger(p);
       }, 500);
 
     });
