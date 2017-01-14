@@ -36,9 +36,11 @@ export class AnimatedSprite extends Sprite {
     privateProperties[this.name].animations = new Map();
     privateProperties[this.name].currentAnimation = "default";
 
-    for(var {[name]:animation} of params.animations) {
-      this.addAnimation(name, animation);
-    }
+    let names = Object.keys(params.animations);
+
+    names.forEach((name, i)=>{
+      this.addAnimation(name, params.animations[name]);
+    });
   }
 
   addAnimation(name, animation){
