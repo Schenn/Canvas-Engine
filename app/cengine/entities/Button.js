@@ -100,12 +100,13 @@ export class Button extends Entity {
       "Mouse":{
         "HoverMouse": {
           onMouseOver: ()=> {
-            this.Entity.isHovering = true;
+            this.isHovering = true;
             this.messageToComponent("Renderer", "markDirty");
           }, onMouseOut: ()=> {
-            this.Entity.isHovering = false;
+            this.isHovering = false;
             this.messageToComponent("Renderer", "markDirty");
-          }
+          },
+          onClick: (params.onClick.bind(this) || ((e)=>{}))
         }
       }
     });
@@ -126,9 +127,14 @@ export class Button extends Entity {
        * @memberof CanvasEngine.Entities.Button
        * @returns {Button~Background#components~Renderer.clearInfo}
        */
-      clearInfo: ctx=>{
+      clearInfo: (ctx)=>{
+        let text = this.getFromComponent("Text","asObject");
         // Return the background's clearInfo
-        return this.Background.getFromComponent("Renderer", "clearInfo", ctx);
+        return Object.assign({},
+          this.Background.getFromComponent("Renderer", "clearInfo", ctx),  {
+          width : ((ctx.measureText({font: text.font, text:text.text}).width)+4) + (params.padding * 2),
+          height : ((ctx.measureText({font: text.font, text:"MWO"}).width/3)+4) + (params.padding * 2)
+        });
       },
       /**
        * Draw the button. Starting with the background or hover state background, then the text.
