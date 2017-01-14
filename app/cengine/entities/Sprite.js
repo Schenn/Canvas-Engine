@@ -10,6 +10,7 @@
  */
 
 import {Entity} from "entities/Entity.js";
+import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 
@@ -30,19 +31,24 @@ export class Sprite extends Entity {
     privateProperties[this.name].currentSpriteName = "";
     privateProperties[this.name].currentSheet = "default";
 
+    let self = this;
+
     var myParams = {
-      draw: ctx => {
-        ctx.drawImage(this.getFromComponent(privateProperties[this.name].currentSheet+"Image", "asObject"));
+      draw: function(ctx){
+        ctx.drawImage(Object.assign({}, this, self.getFromComponent("Image", "asObject")));
       }
     };
     Object.assign(myParams, params);
 
     this.EntityManager.attachComponent(this, "Renderer", myParams);
 
-    for(let sheetName of params.spritesheets){
+    let refNames = Object.keys(params.spritesheets);
+
+    refNames.forEach((refName, index)=>{
+      let ssheet = params.spritesheets[refName];
       let image = {};
-      image[sheetName+"Image"] = {
-        source: params.spritesheets[sheetName].source(),
+      image[refName+"Image"] = {
+        source: ssheet.Source,
         height: params.height,
         width: params.width,
         callback: function(){
@@ -50,12 +56,12 @@ export class Sprite extends Entity {
         }
       };
       let sheet = {};
-      sheet[sheetName+"Sheet"]={spritesheet: params.spritesheets[sheetName]};
+      sheet[refName+"Sheet"]={spritesheet: ssheet};
       this.EntityManager.attachComponent(this, {
         Image:image,
         SpriteSheet:sheet
       });
-    }
+    });
 
     this.Sprite = utilities.exists(params.defaultSprite)? params.defaultSprite : 0;
   }
@@ -65,7 +71,7 @@ export class Sprite extends Entity {
     // Set the current sprite image to nextFrame
     this.messageToComponent(privateProperties[this.name].currentSheet+"Image",
       "setSprite",
-      sprite.getFromComponent(privateProperties[this.name].currentSheet+"Sheet", "getSprite", name)
+      this.getFromComponent(privateProperties[this.name].currentSheet+"Sheet", "getSprite", name)
     );
   }
 
