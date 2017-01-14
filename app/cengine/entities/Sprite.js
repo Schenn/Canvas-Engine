@@ -9,7 +9,7 @@
  * @property {string | number} [defaultSprite]
  */
 
-import {Entity} from "entities/Entity.js";
+import {Entity} from "../entities/Entity.js";
 import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
@@ -35,7 +35,12 @@ export class Sprite extends Entity {
 
     var myParams = {
       draw: function(ctx){
-        ctx.drawImage(Object.assign({}, this, self.getFromComponent("Image", "asObject")));
+        ctx.drawImage(
+          Object.assign({},
+            // this is renderer
+            this,
+            self.getFromComponent(privateProperties[self.name].currentSheet+"Image", "asObject"))
+        );
       }
     };
     Object.assign(myParams, params);
@@ -52,7 +57,7 @@ export class Sprite extends Entity {
         height: params.height,
         width: params.width,
         callback: function(){
-          this.Entity.messageToComponent("Renderer", "markDirty");
+          self.messageToComponent("Renderer", "markDirty");
         }
       };
       let sheet = {};
