@@ -8,87 +8,104 @@
  */
 
 
-SystemJS.import('components/Component.js').then(function(m) {
+SystemJS.import('components/Movement.js').then(function(m) {
   /**
-   * We're testing the Base Component object
+   * Testing the Movement Component
+   *
    * @module CanvasEngine/tests/Components/Component
    */
-  QUnit.module("Components/Component", {}, ()=>{
+  QUnit.module("Components/Movement", {}, ()=> {
 
-    /**
-     * The Base Component Object has the ability to take a property and value.
-     *  Those properties can be locked so that they cannot be altered.
-     *  These properties have public access, so they can be accessed through normal getter/setter methods (e.g. component.property)
-     *
-     *  This tests whether or not component properties work as intended.
-     */
-    QUnit.test("Setting and getting a Property", function(assert){
-      let component = new m.Component({}, ()=>{});
 
-      component.setProperty("x", 10);
+    QUnit.test("Can Construct", function (assert) {
+      assert.throws(()=>{new m.Movement({}, {})}, /origin/, "Movement can't construct without a point of origin.");
 
-      assert.equal(component.x, 10, "x is a property of the component");
-      component.x += 10;
-      assert.equal(component.x, 20, "x can have its value changed as its not a locked property.");
+      assert.ok(new m.Movement({x:1, y:1}, {}), "Movement can construct with a starting point.");
 
-      component.setProperty("y", 10, true);
-      assert.equal(component.y, 10, "y is a property of the component");
-      component.y +=10;
-      assert.notEqual(component.y, 20, "y is a locked property and cannot have its value changed.");
     });
 
-    /**
-     * When you create a Component,
-     *  you can assign it a callback function which is called whenever a property has it's value changed.
-     *  The callback is also called when a locked property is attempted to be changed,
-     *    however, the value is still protected from change.
-     *
-     * This tests that the callback is fired and that the value and property are the same value.
-     *
-     */
-    QUnit.test("Callback on Property Change", function(assert){
+    QUnit.test("Adjusts x and y based on speed and time.", function(assert){
+      let move = new m.Movement({x:1, y:1}, {});
 
-      let initial = 10;
+      assert.equal(move.x, 1, "Movement Component has correct starting location.");
+      move.move();
+      assert.equal(move.x, 1, "Without a speed, movement can't adjust its location.");
+      move.setSpeed({xSpeed: 10});
+      move.move();
+      assert.equal(move.x, 11, "Setting the speed allows movement to adjust its location on move.");
+      move.move(0.5);
+      assert.equal(move.x, 16, "Passing in the delta time in seconds adjusts the movement relative to the speed in seconds.");
 
-      let component = new m.Component({}, (value)=>{
-        assert.notEqual(value, initial, "The property changed callback takes the new value as its argument.");
-        assert.equal(component.x, value, "The property changed callback takes place after the property is set.");
+
+    });
+
+
+    QUnit.test("Movement understands it's direction and triggers a callback if its direction changes.", function(assert){
+
+      let dirTeller = new m.Movement({x:1, y:1, xSpeed: 10},{});
+      dirTeller.move();
+      assert.equal(dirTeller.getDirection().direction, "E", "Movement can tell when its travelling East.");
+
+      dirTeller.setSpeed({xSpeed: -10, ySpeed: 0});
+      dirTeller.move();
+      assert.equal(dirTeller.getDirection().direction, "W", "Movement can tell when its travelling West.");
+
+      dirTeller.setSpeed({xSpeed: 0, ySpeed: 10});
+      dirTeller.move();
+      assert.equal(dirTeller.getDirection().direction, "S", "Movement can tell when its travelling South.");
+
+      dirTeller.setSpeed({xSpeed: 0, ySpeed: -10});
+      dirTeller.move();
+      assert.equal(dirTeller.getDirection().direction, "N", "Movement can tell when its travelling South.");
+
+      dirTeller.setSpeed({xSpeed: 10, ySpeed: 10});
+      dirTeller.move();
+      assert.equal(dirTeller.getDirection().direction, "SE", "Movement can tell when its travelling SouthEast.");
+
+      dirTeller.setSpeed({xSpeed: -10, ySpeed: 10});
+      dirTeller.move();
+      assert.equal(dirTeller.getDirection().direction, "SW", "Movement can tell when its travelling SouthWest.");
+
+      dirTeller.setSpeed({xSpeed: 10, ySpeed: -10});
+      dirTeller.move();
+      assert.equal(dirTeller.getDirection().direction, "NE", "Movement can tell when its travelling NorthEast.");
+
+      dirTeller.setSpeed({xSpeed: -10, ySpeed: -10});
+      dirTeller.move();
+      assert.equal(dirTeller.getDirection().direction, "NW", "Movement can tell when its travelling NorthEast.");
+
+
+      let d = assert.async();
+      let change = new m.Movement({x:1, y:1,xSpeed: -10,
+        onDirectionChange:function(dir){
+          assert.equal(dir.direction, "W", "Got expected direction.");
+          assert.ok(true, "Got callback on direction change!");
+          d();
+      }}, {});
+
+      // Needs to move once to set the current direction.  A non-moving thing has no 'direction'.
+      change.move();
+      // Moving 'changes' the direction from 'nothing' to 'west'
+
+    });
+
+    QUnit.test("Movement Component can understand when its reached a destination.", function(assert){
+
+      let dest = new m.Movement({
+        x:0, y:0
+      },{});
+
+      dest.travel({
+        x: 100, y:100, speed:10
       });
 
-      component.setProperty("x", 10);
-      component.x += 10;
-
-    });
-
-    /**
-     * Components are es6 classes.
-     *
-     * This tests that the component class can be extended.
-     */
-    QUnit.test("Extending the class", function(assert){
-
-      class myComponent extends m.Component {
-        constructor(entity){
-          super(entity, ()=>{});
-
-          this.setProperty("x",10);
-        }
-
-        increment() {
-          this.x++;
-        }
+      for(let i = 0; i < 20; i++){
+        dest.move();
       }
 
-      let myC = new myComponent({});
-
-      assert.ok(myC instanceof m.Component, "myComponent is an instance of Component");
-      assert.ok(myC instanceof myComponent, "myComponent is an instance of myComponent" );
-      assert.equal(myC.x, 10, "myComponent has the assigned property");
-      myC.increment();
-      assert.equal(myC.x, 11, "the assigned property changes based on internal class method.");
+      // If I had moved 20 times without a destination, I would be at x:200.
+      assert.ok(dest.x === 100, "I should have reached x:100 and stopped!.");
 
     });
-
   });
-
 });
