@@ -159,7 +159,7 @@ export class EntityManager {
           let names = Object.keys(component[com]);
           for(let name of names){
             thisComConst = privateProperties[this].components.get(com);
-            entity.attachComponent(name, new thisComConst(component[com], entity));
+            entity.attachComponent(name, new thisComConst(component[com][name], entity));
           }
         } else if(typeof(component[com]== "string")){
           /** component = {"componentName" : "name to use"} */
