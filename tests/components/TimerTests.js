@@ -58,8 +58,6 @@ SystemJS.import('components/Timer.js').then(function(m) {
         onElapsed: (s)=>{
           assert.ok(s, "Was triggered after elapsed time!");
           let delta = (elp.MS - t.getTime())/1000;
-          assert.equal(s, 0.5, "Got passed time since last update called in onElapsed.");
-          assert.ok(s*1000 <= 505 && s*1000 >= 495, "Delta time passed in is since last update was called.");
           assert.ok(delta *1000 >= duration, "Timers Duration determines when the onElapsed method will fire.");
           clearInterval(i);
           d();
@@ -84,7 +82,7 @@ SystemJS.import('components/Timer.js').then(function(m) {
         onUpdate: (s)=>{
           assert.ok(s, "Was triggered after elapsed time!");
 
-          assert.ok(s >= 0.49 && s <= 0.51, "Got passed time since last update called in onUpdate.");
+          assert.ok(s >= 0.49 && s <= 0.51, "Got passed time since last update called in onUpdate." + s);
 
           lastCount = count;
           count++;

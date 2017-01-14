@@ -32,7 +32,8 @@
     image: false,
     timer: false,
     keypress: false,
-    mouse: false
+    mouse: false,
+    movement: false
   };
 
   let doneLoading = function(name){
@@ -77,6 +78,10 @@
 
     SystemJS.import(testPath + "MouseTests.js").then(function(){
       doneLoading('mouse');
+    });
+
+    SystemJS.import(testPath + "MovementTests.js").then(function(){
+      doneLoading('movement');
     });
 
   })();
