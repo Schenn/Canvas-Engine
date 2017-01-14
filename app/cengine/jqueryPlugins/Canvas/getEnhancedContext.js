@@ -342,7 +342,7 @@
       }
       var self = this;
       // Draw image function
-      function draw() {
+      let draw = ()=>{
         if (img.complete) {
           scaleFac = (img.width / img.height);
 
@@ -430,7 +430,7 @@
         } else {
           return false;
         }
-      }
+      };
       // Run callback function
       function callback() {
         if (typeof(imageParams.load) === "function") {
