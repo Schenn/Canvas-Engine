@@ -59,13 +59,20 @@ var game = function(){
     // Show that even though the sprites are in 16 x 16, we can ask for them to be drawn at 32 x 32.
     CanvasEngine.addMap([
       {
+        type: "Rect",
+        height:CanvasEngine.Screen.height,
+        width: CanvasEngine.Screen.width,
+        fillStyle: "#00cc00",
+        z_index:0
+      },
+      {
         type: "TileMap",
         spritesheet: "medieval",
         tileMap: {
           height: 32, width: 32,
           tiles: randomTileMap
         },
-        z_index:0
+        z_index:1
       },
       {
         type: "Button",
@@ -75,7 +82,6 @@ var game = function(){
         text: "Add Movable Entity",
         padding: 2,
         onClick: function(){
-          console.log("Clicked");
           chakara.addMovable();
         },
         background: {
