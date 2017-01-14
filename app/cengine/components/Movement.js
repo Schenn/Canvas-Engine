@@ -143,9 +143,16 @@ export class Movement extends Component {
   getDirection() {
     var direction = "";
 
-    direction += (privateProperties[this.id].ySpeed > 0) ? "S" : "N";
-    if (privateProperties[this.id].xSpeed !== 0) {
-      direction += (privateProperties[this.id].xSpeed > 0) ? "E" : "W";
+    if(privateProperties[this.id].ySpeed > 0) {
+      direction += "S";
+    } else if(privateProperties[this.id].ySpeed < 0) {
+      direction += "N";
+    }
+
+    if(privateProperties[this.id].xSpeed > 0) {
+      direction += "E";
+    } else if(privateProperties[this.id].xSpeed < 0){
+      direction += "W";
     }
 
     return {
