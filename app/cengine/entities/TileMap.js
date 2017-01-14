@@ -8,7 +8,7 @@
  *
  */
 
-import {Entity} from "entities/Entity.js";
+import {Entity} from "../entities/Entity.js";
 
 export class TileMap extends Entity {
   constructor(params, EntityManager){
