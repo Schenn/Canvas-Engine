@@ -5,7 +5,7 @@
 * @typedef {object} LocalParams~ImageEntityParams
 */
 
-import {Entity} from "entities/Entity.js";
+import {Entity} from "../entities/Entity.js";
 
 /**
  * Responsible for rendering a static image to the screen.
@@ -26,7 +26,8 @@ export class ImageEntity extends Entity {
         self.messageToComponent("Renderer", "markDirty");
       },
       draw: function(ctx){
-        ctx.drawImage(self.getFromComponent("Image", "asObject"));
+
+        ctx.drawImage(Object.assign({}, this, self.getFromComponent("Image", "asObject")));
       }
     };
 
