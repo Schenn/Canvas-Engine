@@ -2,29 +2,30 @@ var game = function(){
   let CanvasEngine = null;
   var randomTileMap = [];
 
-  // Tell canvas engine to point to our canvas
-  this.setup = function(canvas, CEngine){
-    CanvasEngine = CEngine;
-    CanvasEngine.ResourceManager.ImagePath = "demos/chakara_graphics";
-    CanvasEngine.Screen.attachToCanvas(canvas);
-    CanvasEngine.Screen.maximize();
-    CanvasEngine.EntityTracker.excludeZ([0]);
-
+  this.randomizeMap = function(){
     for(var y=0; (y * 32) < CanvasEngine.Screen.height;y++){
       randomTileMap[y]=[];
       for(var x=0; (x * 32) < CanvasEngine.Screen.width; x++){
         randomTileMap[y][x] = Math.floor(Math.random() * (4));
       }
     }
+  };
+
+  this.backgroundFill = function(color){
+    return {
+      type: "Rect",
+      height:CanvasEngine.Screen.height,
+      width: CanvasEngine.Screen.width,
+      fillStyle: color,
+      z_index:0
+    };
+  };
+
+  this.startLoading = function(){
+    this.randomizeMap();
 
     CanvasEngine.addMap([
-      {
-        type: "Rect",
-        height:CanvasEngine.Screen.height,
-        width: CanvasEngine.Screen.width,
-        fillStyle: "#000000",
-        z_index:0
-      },
+      this.backgroundFill("#000000"),
       {
         type: "Label",
         name: "Loading",
@@ -34,7 +35,6 @@ var game = function(){
         z_index: 1
       }
     ], true);
-
 
     // Load Resources
     CanvasEngine.ResourceManager.loadResourceCollection([
@@ -48,9 +48,23 @@ var game = function(){
         }
       }
     ], function(){
-      CanvasEngine.EntityTracker.getEntities(["Loading"])[0].messageToComponent("Text", "setText", "All resources loaded.");
+      let l = CanvasEngine.EntityTracker.getEntities(["Loading"])[0];
+      l.messageToComponent("Text", "setText", "All resources loaded.");
       $("#chakara").click();
     });
+
+  };
+
+
+  // Tell canvas engine to point to our canvas
+  this.setup = function(canvas, CEngine){
+    CanvasEngine = CEngine;
+    CanvasEngine.ResourceManager.ImagePath = "demos/chakara_graphics";
+    CanvasEngine.Screen.attachToCanvas(canvas);
+    CanvasEngine.Screen.maximize();
+    CanvasEngine.EntityTracker.excludeZ([0]);
+
+    this.startLoading();
 
   };
 
@@ -59,13 +73,7 @@ var game = function(){
 
     // Show that even though the sprites are in 16 x 16, we can ask for them to be drawn at 32 x 32.
     CanvasEngine.addMap([
-      {
-        type: "Rect",
-        height:CanvasEngine.Screen.height,
-        width: CanvasEngine.Screen.width,
-        fillStyle: "#00cc00",
-        z_index:0
-      },
+      this.backgroundFill("#00cc00"),
       {
         type: "TileMap",
         spritesheet: "medieval",
@@ -98,6 +106,20 @@ var game = function(){
   };
 
   this.addMovable = function(){
+    function h(sprite, pos){
+      sprite.messageToComponent("Movement", "travel", {
+        x: (pos) ? 32: -32,
+        speed: 50
+      });
+    }
+
+    function v(sprite, pos){
+      sprite.messageToComponent("Movement", "travel", {
+        y: (pos) ? 32: -32,
+        speed: 50
+      });
+    }
+
     CanvasEngine.addMap([
       {
         type: "MobileSprite",
@@ -114,28 +136,16 @@ var game = function(){
         height: 32, width: 32, fromCenter: false,
         keys: {
           w: function(){
-            this.messageToComponent("Movement", "travel", {
-              y: -32,
-              speed: 50
-            });
+            v(this, false);
           },
           a: function(){
-            this.messageToComponent("Movement", "travel", {
-              x: -32,
-              speed: 50
-            });
+            h(this, false);
           },
           s: function(){
-            this.messageToComponent("Movement", "travel", {
-              y: 32,
-              speed: 50
-            });
+            v(this, true);
           },
           d: function(){
-            this.messageToComponent("Movement", "travel", {
-              x: 32,
-              speed: 50
-            });
+            h(this, true);
           }
         }
       }
