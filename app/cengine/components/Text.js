@@ -13,9 +13,11 @@
  * @property {string} params.text
  */
 
-import {Component} from "components/Component.js";
-import {properties} from "engineParts/propertyDefinitions.js";
-import * as utilities from "engineParts/utilities.js";
+import {Component} from "../components/Component.js";
+import {properties} from "../engineParts/propertyDefinitions.js";
+import * as utilities from "../engineParts/utilities.js";
+
+const privateProperties = new WeakMap();
 
 /**
  * A Text Component handles the manipulation of text and its font.
@@ -41,15 +43,25 @@ export class Text extends Component {
       fontWeight = "normal",
       fontSize = "12pt",
       fontFamily = "sans-serif",
-      text = ""} = params;
+      text = "",
+      width = 0} = params;
 
-    this.setProperty("align", align);
-    this.setProperty("baseline", baseline);
-    this.setProperty("fontWeight", fontWeight);
-    this.setProperty("fontSize", fontSize);
-    this.setProperty("fontFamily", fontFamily);
-    this.setProperty("text", text);
+    privateProperties[this.name] = {};
+    privateProperties[this.name].align = align;
+    privateProperties[this.name].baseline = baseline;
+    privateProperties[this.name].fontWeight = fontWeight;
+    privateProperties[this.name].fontSize = fontSize;
+    privateProperties[this.name].fontFamily = fontFamily;
+    privateProperties[this.name].text = text;
+    privateProperties[this.name].width = width;
 
+    this.setProperty("align", privateProperties[this.name].align);
+    this.setProperty("baseline", privateProperties[this.name].baseline);
+    this.setProperty("fontWeight", privateProperties[this.name].fontWeight);
+    this.setProperty("fontSize", privateProperties[this.name].fontSize);
+    this.setProperty("fontFamily", privateProperties[this.name].fontFamily);
+    this.setProperty("text", privateProperties[this.name].text);
+    this.setProperty("width", privateProperties[this.name].width);
   }
 
   get font() {
@@ -67,11 +79,13 @@ export class Text extends Component {
     this.fontFamily = newFont.replace(this.fontWeight, "").replace(this.fontSize, "").trim();
   }
 
+
+
   /**
    * @returns {{align: string,baseline:string, text: string, font: string }}
    */
   asObject(){
-    return {align: this.align, baseline: this.baseline, text: this.text, font: this.font};
+    return {align: this.align, baseline: this.baseline, text: this.text, font: this.font, width: this.width};
   }
 
   /**

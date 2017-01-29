@@ -342,7 +342,7 @@
       }
       var self = this;
       // Draw image function
-      let draw = ()=>{
+      var draw = function(){
         if (img.complete) {
           scaleFac = (img.width / img.height);
 
@@ -645,8 +645,29 @@
       ctx.textAlign = textParams.align;
       ctx.font = textParams.font;
 
-      ctx.strokeText(textParams.text, textParams.x, textParams.y);
-      ctx.fillText(textParams.text, textParams.x, textParams.y);
+      var words = textParams.text.split(' ');
+      var line = '';
+      var x = textParams.x;
+      var y = textParams.y;
+      var height =ctx.measureText("MWO").width + 2;
+      var maxWidth = (typeof textParams.width !== "undefined" && textParams.width > 0) ? textParams.width : ctx.canvas.width;
+
+      for(var n = 0; n < words.length; n++) {
+        var testLine = line + words[n] + ' ';
+        var metrics = ctx.measureText(testLine);
+        var testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+          ctx.strokeText(line, x, y);
+          ctx.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += height;
+        }
+        else {
+          line = testLine;
+        }
+      }
+      ctx.strokeText(line, x, y);
+      ctx.fillText(line, x, y);
       return this;
     };
 
