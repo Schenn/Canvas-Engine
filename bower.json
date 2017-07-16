@@ -25,6 +25,7 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "^2.2.2"
+    "jquery": "^2.2.2",
+    "system.js": "^0.2.0"
   }
 }
