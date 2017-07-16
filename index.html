@@ -5,10 +5,6 @@
   <meta property="og:url" content="http://schenncopcc.com"/>
   <meta property="og:title" content="Schennco - Canvas Engine"/>
   <meta property="og:description" content="Canvas Engine - A simple interface for managing objects inside a canvas!"/>
-  <meta property="og:image" content="http://schenncopcc.com/images/og_image_1.jpg" />
-  <meta property="og:image" content="http://schenncopcc.com/images/og_image_2.jpg" />
-  <meta property="og:image" content="http://schenncopcc.com/images/og_image_3.jpg" />
-  <meta property="og:image" content="http://schenncopcc.com/images/og_image_4.jpg" />
   <style>
   #wrap {
     height: 800px;
@@ -26,10 +22,10 @@
   </style>
   <script src="js/lib.min.js"></script>
   <script src="js/cengine-plugins.min.js"></script>
-  <script src="app/dependencies/systemjs-0.19.31/dist/system.js"></script>
   <script src="demos/chakara.js"></script>
   <script>
     // set our baseURL reference path
+    /**
     SystemJS.config({
       map: {
         'plugin-babel': '../Canvas-Engine/app/dependencies/plugin-babel-0.0.12/plugin-babel.js',
@@ -38,9 +34,10 @@
       transpiler: 'plugin-babel',
       baseURL: 'app/cengine'
     });
+     */
 
     // loads /js/main.js
-    SystemJS.import('CanvasEngine.js').then(function(m) {
+    SystemJS.import('js/cengine.min.js').then(function(m) {
       window.CanvasEngine = new m.CanvasEngine();
       console.log(window.CanvasEngine);
       var chakaraStart = function(){
