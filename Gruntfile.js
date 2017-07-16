@@ -22,13 +22,19 @@ module.exports = function(grunt) {
     },
     bower_concat: {
       all:{
-        dest: 'js/lib.js'
+        dest: {
+          js: 'js/lib.js'
+        },
+        mainFiles:{
+          "system.js":['dist/system-production.js']
+        }
       }
     },
     babel: {
       options: {
         sourceMap: true,
-        presets: ['es2015']
+        presets: ['es2015'],
+        plugins: ['transform-es2015-modules-systemjs']
       },
       dist: {
         files: {
@@ -87,7 +93,12 @@ module.exports = function(grunt) {
         files: {
           'js/cengine-plugins.min.js': [
             '<%= cengine %>/polyfills/**/*.js',
-            '<%= cengine %>/jqueryPlugins/**/*.js']
+            '<%= cengine %>/jqueryPlugins/**/*.js'
+          ],
+          'js/cengine.min.js': [
+              '<%= cengine %>/es6/**/*.js',
+              '<%= cengine %>/es6/*.js',
+          ]
         }
       }
     },

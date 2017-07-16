@@ -12,6 +12,7 @@
     "url": "git@bitbucket.org:schenn/schennco_ux.git"
   },
   "devDependencies": {
+    "babel-plugin-transform-es2015-modules-systemjs": "^6.24.1",
     "babel-preset-es2015": "^6.9.0",
     "grunt": "^0.4.5",
     "grunt-babel": "^6.0.0",
