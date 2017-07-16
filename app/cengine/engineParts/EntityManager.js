@@ -43,6 +43,11 @@ import {properties} from "engineParts/propertyDefinitions.js";
 
 const privateProperties = new WeakMap();
 
+/**
+ * Entity Manager maintains the information needed for creating new Entities and Components.
+ *
+ * @class
+ */
 export class EntityManager {
   constructor(ResourceManager, EntityTracker) {
     if(!utilities.exists(ResourceManager)) throw "No ResourceManager provided";
@@ -145,23 +150,23 @@ export class EntityManager {
   attachComponent(entity, component, params){
     let thisComConst;
     // component === "componentName"
-    if(typeof(component) == "string"){
+    if(typeof(component) === "string"){
       if(privateProperties[this].components.has(component)){
         thisComConst = privateProperties[this].components.get(component);
         entity.attachComponent(component, new thisComConst(params, entity));
       }
     } else if (component instanceof privateProperties[this].components.get("BaseComponent")){
       entity.attachComponent(component.constructor.name, component);
-    } else if (typeof(component) == "object") {
+    } else if (typeof(component) === "object") {
       for(let com of Object.keys(component)){
-        if(typeof(component[com]) == "object"){
+        if(typeof(component[com]) === "object"){
           /** component = {"componentName" : {"name to use" : data }} */
           let names = Object.keys(component[com]);
           for(let name of names){
             thisComConst = privateProperties[this].components.get(com);
             entity.attachComponent(name, new thisComConst(component[com][name], entity));
           }
-        } else if(typeof(component[com]== "string")){
+        } else if(typeof(component[com] === "string")){
           /** component = {"componentName" : "name to use"} */
           thisComConst = privateProperties[this].components.get(com);
           entity.attachComponent(component[com], thisComConst(params, entity));
@@ -179,9 +184,7 @@ export class EntityManager {
    * @return {Entity[]}
    */
   fromMap(screenMap){
-
     let entities = [];
-
     for(let data of screenMap){
       entities.push(this.create(data.type, data));
     }

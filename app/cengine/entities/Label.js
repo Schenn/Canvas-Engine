@@ -10,6 +10,9 @@
 
 import {Entity} from "../entities/Entity.js";
 /**
+ * Manages rendering and maintaining text information as an Entity.
+ *  Re-renders if the text is changed.
+ *
  * @class Label
  * @memberof CanvasEngine.Entities
  * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Label#components~Renderer
@@ -21,12 +24,22 @@ export class Label extends Entity {
     this.cache = null;
     let self = this;
 
+    /**
+     * transform a block of text so that the text wraps.
+     *    (Renders a section of text within the space provided,
+     *    moving the cursor, than continuing to render.)
+     *
+     * @param ctx
+     * @param drawProperties
+     * @param text
+     * @param width
+     */
     function wrapText(ctx, drawProperties, text, width){
-      var words = text.split(' ');
-      var line = '';
+      let words = text.split(' ');
+      let line = '';
 
-      for(var n = 0; n < words.length; n++) {
-        var testLine = line + words[n] + ' ';
+      for(let n = 0; n < words.length; n++) {
+        let testLine = line + words[n] + ' ';
 
 
       }
@@ -63,7 +76,7 @@ export class Label extends Entity {
 
 
         // for each line, if 'wider' than the width, break at 1st space from the end of the line
-
+        //@todo Finish adding line wrapping for large text blocks.
 
 
       }
@@ -75,7 +88,7 @@ export class Label extends Entity {
   }
 
   /**
-   * Get the Area of the text on a canvas context.
+   * Get the general Area of the current text output on a canvas context.
    *
    * @param {Canvas.enhancedContext} ctx
    * @returns {{x: number, y: number, height: (number|*), width: (number|*), fromCenter: boolean}}

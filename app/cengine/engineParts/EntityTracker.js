@@ -8,7 +8,7 @@ import {Entity} from "entities/Entity.js";
 
 const privateProperties = new WeakMap();
 /**
- * The EntityTracker manages the information about all current living Entities in our engine.
+ * The EntityTracker manages the information about all current Entity Instances in our engine.
  *
  * @class
  * @memberOf CanvasEngine
@@ -16,11 +16,20 @@ const privateProperties = new WeakMap();
  */
 export class EntityTracker {
 
+  /**
+   * The current highest z index in use.
+   * @returns {Number}
+   */
   get maxZ(){
     let zs = Object.keys(privateProperties[this].entitiesByZ);
     return zs[zs.length-1];
   }
 
+  /**
+   * A count of all current entity instances.
+   *
+   * @returns {number}
+   */
   get entityCount(){
     let count = 0;
 
@@ -30,6 +39,11 @@ export class EntityTracker {
     return count;
   }
 
+  /**
+   * A collection of the current z indexes in use.
+   *
+   * @returns {Iterator.<number>}
+   */
   get zIndexes(){
     return privateProperties[this].entitiesByZ.keys();
   }
@@ -67,7 +81,9 @@ export class EntityTracker {
   }
 
   /**
-   * Exclude (or stop excluding if you pass true as second argument) a set of z indexes from interactions
+   * Exclude (or stop excluding if you pass true as second argument)
+   *  a set of z indexes from interactions
+   *
    * @param {number[]} indices
    * @param {boolean} invert
    */
@@ -89,7 +105,7 @@ export class EntityTracker {
    * @returns {Entity[]}
    */
   getEntities(names){
-    var ents = [];
+    let ents = [];
     let ep = privateProperties[this].entityProxies;
     names.forEach((name, index)=>{
       if(ep.hasOwnProperty(name)){
@@ -167,7 +183,7 @@ export class EntityTracker {
    * @returns {Entity[]} Array of Entities
    */
   getEntitiesByZ(z){
-    var ents = [];
+    let ents = [];
     if(utilities.exists(privateProperties[this].entitiesByZ[z])){
       for(let name of privateProperties[this].entitiesByZ[z]){
         ents.push(privateProperties[this].entities.get(name));

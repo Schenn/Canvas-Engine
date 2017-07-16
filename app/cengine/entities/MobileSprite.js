@@ -11,6 +11,11 @@
 import {AnimatedSprite} from "../entities/AnimatedSprite.js";
 import * as utilities from "../engineParts/utilities.js";
 
+/**
+ * A mobile sprite is an animated sprite which maintains multiple sprite collections
+ *  for a moving sprite. These are Entities which will be moving on the screen and
+ *    need to animate through a set of sprites in time with their movement.
+ */
 export class MobileSprite extends AnimatedSprite {
   constructor(params, EntityManager){
     super(params, EntityManager);
@@ -56,7 +61,7 @@ export class MobileSprite extends AnimatedSprite {
   }
 
   updateRenderPosition(axis, val){
-    var data = {};
+    let data = {};
     data[axis] = val;
     this.messageToComponent("Renderer", "setPosition", data);
     if(utilities.isFunction(this.onMovement)){

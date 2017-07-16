@@ -1,3 +1,7 @@
+/**
+ * Update the Array object to include a method that searches for a value.
+ * This is a polyfill for browsers which are missing this es6 feature.
+ */
 if (!Array.prototype.includes) {
   Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {
     'use strict';

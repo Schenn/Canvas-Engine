@@ -23,7 +23,7 @@ import {MobileSprite} from "entities/MobileSprite.js";
 import {Button} from "entities/Button.js";
 
 /**
- * Get the list of classes.
+ * Get the list of Entity classes which the app will use when creating new objects.
  *
  * @param {Map} customEntities A collection of entities custom to your game or animation.
  * @returns {Map}

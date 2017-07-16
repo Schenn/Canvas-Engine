@@ -15,6 +15,9 @@ import * as utilities from "../engineParts/utilities.js";
 const privateProperties = new WeakMap();
 
 /**
+ * A Sprite is an entity which uses a section of a larger image as its source.
+ * It maintains the information needed to render that image section on the screen.
+ *
  * @class Sprite
  * @memberOf CanvasEngine.Entities
  * @augments CanvasEngine.Entities.Image
@@ -33,7 +36,7 @@ export class Sprite extends Entity {
 
     let self = this;
 
-    var myParams = {
+    let myParams = {
       draw: function(ctx){
         ctx.drawImage(
           Object.assign({},

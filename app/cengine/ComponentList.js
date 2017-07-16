@@ -22,6 +22,12 @@ import {TileMap} from "components/TileMap.js";
 import {KeyPress} from "components/KeyPress.js";
 import {Mouse} from "components/Mouse.js";
 
+/**
+ * Export a list of component names and their associated Component object.
+ *
+ * @param customComponents
+ * @returns {Map}
+ */
 export function getComponentList(customComponents = new Map()) {
   var componentList = new Map();
 

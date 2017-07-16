@@ -17,7 +17,7 @@ import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 
-var makeThing = function(EntityManager, params){
+let makeThing = function(EntityManager, params){
 
   let thing;
   if(utilities.exists(params.background)){
@@ -34,6 +34,12 @@ var makeThing = function(EntityManager, params){
 };
 
 /**
+ * Create an interactive element which has :
+ *  a click method, a background image or shape and a label.
+ *  The button should be able to update its image on mouse hover, so that
+ *    the user knows that its a button and a button that can be used and a button
+ *    that works.
+ *
  * @class Button
  * @memberOf CanvasEngine.Entities
  * @borrows CanvasEngine.Components.Mouse as CanvasEngine.Entities.Button#components~HoverMouse
@@ -155,7 +161,7 @@ export class Button extends Entity {
         size.width += (params.padding * 2);
         size.height += (params.padding * 2);
 
-        var target;
+        let target;
 
         if(this.Entity.isHovering && utilities.exists(this.Entity.Hover)){
           target = this.Entity.Hover;

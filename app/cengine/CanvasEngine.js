@@ -19,7 +19,9 @@ import {ResourceManager} from "engineParts/ResourceManager.js";
 import {Screen} from "engineParts/Screen.js";
 const privateProperties = new WeakMap();
 
-
+/**
+ * The primary game engine.  Assembles the pieces of the app into a whole.
+ */
 export class CanvasEngine{
 
   /**

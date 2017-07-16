@@ -14,6 +14,8 @@ import {Entity} from "entities/Entity.js";
 import * as utilities from "../engineParts/utilities.js";
 
 /**
+ * A line manages the information needed for rendering lines between coordinates.
+ *
  * @class
  * @memberof CanvasEngine.Entities
  * @borrows CanvasEngine.Components.PointPlotter as CanvasEngine.Entities.Line#components~PointPlotter

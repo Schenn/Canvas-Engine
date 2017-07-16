@@ -10,6 +10,11 @@
 
 import {Entity} from "../entities/Entity.js";
 
+/**
+ * Maintain the collection of information needed to render a tilesheet in a desired way.
+ *  Can also handle triggering mouse events on its tiles.
+ *  Can scroll that tilemap if it's larger than the screen dimensions.
+ */
 export class TileMap extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
@@ -81,10 +86,20 @@ export class TileMap extends Entity {
     }, params));
   }
 
+  /**
+   * Update the currently visible tiles based off a requested direction
+   *
+   * @param direction
+   */
   scroll(direction){
     this.messageToComponent("TileMap", "scroll", direction);
   }
 
+  /**
+   * Set a given tile to another one from the already loaded tileset.
+   * @param coord
+   * @param value
+   */
   setTileAt(coord, value){
     this.messageToComponent("TileMap", "setTile", {coord: coord, val: value});
     this.messageToComponent("Renderer", "markDirty");

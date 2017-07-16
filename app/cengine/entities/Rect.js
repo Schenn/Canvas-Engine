@@ -12,6 +12,8 @@
 import {Entity} from "entities/Entity.js";
 
 /**
+ * Manage the information needed to render a Rectangular object on the screen.
+ *
  * @class Rect
  * @memberof CanvasEngine.Entities
  * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Rect#components~Renderer

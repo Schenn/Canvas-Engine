@@ -11,6 +11,16 @@ import {properties} from "engineParts/propertyDefinitions.js";
 
 const privateProperties = new WeakMap();
 
+/**
+ * Convert an image into a collection of Sprite Data using the parameters provided.
+ *
+ * @param spriteCache
+ * @param source
+ * @param spriteWidth
+ * @param spriteHeight
+ * @param onFinished
+ * @returns {{}}
+ */
 let processSprites = function(spriteCache, source, spriteWidth, spriteHeight, onFinished){
   let sx = 0, sy= 0, index=0;
   let useCache = utilities.exists(spriteCache);

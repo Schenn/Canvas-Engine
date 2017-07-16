@@ -16,6 +16,10 @@ import {properties} from "engineParts/propertyDefinitions.js";
 
 const privateProperties = new WeakMap();
 
+/**
+ * Manage maintaining and listening to events on the 'physical' screen
+ *  (the stack of canvases) which the cengine is rendering to.)
+ */
 export class Screen {
 
   get height(){
@@ -26,6 +30,11 @@ export class Screen {
     return privateProperties[this.id].baseCanvas.width();
   }
 
+  /**
+   * Create a new screen with a given Mouse Event Handler
+   *
+   * @param MouseHandler
+   */
   constructor(MouseHandler){
 
     let id = utilities.randName();
@@ -40,6 +49,11 @@ export class Screen {
     privateProperties[this.id].onMouseEvent = MouseHandler;
   }
 
+  /**
+   * Attach the Screen to the canvas element
+   *
+   * @param {HTMLElement} canvas
+   */
   attachToCanvas(canvas){
     if(!(canvas instanceof jQuery)){
       canvas = $(canvas);
@@ -73,10 +87,22 @@ export class Screen {
     });
   }
 
+  /**
+   * Get the canvas context for a given screen layer.
+   *
+   * @param zIndex
+   * @returns {Canvas.enhancedContext}
+   */
   getScreenContext(zIndex){
     return privateProperties[this.id].canvases[zIndex].getEnhancedContext();
   }
 
+  /**
+   * Set the screen resolution to a fixed value so that scaling can utilize aspect ratios.
+   *
+   * @todo
+   * @param resolution
+   */
   setResolution(resolution){
 
   }
@@ -126,11 +152,13 @@ export class Screen {
    * @param {number} w The width of the search area
    * @param {number} transparent Flag to only check for transparent pixels
    *
+   * @todo This should be a generator
+   *
    * @returns {Array}
    */
   atPixel(x, y, h, w, transparent){
-    var pixelHits = [];
-    var zs = privateProperties[this.id].canvases.keys();
+    let pixelHits = [];
+    let zs = privateProperties[this.id].canvases.keys();
 
     for(let zIndex of zs){
       pixelHits[zIndex] = privateProperties[this.id].canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent);

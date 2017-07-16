@@ -1,15 +1,16 @@
 /**
- * Created by schenn on 3/25/16.
+ * Builds a canvas based gradient object for using as a color.
+ *
  * @todo Convert into a Resource
  */
-var Gradient = function(name, coords, colors){
+let Gradient = function(name, coords, colors){
   this.name = name;
   this.x1 = coords.x1;
   this.x2 = coords.x2;
   this.y1 = coords.y1;
   this.y2 = coords.y2;
 
-  var self = this;
+  let self = this;
   colors.forEach(function(color, index){
     self['c'+(index+1)] = color.color;
     self['s'+(index+1)] = color.s;

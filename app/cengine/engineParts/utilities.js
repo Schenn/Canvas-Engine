@@ -54,7 +54,7 @@ export function parseJsonArray(screenMap){
     screenMap = $.parseJSON(screenMap);
   }
   if(isArray(screenMap)){
-    for (var i = 0; i < screenMap.length; i++) {
+    for (let i = 0; i < screenMap.length; i++) {
       if ($.parseJSON(screenMap[i]) !== null) {
         screenMap[i] = $.parseJSON(screenMap[i]);
       }

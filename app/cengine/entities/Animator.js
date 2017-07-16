@@ -15,6 +15,11 @@ import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 
+/**
+ * Animator uses a timer to count through a collection of strings as frames.
+ * When a frame is updated, it informs whoever is listening via the onFrameChanged callback provided.
+ *
+ */
 export class Animator extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
@@ -25,7 +30,7 @@ export class Animator extends Entity {
     } else {
       privateProperties[this.name].frameCount = utilities.exists(params.frameCount) ? params.frameCount : 1;
       privateProperties[this.name].frames = [];
-      for(var i =0; i < privateProperties[this].frameCount; i++){
+      for(let i =0; i < privateProperties[this].frameCount; i++){
         privateProperties[this.name].frames.push(i);
       }
     }

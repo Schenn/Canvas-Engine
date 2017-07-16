@@ -17,6 +17,11 @@ import {properties} from "engineParts/propertyDefinitions.js";
 const privateProperties = new WeakMap();
 
 /**
+ * Manages the information for loading resources such as
+ *  images, spritesheets, sounds, video files, etc.
+ *
+ *  @todo Sounds, Videos, etc
+ *
  * @class ResourceManager
  * @memberof CanvasEngine
  * @inner
@@ -44,7 +49,8 @@ export class ResourceManager {
     };
   }
   /**
-   * Set the base image path
+   * Set the base image path which the app will load from
+   *
    * @param {string} path
    */
   set ImagePath(path){
@@ -52,6 +58,8 @@ export class ResourceManager {
   }
 
   /**
+   * The current path the app loads images from
+   *
    * @returns {string}
    */
   get ImagePath(){
@@ -60,6 +68,7 @@ export class ResourceManager {
 
   /**
    * Are all resources finished loading
+   *
    * @returns {boolean}
    */
   get ResourcesAreLoaded() {
@@ -93,10 +102,10 @@ export class ResourceManager {
    * @param {Callbacks~onImageLoad} [load] A method to fire when the image is loaded.
    */
   addImage(name, path, load){
-    var image = new Image();
+    let image = new Image();
     privateProperties[this.id].images[name] = image;
     privateProperties[this.id].resourcesLoaded.set(name, false);
-    var triggerOnLoad = ()=>{
+    let triggerOnLoad = ()=>{
       if(this.ResourcesAreLoaded &&
         privateProperties[this.id].resourcesLoaded.get(name) === true){
         load.call(image);
@@ -218,9 +227,9 @@ export class ResourceManager {
    */
   loadResourceCollection(resourceCollection, resourcesLoadedCallback){
     this.onResourcesLoaded(resourcesLoadedCallback);
-    for(var i =0; i<resourceCollection.length; i++){
-      var type = Object.keys(resourceCollection[i])[0];
-      var data = resourceCollection[i][type];
+    for(let i = 0; i<resourceCollection.length; i++){
+      let type = Object.keys(resourceCollection[i])[0];
+      let data = resourceCollection[i][type];
       switch(type.toLowerCase()){
         case "spritesheet":
           this.addSpriteSheet(data.name,data.source,data.details);

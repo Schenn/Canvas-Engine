@@ -10,8 +10,17 @@ import {Sprite} from "entities/Sprite.js";
 import * as utilities from "../engineParts/utilities.js";
 const privateProperties = new WeakMap();
 
+/**
+ * An Animated Sprite is an entity which uses a collection of sprite images
+ *   and a timer to animate its display through those sprites.
+ *
+ * By extending from an Animated Sprite, you can control what collection of sprites
+ *    to use at a given time. This way your sprite can continue to
+ *      animate automatically, while changing what specific effects you are rendering.
+ */
 export class AnimatedSprite extends Sprite {
   /**
+   * The name of the current animation
    * @returns {string}
    */
   get CurrentAnimation(){
@@ -19,6 +28,7 @@ export class AnimatedSprite extends Sprite {
   }
 
   /**
+   * Set the current animation to a assigned set of instructions.
    *
    * @param {string} animation
    */
@@ -30,6 +40,11 @@ export class AnimatedSprite extends Sprite {
     }
   }
 
+  /**
+   * Create a new Animated Sprite
+   * @param {Object} params
+   * @param {EntityManager} EntityManager
+   */
   constructor(params, EntityManager){
     super(params, EntityManager);
     privateProperties[this.name] = {};
@@ -43,6 +58,12 @@ export class AnimatedSprite extends Sprite {
     });
   }
 
+  /**
+   * Add animation instructions to the Animated Sprite
+   *
+   * @param {String} name
+   * @param {Object} animation
+   */
   addAnimation(name, animation){
     let animator = this.EntityManager.create("Animator", Object.assign({}, {
         name: name,
