@@ -70,7 +70,7 @@ let propertyDefinition = {
  * Export a getter to prevent other tools from overriding the content of the
  *  property definitions.
  */
-export const propertyDefinitions = new Proxy(propertyDefinitions, {
+export const propertyDefinitions = new Proxy(propertyDefinition, {
   get: function(definitions, name){
     return definitions[name];
   }
