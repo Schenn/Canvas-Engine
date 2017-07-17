@@ -13,6 +13,7 @@
 
 import * as utilities from "./utilities.js";
 import {properties} from "./propertyDefinitions.js";
+import {getEnhancedContext} from "./EnhancedContext";
 
 const privateProperties = new WeakMap();
 
@@ -94,7 +95,7 @@ export class Screen {
    * @returns {Canvas.enhancedContext}
    */
   getScreenContext(zIndex){
-    return privateProperties[this.id].canvases[zIndex].getEnhancedContext();
+    return getEnhancedContext(privateProperties[this.id].canvases[zIndex]);
   }
 
   /**

@@ -13,7 +13,7 @@ class EnhancedContext {
    */
   constructor(canvas){
     Object.defineProperties(this, {
-      ctx: properties.lockedProperty(canvas.getContext('2d'))
+      ctx: properties.lockedProperty(canvas.get(0).getContext('2d'))
     });
   }
 
@@ -284,7 +284,7 @@ class EnhancedContext {
     );
     // Left side
     this.ctx.bezierCurveTo(
-        ellipseParams.x -controlW / 2,
+        ellipseParams.x - controlW / 2,
         ellipseParams.y - ellipseParams.height / 2,
         ellipseParams.x - controlW / 2,
         ellipseParams.y + ellipseParams.height / 2,
@@ -869,7 +869,6 @@ class EnhancedContext {
    * @returns {CanvasGradient}
    */
   createGradient(args) {
-    if (!this[0].getContext) {return null;}
     let params = $.extend({}, args),
         gradient, percent,
         stops = 0,
@@ -912,7 +911,7 @@ class EnhancedContext {
    * @returns {CanvasPattern}
    */
   createPattern(args) {
-    var params = $.extend({}, args),
+    let params = $.extend({}, args),
         img = new Image(),
         pattern;
     // Use specified element, if not, a source URL
@@ -986,10 +985,10 @@ class EnhancedContext {
    *
    * @param {number} modifier A percentage value to derive the relative size. Default 100%
    */
-  maximize = function(modifier = 100){
+  maximize(modifier = 100){
     // Divide the modifier by 100, if there is no modifier set it to the default
     let mod = modifier / 100;
-    this.attr("height",
+    $(this.ctx.canvas).attr("height",
         Math.ceil(this.parent().height() * mod)
     ).attr("width",
         Math.ceil(this.parent().width() * mod)
