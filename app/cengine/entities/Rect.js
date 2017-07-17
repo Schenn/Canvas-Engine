@@ -9,7 +9,7 @@
  * @property {string} [fillStyle]
  */
 
-import {Entity} from "entities/Entity.js";
+import {Entity} from "./Entity.js";
 
 /**
  * Manage the information needed to render a Rectangular object on the screen.

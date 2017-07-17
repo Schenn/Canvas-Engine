@@ -19,9 +19,9 @@
  * @this {GeneralTypes~Tile}
  */
 
-import {properties} from "engineParts/propertyDefinitions.js";
-import {Component} from "components/Component.js";
-import * as utilities from "engineParts/utilities.js";
+import {properties} from "../engineParts/propertyDefinitions.js";
+import {Component} from "./Component.js";
+import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 

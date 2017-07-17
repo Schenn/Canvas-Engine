@@ -2,9 +2,9 @@
  * @author Steven Chennault <schenn@gmail.com>
  */
 
-import * as utilities from "engineParts/utilities.js";
+import * as utilities from "./utilities.js";
 
-import {Entity} from "entities/Entity.js";
+import {Entity} from "../entities/Entity.js";
 
 const privateProperties = new WeakMap();
 /**

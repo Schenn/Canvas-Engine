@@ -6,7 +6,7 @@
  * @property {object.<string, LocalParams~AnimatorParams>} animations
  */
 
-import {Sprite} from "entities/Sprite.js";
+import {Sprite} from "./Sprite.js";
 import * as utilities from "../engineParts/utilities.js";
 const privateProperties = new WeakMap();
 

@@ -8,7 +8,7 @@
  * @property {LocalParams~TimerParams} movementTimer
  */
 
-import {AnimatedSprite} from "../entities/AnimatedSprite.js";
+import {AnimatedSprite} from "./AnimatedSprite.js";
 import * as utilities from "../engineParts/utilities.js";
 
 /**

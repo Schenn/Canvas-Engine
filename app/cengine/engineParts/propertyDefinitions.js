@@ -8,7 +8,7 @@
  *  however, attempting to set the property can still trigger an action with the new value
  *  if a callback has been provided.
  */
-let propertyDefinition = {
+let propertyDefinitions = {
   defaultProperty: function (privateVar, callback) {
     return {
       enumerable: true,
@@ -70,7 +70,7 @@ let propertyDefinition = {
  * Export a getter to prevent other tools from overriding the content of the
  *  property definitions.
  */
-export const propertyDefinitions = new Proxy(propertyDefinitions, {
+export const properties = new Proxy(propertyDefinitions, {
   get: function(definitions, name){
     return definitions[name];
   }

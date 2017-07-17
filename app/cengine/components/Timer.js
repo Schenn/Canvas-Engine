@@ -8,7 +8,7 @@
  * @property {function} [onElapsed]
  */
 
-import {Component} from "../components/Component.js";
+import {Component} from "./Component.js";
 import * as utilities from "../engineParts/utilities.js";
 
 let privateProperties = new WeakMap();

@@ -8,7 +8,7 @@
  *
  */
 
-import {Entity} from "../entities/Entity.js";
+import {Entity} from "./Entity.js";
 
 /**
  * Maintain the collection of information needed to render a tilesheet in a desired way.

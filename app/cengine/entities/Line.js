@@ -10,7 +10,7 @@
  * @property {boolean} [rounded]
  */
 
-import {Entity} from "entities/Entity.js";
+import {Entity} from "./Entity.js";
 import * as utilities from "../engineParts/utilities.js";
 
 /**

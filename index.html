@@ -22,52 +22,19 @@
   </style>
   <script src="js/lib.min.js"></script>
   <script src="js/cengine-plugins.min.js"></script>
+  <script src="dist/cengine.js"></script>
   <script src="demos/chakara.js"></script>
+
   <script>
-    // set our baseURL reference path
-    /**
-    SystemJS.config({
-      map: {
-        'plugin-babel': '../Canvas-Engine/app/dependencies/plugin-babel-0.0.12/plugin-babel.js',
-        'systemjs-babel-build': '../Canvas-Engine/app/dependencies/plugin-babel-0.0.12/systemjs-babel-browser.js'
-      },
-      transpiler: 'plugin-babel',
-      baseURL: 'app/cengine'
-    });
-     */
-
-    // loads /js/main.js
-    SystemJS.import('js/cengine.min.js').then(function(m) {
-      window.CanvasEngine = new m.CanvasEngine();
-      console.log(window.CanvasEngine);
-      var chakaraStart = function(){
-        chakara.setup($("#game")[0], window.CanvasEngine);
-        $("#chakara").on("click", function(){
-          chakara.start();
-        });
-      };
-      chakaraStart();
-    });
-  </script>
-
-  <!--
-   <script src="app/cengine/CanvasEngine.js"></script>
-  <script>
-
     $(function(){
-
-      var chakaraStart = function(){
-        chakara.setup($("#game")[0]);
-        $("#chakara").on("click", function(){
-          chakara.start();
-        });
-      };
-      chakaraStart();
-
+      window.CanvasEngine = new CanvasEngine.CanvasEngine();
+      chakara.setup($("#game")[0], window.CanvasEngine);
+      $("#chakara").on("click", function(){
+        chakara.start();
+      });
     });
 
   </script>
-  -->
 </head>
 <body>
   <h1>Canvas Engine</h1>

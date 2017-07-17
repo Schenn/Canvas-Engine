@@ -14,7 +14,7 @@
  * @see {CanvasEngine.Components.getDirection}
  */
 
-import {Component} from "../components/Component.js";
+import {Component} from "./Component.js";
 import {properties} from "../engineParts/propertyDefinitions.js";
 import * as utilities from "../engineParts/utilities.js";
 const privateProperties = new WeakMap();

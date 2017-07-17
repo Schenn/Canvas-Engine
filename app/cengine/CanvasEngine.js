@@ -11,12 +11,12 @@
  * @property {number} y
  */
 
-import * as utilities from 'engineParts/utilities.js';
-import {EntityManager} from "engineParts/EntityManager.js";
-import {EntityTracker} from "engineParts/EntityTracker.js";
-import {properties} from "engineParts/propertyDefinitions.js";
-import {ResourceManager} from "engineParts/ResourceManager.js";
-import {Screen} from "engineParts/Screen.js";
+import * as utilities from './engineParts/utilities.js';
+import {EntityManager} from "./engineParts/EntityManager.js";
+import {EntityTracker} from "./engineParts/EntityTracker.js";
+import {properties} from "./engineParts/propertyDefinitions.js";
+import {ResourceManager} from "./engineParts/ResourceManager.js";
+import {Screen} from "./engineParts/Screen.js";
 const privateProperties = new WeakMap();
 
 /**

@@ -51,9 +51,9 @@
  * @property {?Callbacks~Clear} [clear=null]
  */
 
-import {properties} from "engineParts/propertyDefinitions.js";
-import {Component} from "components/Component.js";
-import * as utilities from "engineParts/utilities.js";
+import {properties} from "../engineParts/propertyDefinitions.js";
+import {Component} from "./Component.js";
+import * as utilities from "../engineParts/utilities.js";
 
 let privateProperties = new WeakMap();
 

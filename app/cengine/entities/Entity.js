@@ -3,9 +3,9 @@
  *
  */
 
-import {properties} from "engineParts/propertyDefinitions.js";
-import * as utilities from "engineParts/utilities.js";
-import {Component} from "components/Component.js";
+import {properties} from "../engineParts/propertyDefinitions.js";
+import * as utilities from "../engineParts/utilities.js";
+import {Component} from "../components/Component.js";
 
 const privateProperties =new WeakMap();
 

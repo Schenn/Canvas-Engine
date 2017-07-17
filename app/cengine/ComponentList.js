@@ -2,25 +2,25 @@
  * Created by schenn on 6/23/16.
  */
 // Base Component
-import {Component} from "components/Component.js";
+import {Component} from "./components/Component.js";
 
 // Renderer Components
-import {Renderer} from "components/Renderer.js";
+import {Renderer} from "./components/Renderer.js";
 
 // Functional Components
-import {Timer} from "components/Timer.js";
-import {PointPlotter} from "components/PointPlotter.js";
-import {Movement} from "components/Movement.js";
+import {Timer} from "./components/Timer.js";
+import {PointPlotter} from "./components/PointPlotter.js";
+import {Movement} from "./components/Movement.js";
 
 // Data Wrapper Components
-import {ImageWrapper} from "components/ImageWrapper.js";
-import {SpriteSheetWrapper} from "components/SpriteSheetWrapper.js";
-import {Text} from "components/Text.js";
-import {TileMap} from "components/TileMap.js";
+import {ImageWrapper} from "./components/ImageWrapper.js";
+import {SpriteSheetWrapper} from "./components/SpriteSheetWrapper.js";
+import {Text} from "./components/Text.js";
+import {TileMap} from "./components/TileMap.js";
 
 // UI Components
-import {KeyPress} from "components/KeyPress.js";
-import {Mouse} from "components/Mouse.js";
+import {KeyPress} from "./components/KeyPress.js";
+import {Mouse} from "./components/Mouse.js";
 
 /**
  * Export a list of component names and their associated Component object.

@@ -36,10 +36,10 @@
  */
 
 
-import {getClassList} from "EntityList.js";
-import {getComponentList} from "ComponentList.js";
-import * as utilities from "engineParts/utilities.js";
-import {properties} from "engineParts/propertyDefinitions.js";
+import {getClassList} from "../EntityList.js";
+import {getComponentList} from "../ComponentList.js";
+import * as utilities from "./utilities.js";
+import {properties} from "./propertyDefinitions.js";
 
 const privateProperties = new WeakMap();
 

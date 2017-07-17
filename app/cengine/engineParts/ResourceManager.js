@@ -8,11 +8,11 @@
  * @callback Callbacks~onResourcesLoaded
  */
 
-import * as utilities from "engineParts/utilities.js";
+import * as utilities from "./utilities.js";
 
-import {SpriteSheet} from "resources/SpriteSheet.js";
+import {SpriteSheet} from "../resources/SpriteSheet.js";
 
-import {properties} from "engineParts/propertyDefinitions.js";
+import {properties} from "./propertyDefinitions.js";
 
 const privateProperties = new WeakMap();
 

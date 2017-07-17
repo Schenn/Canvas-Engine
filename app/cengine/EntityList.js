@@ -2,25 +2,25 @@
  * Created by schenn on 6/23/16.
  */
 // Base Entity
-import {Entity} from "entities/Entity.js";
+import {Entity} from "./entities/Entity.js";
 
 // Primary Entities
-import {ImageEntity} from "entities/Image.js";
-import {Sprite} from "entities/Sprite.js";
-import {Label} from "entities/Label.js";
-import {Line} from "entities/Line.js";
-import {Rect} from "entities/Rect.js";
-import {TileMap} from "entities/TileMap.js";
+import {ImageEntity} from "./entities/Image.js";
+import {Sprite} from "./entities/Sprite.js";
+import {Label} from "./entities/Label.js";
+import {Line} from "./entities/Line.js";
+import {Rect} from "./entities/Rect.js";
+import {TileMap} from "./entities/TileMap.js";
 
 // Functional Entities
-import {Animator} from "entities/Animator.js";
+import {Animator} from "./entities/Animator.js";
 
 // Extended Entities
-import {AnimatedSprite} from "entities/AnimatedSprite.js";
-import {MobileSprite} from "entities/MobileSprite.js";
+import {AnimatedSprite} from "./entities/AnimatedSprite.js";
+import {MobileSprite} from "./entities/MobileSprite.js";
 
 // UI Entities
-import {Button} from "entities/Button.js";
+import {Button} from "./entities/Button.js";
 
 /**
  * Get the list of Entity classes which the app will use when creating new objects.
