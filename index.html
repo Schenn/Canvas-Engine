@@ -26,13 +26,13 @@
   <script src="demos/chakara.js"></script>
 
   <script>
-    $(function(){
+    window.onload = function(){
       window.CanvasEngine = new CanvasEngine.CanvasEngine();
-      chakara.setup($("#game")[0], window.CanvasEngine);
-      $("#chakara").on("click", function(){
+      chakara.setup(document.getElementById("game"), window.CanvasEngine);
+      document.getElementById("chakara").addEventListener("click", function(){
         chakara.start();
       });
-    });
+    };
 
   </script>
 </head>
