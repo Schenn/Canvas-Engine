@@ -73,14 +73,15 @@ export class ResourceManager {
    */
   get ResourcesAreLoaded() {
     if(privateProperties[this.id].allAdded) {
+      let ret = true;
       privateProperties[this.id].resourcesLoaded.forEach((isLoaded)=>{
         if(!isLoaded) {
-          return false;
+          ret = false;
         }
       });
-      return true;
+      return ret;
     }
-    return true;
+    return false;
   }
 
   /**
@@ -103,26 +104,29 @@ export class ResourceManager {
    */
   addImage(name, path, load){
     let image = new Image();
-    privateProperties[this.id].images[name] = image;
+    privateProperties[this.id].images.set(name, image);
     privateProperties[this.id].resourcesLoaded.set(name, false);
     let triggerOnLoad = ()=>{
       if(this.ResourcesAreLoaded &&
         privateProperties[this.id].resourcesLoaded.get(name) === true){
-        load.call(image);
+
         this.triggerCallback();
       }
     };
 
     image.addEventListener("load", ()=>{
-      privateProperties[this.id].resourcesLoaded[name] = true;
+      privateProperties[this.id].resourcesLoaded.set(name, true);
+      if(typeof load === "function"){
+        load(image);
+      }
       triggerOnLoad();
     });
-    image.addEventListener("load", load);
 
-    image.src = privateProperties[this.id].imagePath +"/"+path;
+    image.src = privateProperties[this.id].imagePath + "/" + path;
 
     if(image.complete){
-      if (utilities.isFunction(load)){
+      privateProperties[this.id].resourcesLoaded.set(name, true);
+      if(typeof load === "function"){
         load(image);
       }
       triggerOnLoad();
@@ -137,12 +141,13 @@ export class ResourceManager {
 * @param {LocalParams~SpriteSheetParams} details The spritesheets details
 */
   addSpriteSheet(name, path, details){
-    privateProperties[this.id].resourcesLoaded[name+"sheet"] = false;
+    privateProperties[this.id].resourcesLoaded.set(name+"sheet", false);
     this.addImage(name, path, ()=>{
-      details.source = privateProperties[this.id].images[name];
-      privateProperties[this.id].spriteSheets[name] = new privateProperties[this.id].Resources.SpriteSheet(details);
-      privateProperties[this.id].resourcesLoaded[name+"sheet"] = true;
-      this.triggerCallback();
+      details.source = privateProperties[this.id].images.get(name);
+      privateProperties[this.id].spriteSheets.set(name,
+          new privateProperties[this.id].Resources.SpriteSheet(details));
+
+      privateProperties[this.id].resourcesLoaded.set(name+"sheet", true);
     });
 
   }
@@ -153,7 +158,7 @@ export class ResourceManager {
    * @returns {CanvasEngine.Resources.SpriteSheet}
    */
   getSpriteSheet (name){
-    return privateProperties[this.id].spriteSheets[name];
+    return privateProperties[this.id].spriteSheets.get(name);
   }
 
   /**
@@ -174,7 +179,7 @@ export class ResourceManager {
       });
     } else if(privateProperties[this.id].resourcesLoaded.get(name) === true){
       return privateProperties[this.id].images.get(name);
-    } else if(!utilities.exists(privateProperties[this].images.get(name))){
+    } else if(!utilities.exists(privateProperties[this.id].images.get(name))){
       throw "Image not added to this resource manager!";
     }
 

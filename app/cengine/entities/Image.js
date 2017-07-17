@@ -18,22 +18,19 @@ import {Entity} from "../entities/Entity.js";
 export class ImageEntity extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
-
-    let self=this;
-
+    let self = this;
     let componentParams = {
-      callback: function(){
-        self.messageToComponent("Renderer", "markDirty");
+      callback: ()=>{
+        this.messageToComponent("Renderer", "markDirty");
       },
       draw: function(ctx){
-
         ctx.drawImage(Object.assign({}, this, self.getFromComponent("Image", "asObject")));
       }
     };
 
     Object.assign(componentParams, params);
 
-    this.EntityManager.attachComponent(this, "ImageWrapper", componentParams);
-    this.EntityManager.attachComponent(this, "Renderer", componentParams);
+    EntityManager.attachComponent(this, "Image", componentParams);
+    EntityManager.attachComponent(this, "Renderer", componentParams);
   }
 }

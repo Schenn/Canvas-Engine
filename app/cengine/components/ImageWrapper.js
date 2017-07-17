@@ -102,15 +102,19 @@ export class ImageWrapper extends Component{
 
       setProps(params);
     } else {
-      let keys = Object.keys(params);
-      if(keys.length === 1 && utilities.exists(params[keys].source)){
-        privateProperties[this.name].source = params[keys].source;
-        setProps(params[keys]);
+      if(utilities.exists(params.image)){
+        privateProperties[this.name].source = params.image.src;
+      } else {
+        let keys = Object.keys(params);
+        if(keys.length === 1 && utilities.exists(params[keys].source)){
+          privateProperties[this.name].source = params[keys].source;
+          setProps(params[keys]);
+        }
       }
     }
 
     if(privateProperties[this.name].source === "") {
-      console.log(params);
+      console.log(privateProperties[this.name]);
       throw "Source missing from Image Component";
     }
 
