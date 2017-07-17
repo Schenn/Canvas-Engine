@@ -1,5 +1,5 @@
 {
-  "name": "Canvas Engine",
+  "name": "canvas-engine",
   "version": "1.0.0",
   "description": "An engine for running interactive animations on a canvas",
   "main": "grunt.js",
