@@ -17,7 +17,7 @@ export function isArray(arg){
 export function cleanArray(cleanMe){
   let cleaner = [];
   if(isArray(cleanMe)) {
-    for (var i = 0; i < cleanMe.length; i++) {
+    for (let i = 0; i < cleanMe.length; i++) {
       if (exists(cleanMe[i])) {
         cleaner.push(cleanMe[i]);
       }

@@ -27,7 +27,7 @@ let propertyDefinitions = {
           val = Boolean(val);
         }
         privateVar = val;
-        if($.isFunction(callback)){
+        if(callback && typeof callback === "function"){
           callback(val);
         }
       }
@@ -43,7 +43,7 @@ let propertyDefinitions = {
       set: function (val) {
         // Don't change the private variable.
         // Call the callback with the passed value.
-        if($.isFunction(callback)){
+        if(callback && typeof callback === "function"){
           callback(val);
         }
       }
