@@ -1,5 +1,6 @@
 /**
- * Property Definitions can be used by Object.setProperty to define standard object propeties.
+ * Property Definitions can be used by Object.setProperty to define
+ *  standard object properties.
  *
  * default Property is an object property that behaves as a normal object property in
  *  that it is enumerable, semi-typed, and can perform some action when the value is set.
