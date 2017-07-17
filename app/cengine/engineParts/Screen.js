@@ -84,7 +84,7 @@ export class Screen {
    */
   maximize(modifier = 100){
     privateProperties[this.id].canvases.forEach(function(canvas){
-      canvas.maximize(modifier);
+      getEnhancedContext(canvas).maximize(modifier);
     });
   }
 

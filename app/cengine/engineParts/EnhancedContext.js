@@ -869,7 +869,7 @@ class EnhancedContext {
    * @returns {CanvasGradient}
    */
   createGradient(args) {
-    let params = $.extend({}, args),
+    let params = Object.assign({}, args),
         gradient, percent,
         stops = 0,
         i = 1;
@@ -911,7 +911,7 @@ class EnhancedContext {
    * @returns {CanvasPattern}
    */
   createPattern(args) {
-    let params = $.extend({}, args),
+    let params = Object.assign({}, args),
         img = new Image(),
         pattern;
     // Use specified element, if not, a source URL
@@ -966,11 +966,13 @@ class EnhancedContext {
    * @returns {HTMLElement}
    */
   addZLayer(z){
-    let tag = 'zLayer'+z;
-
-    let canvas = $("<canvas id='" + tag + "'></canvas>");
-    canvas.appendTo(this.parent());
-    canvas.attr("height", this.height()).attr("width", this.width()).css("z-index", z);
+    let tag = 'zLayer' + z;
+    let canvas = document.createElement('canvas');
+    canvas.setAttribute("id", tag);
+    canvas.setAttribute("height", this.ctx.canvas.getAttribute("height"));
+    canvas.setAttribute("width", this.ctx.canvas.getAttribute("width"));
+    canvas.style['z-index'] = z;
+    this.ctx.canvas.parentNode.appendChild(canvas);
     return canvas;
   }
 
@@ -988,11 +990,8 @@ class EnhancedContext {
   maximize(modifier = 100){
     // Divide the modifier by 100, if there is no modifier set it to the default
     let mod = modifier / 100;
-    $(this.ctx.canvas).attr("height",
-        Math.ceil(this.parent().height() * mod)
-    ).attr("width",
-        Math.ceil(this.parent().width() * mod)
-    );
+    this.ctx.canvas.setAttribute("height", Math.ceil($(this.ctx.canvas).parent().height() * mod));
+    this.ctx.canvas.setAttribute("width", Math.ceil($(this.ctx.canvas).parent().width() * mod));
   }
 
 }
