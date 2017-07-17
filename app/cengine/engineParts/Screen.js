@@ -20,15 +20,17 @@ const privateProperties = new WeakMap();
 /**
  * Manage maintaining and listening to events on the 'physical' screen
  *  (the stack of canvases) which the cengine is rendering to.)
+ *  @class
+ *  @property {string} id
  */
 export class Screen {
 
   get height(){
-    return privateProperties[this.id].baseCanvas.height();
+    return privateProperties[this.id].baseCanvas.height;
   }
 
   get width(){
-    return privateProperties[this.id].baseCanvas.width();
+    return privateProperties[this.id].baseCanvas.width;
   }
 
   /**
@@ -56,26 +58,29 @@ export class Screen {
    * @param {HTMLElement} canvas
    */
   attachToCanvas(canvas){
-    if(!(canvas instanceof jQuery)){
-      canvas = $(canvas);
-    }
     privateProperties[this.id].canvases[0] = canvas;
     privateProperties[this.id].baseCanvas = canvas;
     let self = this;
-    privateProperties[this.id].baseCanvas.parent().on({
-      click:(e)=>{
-        self.onClick(e);
-      },
-      mousedown: (e)=>{
-        self.onMouseDown(e);
-      },
-      mouseup:(e)=>{
-        self.onMouseUp(e);
-      },
-      mousemove: (e)=>{
-        self.onMouseMove(e);
+    privateProperties[this.id].baseCanvas.parentNode.addEventListener("click", (e)=>{
+      if(e.target.tagName === "CANVAS"){
+        self.onClick(e)
       }
-    }, "canvas");
+    }, true);
+    privateProperties[this.id].baseCanvas.parentNode.addEventListener("mousedown", (e)=>{
+      if(e.target.tagName === "CANVAS") {
+        self.onMouseDown(e)
+      }
+    }, true);
+    privateProperties[this.id].baseCanvas.parentNode.addEventListener("mouseup", (e)=>{
+      if(e.target.tagName === "CANVAS") {
+        self.onMouseUp(e)
+      }
+    }, true);
+    privateProperties[this.id].baseCanvas.parentNode.addEventListener("mousemove", (e)=>{
+      if(e.target.tagName === "CANVAS") {
+        self.onMouseMove(e)
+      }
+    }, true);
   }
 
   /**
@@ -119,9 +124,9 @@ export class Screen {
 
       // Set reference to the canvas element, not its jQuery wrapped version.
       // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
-      privateProperties[this.id].canvases[z] = privateProperties[this.id].baseCanvas.addZLayer(
-        privateProperties[this.id].baseCanvas.attr("height"),
-        privateProperties[this.id].baseCanvas.attr("width"),
+      privateProperties[this.id].canvases[z] = getEnhancedContext(privateProperties[this.id].baseCanvas).addZLayer(
+        privateProperties[this.id].baseCanvas.height,
+        privateProperties[this.id].baseCanvas.width,
         z
       );
     }
@@ -162,7 +167,7 @@ export class Screen {
     let zs = privateProperties[this.id].canvases.keys();
 
     for(let zIndex of zs){
-      pixelHits[zIndex] = privateProperties[this.id].canvases[zIndex].getEnhancedContext().atPixel(x, y, h, w, transparent);
+      pixelHits[zIndex] = getEnhancedContext(privateProperties[this.id].canvases[zIndex]).atPixel(x, y, h, w, transparent);
     }
     return pixelHits;
   }
@@ -239,26 +244,26 @@ export class Screen {
    */
   capture(){
     // Create a hidden canvas of the appropriate size
-    let output = $("<canvas><canvas>");
-    output.attr("height", privateProperties[this.id].baseCanvas.height);
-    output.attr("width", privateProperties[this.id].baseCanvas.width);
-    output.hide();
+    let output = document.createElement("canvas");
+    output.setAttribute("height", privateProperties[this.id].baseCanvas.height);
+    output.setAttribute("width", privateProperties[this.id].baseCanvas.width);
+    output.style.display = "none";
 
-    let ctx = output.getContext("2d");
+    let outputCtx = output.getContext("2d");
 
     // Draw each canvas to the hidden canvas in order of z index
     for(let z=0; z < privateProperties[this.id].canvases.length; z++){
-      ctx.drawImage(privateProperties[this.id].canvases[i], 0, 0);
+      outputCtx.drawImage(privateProperties[this.id].canvases[i], 0, 0);
     }
 
     // Get the image data
     let dataUrl = output.toDataURL();
 
     // Save the image as a png
-    let a = $("<a></a>");
-    a.attr("href", dataUrl);
-    a.attr("download", "ScreenShot"+(new Date().getDate())+".png");
-    $("body").append(a);
+    let a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = "ScreenShot" + (new Date().getDate())+".png";
+    document.body.appendChild(a);
     a.click();
     a.remove();
   }

@@ -13,7 +13,7 @@ class EnhancedContext {
    */
   constructor(canvas){
     Object.defineProperties(this, {
-      ctx: properties.lockedProperty(canvas.get(0).getContext('2d'))
+      ctx: properties.lockedProperty(canvas.getContext('2d'))
     });
   }
 
