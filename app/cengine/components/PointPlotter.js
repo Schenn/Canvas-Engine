@@ -67,11 +67,11 @@ export class PointPlotter extends Component {
    * @returns {{x: number, y: number, width: number, height: number}}
    */
   getArea(){
-    var smallX = 0;
-    var smallY = 0;
-    var bigX = 0;
-    var bigY = 0;
-    for (var i = 0; i < privateProperties[this.id].coordinateArray.length; i++) {
+    let smallX = 0;
+    let smallY = 0;
+    let bigX = 0;
+    let bigY = 0;
+    for (let i = 0; i < privateProperties[this.id].coordinateArray.length; i++) {
       if (privateProperties[this.id].coordinateArray[i].x <= smallX) {
         smallX = privateProperties[this.id].coordinateArray[i].x;
       }

@@ -7,7 +7,7 @@ export function orDefault(potential, def){
 }
 
 export function isFunction(arg){
-  return exists(arg) && $.isFunction(arg);
+  return exists(arg) && typeof arg === "function";
 }
 
 export function isArray(arg){
