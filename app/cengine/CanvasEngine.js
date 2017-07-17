@@ -96,7 +96,7 @@ export class CanvasEngine{
   addMap(screenMap, start){
     // Convert to entity Array
 
-    var entities = this.EntityManager.fromMap(screenMap);
+    let entities = this.EntityManager.fromMap(screenMap);
 
     this.addEntities(entities, start);
   }
@@ -292,16 +292,16 @@ export class CanvasEngine{
    */
   setup(canvas){
     this.Screen.setScreen(canvas);
-    $(document).on("contextmenu", ()=>{
+    document.addEventListener("contextmenu", ()=>{
       this.pauseOnRightClick();
 
-      $(document).on("keypress.unpause", (e)=>{
+      document.addEventListener("keypress.unpause", (e)=>{
         if(e.keyCode === 27){
           this.unPause();
         }
       });
-      $(document).on("click.unpause", this.unPause);
-      $(window).on("blur.unpause", this.unPause);
+      document.addEventListener("click.unpause", this.unPause);
+      window.addEventListener("blur.unpause", this.unPause);
 
     });
 

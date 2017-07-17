@@ -41,7 +41,7 @@ export class KeyPress extends Component{
     /**
      * @fires keyboard#keypress
      */
-    $(document).on("keypress",
+    document.addEventListener("keypress",
       /**
        * @listens keyboard#keypress
        */
