@@ -51,12 +51,12 @@ export function randName() {
 
 export function parseJsonArray(screenMap){
   if (typeof(screenMap) === "string") {
-    screenMap = $.parseJSON(screenMap);
+    screenMap =JSON.parse(screenMap);
   }
   if(isArray(screenMap)){
     for (let i = 0; i < screenMap.length; i++) {
-      if ($.parseJSON(screenMap[i]) !== null) {
-        screenMap[i] = $.parseJSON(screenMap[i]);
+      if (JSON.parse(screenMap[i]) !== null) {
+        screenMap[i] =JSON.parse(screenMap[i]);
       }
     }
   }
