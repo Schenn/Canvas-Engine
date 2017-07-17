@@ -823,8 +823,8 @@ class EnhancedContext {
     //if checking for transparency
     if (t) {
       for (let a = 3; a < data.length; a += 4) {
-        if (data[a] > 0) //if alpha not transparent
-        {
+        //if alpha not transparent
+        if (data[a] > 0) {
           return (true);
         }
       }
@@ -990,8 +990,9 @@ class EnhancedContext {
   maximize(modifier = 100){
     // Divide the modifier by 100, if there is no modifier set it to the default
     let mod = modifier / 100;
-    this.ctx.canvas.setAttribute("height", Math.ceil($(this.ctx.canvas).parent().height() * mod));
-    this.ctx.canvas.setAttribute("width", Math.ceil($(this.ctx.canvas).parent().width() * mod));
+    let parent = this.ctx.canvas.parentNode;
+    this.ctx.canvas.setAttribute("height", Math.ceil(parent.clientHeight * mod));
+    this.ctx.canvas.setAttribute("width", Math.ceil(parent.clientHeight * mod));
   }
 
 }
