@@ -53,7 +53,6 @@
 
 import {properties} from "../engineParts/propertyDefinitions.js";
 import {Component} from "./Component.js";
-import * as utilities from "../engineParts/utilities.js";
 
 let privateProperties = new WeakMap();
 
@@ -73,6 +72,360 @@ let privateProperties = new WeakMap();
  *
  */
 export class Renderer extends Component {
+
+  get angle(){
+    return privateProperties[this.id].angle;
+  }
+
+  get ccw(){
+    return privateProperties[this.id].ccw;
+  }
+
+  get closed(){
+    return privateProperties[this.id].closed;
+  }
+
+  get compositing(){
+    return privateProperties[this.id].compositing;
+  }
+
+  get cornerRadius(){
+    return privateProperties[this.id].cornerRadius;
+  }
+
+  get end(){
+    return privateProperties[this.id].end;
+  }
+
+  get fillStyle(){
+    return privateProperties[this.id].fillStyle;
+  }
+
+  get fromCenter(){
+    return privateProperties[this.id].fromCenter;
+  }
+
+  get height(){
+    return privateProperties[this.id].height;
+  }
+
+  get inDegrees(){
+    return privateProperties[this.id].inDegrees;
+  }
+
+  get mask(){
+    return privateProperties[this.id].mask;
+  }
+
+  get opacity(){
+    return privateProperties[this.id].opacity;
+  }
+
+  get projection(){
+    return privateProperties[this.id].projection;
+  }
+
+  get r1(){
+    return privateProperties[this.id].r1;
+  }
+
+  get r2(){
+    return privateProperties[this.id].r2;
+  }
+
+  get radius(){
+    return privateProperties[this.id].radius;
+  }
+
+  get rounded(){
+    return privateProperties[this.id].rounded;
+  }
+
+  get scaleX(){
+    return privateProperties[this.id].scaleX;
+  }
+
+  get scaleY(){
+    return privateProperties[this.id].scaleY;
+  }
+
+  get shadowBlur(){
+    return privateProperties[this.id].shadowBlur;
+  }
+
+  get shadowColor(){
+    return privateProperties[this.id].shadowColor;
+  }
+
+  get shadowX(){
+    return privateProperties[this.id].shadowX;
+  }
+
+  get shadowY(){
+    return privateProperties[this.id].shadowY;
+  }
+
+  get sides(){
+    return privateProperties[this.id].sides;
+  }
+
+  get start(){
+    return privateProperties[this.id].start;
+  }
+
+  get strokeCap(){
+    return privateProperties[this.id].strokeCap;
+  }
+
+  get strokeJoin(){
+    return privateProperties[this.id].strokeJoin;
+  }
+
+  get strokeStyle(){
+    return privateProperties[this.id].strokeStyle;
+  }
+
+  get strokeWidth(){
+    return privateProperties[this.id].strokeWidth;
+  }
+
+  get width(){
+    return privateProperties[this.id].width;
+  }
+
+  get x(){
+    return privateProperties[this.id].x;
+  }
+
+  get y(){
+    return privateProperties[this.id].y;
+  }
+
+  set angle(angle){
+    if(Component.utilities.isNumeric(angle)) {
+      privateProperties[this.id].angle = angle;
+      this.propertyCallback(angle);
+    }
+  }
+
+  set ccw(ccw){
+    privateProperties[this.id].ccw = !!ccw;
+    this.propertyCallback(ccw);
+  }
+
+  set closed(closed){
+    privateProperties[this.id].closed = !!closed;
+    this.propertyCallback(closed);
+  }
+
+  set compositing(compositing){
+    if(['source-over', 'source-in', 'source-atop', 'destination-over', 'destination-in',
+        'destination-out', 'destination-atop', 'lighter', 'copy', 'xor', 'multiply',
+        'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light',
+        'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color',
+        'luminosity'].includes(compositing)){
+      privateProperties[this.id].compositing = compositing;
+      this.propertyCallback(compositing);
+    }
+  }
+
+  set cornerRadius(radius){
+    if(Component.utilities.isNumeric(radius)){
+      privateProperties[this.id].radius = radius;
+      this.propertyCallback(radius);
+    }
+  }
+
+  set end(end){
+    if(Component.utilities.isNumeric(end)){
+      privateProperties[this.id].end = end;
+      this.propertyCallback(end);
+    }
+  }
+
+  set fillStyle(style){
+    if(style instanceof CanvasPattern || style instanceof CanvasGradient) {
+      privateProperties[this.id].fillStyle = style;
+    } else if(style[0] !== '#' && style !== "transparent"){
+      style = "#" + style;
+    }
+    privateProperties[this.id].fillStyle = style;
+    this.propertyCallback(style);
+  }
+
+  set fromCenter(center){
+    privateProperties[this.id].fromCenter = !!center;
+    this.propertyCallback(center);
+  }
+
+  set height(height){
+    if(Component.utilities.isNumeric(height)){
+      privateProperties[this.id].height = height;
+      this.propertyCallback(height);
+    }
+  }
+
+  set inDegrees(deg){
+    privateProperties[this.id].inDegrees = !!deg;
+    this.propertyCallback(privateProperties[this.id].inDegrees);
+  }
+
+  set mask(mask){
+    privateProperties[this.id].mask = !!mask;
+    this.propertyCallback(privateProperties[this.id].mask);
+  }
+
+  set opacity(opacity){
+    if(Component.utilities.isNumeric(opacity) && opacity <= 1 && opacity >= 0){
+      privateProperties[this.id].opacity = opacity;
+      this.propertyCallback(opacity);
+    }
+  }
+
+  set projection(proj){
+    if(Component.utilities.isNumeric(proj)){
+      privateProperties[this.id].projection = proj;
+      this.propertyCallback(proj);
+    }
+  }
+
+  set r1(r){
+    if(Component.utilities.isNumeric(r) || r === null){
+      privateProperties[this.id].r1 = r;
+      this.propertyCallback(r);
+    }
+  }
+
+  set r2(r){
+    if(Component.utilities.isNumeric(r) || r === null){
+      privateProperties[this.id].r2 = r;
+      this.propertyCallback(r);
+    }
+  }
+
+  set radius(rad){
+    if(Component.utilities.isNumeric(rad)){
+      privateProperties[this.id].radius = rad;
+      this.propertyCallback(rad);
+    }
+  }
+
+  set rounded(round){
+    privateProperties[this.id].rounded = !!round;
+    this.propertyCallback(!!round);
+  }
+
+  set scaleX(scale){
+    if(Component.utilities.isNumeric(scale)){
+      privateProperties[this.id].scaleX = scale;
+      this.propertyCallback(scale);
+    }
+  }
+
+  set scaleY(scale){
+    if(Component.utilities.isNumeric(scale)){
+      privateProperties[this.id].scaleY = scale;
+      this.propertyCallback(scale);
+    }
+  }
+
+  set shadowBlur(blur){
+    if(Component.utilities.isNumeric(blur)){
+      privateProperties[this.id].shadowBlur = blur;
+      this.propertyCallback(blur);
+    }
+  }
+
+  set shadowColor(color){
+    if(color[0] !== '#' && color !== "transparent"){
+      color = "#" + color;
+    }
+    privateProperties[this.id].shadowColor = color;
+    this.propertyCallback(color);
+  }
+
+  set shadowX(x){
+    if(Component.utilities.isNumeric(x)){
+      privateProperties[this.id].shadowX = x;
+      this.propertyCallback(x);
+    }
+  }
+
+  set shadowY(y){
+    if(Component.utilities.isNumeric(y)){
+      privateProperties[this.id].shadowY = y;
+      this.propertyCallback(y);
+    }
+  }
+
+  set sides(sides){
+    if(Component.utilities.isNumeric(sides)){
+      privateProperties[this.id].sides= sides;
+      this.propertyCallback(sides);
+    }
+  }
+
+  set start(start){
+    if(Component.utilities.isNumeric(start)){
+      privateProperties[this.id].start = start;
+      this.propertyCallback(start);
+    }
+  }
+
+  set strokeCap(cap){
+    if(['butt','round','square'].includes(cap.toLowerCase())){
+      privateProperties[this.id].strokeCap = cap;
+      this.propertyCallback(cap);
+    }
+  }
+
+  set strokeJoin(join){
+    if(['bevel','round','miter'].includes(join.toLowerCase())){
+      privateProperties[this.id].strokeCap = join;
+      this.propertyCallback(join);
+    }
+  }
+
+  set strokeStyle(style){
+    if(style instanceof CanvasGradient || style instanceof CanvasPattern){
+      privateProperties[this.id].strokeStyle = style;
+    } else {
+      if(style[0] !== "#"){
+        style = "#" + style;
+      }
+      privateProperties[this.id].strokeStyle = style;
+    }
+    this.propertyCallback(style);
+  }
+
+  set strokeWidth(width){
+    if(Component.utilities.isNumeric(width)){
+      privateProperties[this.id].strokeWidth = width;
+      this.propertyCallback(width);
+    }
+  }
+
+  set width(width){
+    if(Component.utilities.isNumeric(width)){
+      privateProperties[this.id].width = width;
+      this.propertyCallback(width);
+    }
+  }
+
+  set x(x){
+    if(Component.utilities.isNumeric(x)){
+      privateProperties[this.id].x = x;
+      this.propertyCallback(x);
+    }
+  }
+
+  set y(y){
+    if(Component.utilities.isNumeric(y)){
+      privateProperties[this.id].y= y;
+      this.propertyCallback(y);
+    }
+  }
+
   /**
    * @param {ComponentParams~Renderer} params The container of property values.
    * @param {CanvasEngine.Entities.Entity} entity The entity to attach the Renderer Component to
@@ -84,240 +437,38 @@ export class Renderer extends Component {
     privateProperties[this.id].hidden = false;
     privateProperties[this.id].postRender = null;
 
-    // Private Properties
-    var { angle = 0,
-      ccw = false,
-      closed = false,
-      compositing = 'source-over',
-      cornerRadius = 0,
-      end = 360,
-      fillStyle = "#000",
-      fromCenter = false,
-      height = 0,
-      inDegrees = true,
-      mask = false,
-      opacity = 1,
-      projection = 0,
-      r1 = null,
-      r2 = null,
-      radius = 0,
-      repeat = 'repeat',
-      rounded = false,
-      scaleX = 1,
-      scaleY = 1,
-      shadowBlur = 3,
-      shadowColor = 'transparent',
-      shadowX = 0,
-      shadowY = 0,
-      sides = 3,
-      start = 0,
-      strokeCap = 'butt',
-      strokeJoin = 'miter',
-      strokeStyle = 'transparent',
-      strokeWidth = 1,
-      width = 0,
-      x = 0,
-      y = 0 } = params;
-
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("angle", angle);
-    /**
-     * @type boolean
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("ccw", ccw);
-    /**
-     * @type boolean
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("closed", closed);
-    /**
-     * @type string
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("compositing", compositing);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("cornerRadius", cornerRadius);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("end", end);
-    /**
-     * @type string
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("fillStyle", fillStyle);
-    /**
-     * @type boolean
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("fromCenter", fromCenter);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("height", height);
-    /**
-     * @type boolean
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("inDegrees", inDegrees);
-    /**
-     * @type boolean
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("mask", mask);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("opacity", opacity);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("projection", projection);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("r1", r1);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("r2", r2);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("radius", radius);
-
-    /**
-     * @type string
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("repeat", repeat);
-    /**
-     * @type boolean
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("rounded", rounded);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("scaleX", scaleX);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("scaleY", scaleY);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("shadowBlur", shadowBlur);
-    /**
-     * @type string
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("shadowColor", shadowColor);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("shadowX", shadowX);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("shadowY", shadowY);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("sides", sides);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("start", start);
-    /**
-     * @type string
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("strokeCap", strokeCap);
-    /**
-     * @type string
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("strokeJoin", strokeJoin);
-    /**
-     * @type string
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("strokeStyle", strokeStyle);
-    /**
-     * @type string
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("strokeWidth", strokeWidth);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("width", width);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("x", x);
-    /**
-     * @type number
-     * @instance
-     * @memberof Renderer
-     */
-    this.setProperty("y", y);
+    this.angle = params.angle || 0;
+    this.ccw = params.ccw || false;
+    this.closed = params.closed || false;
+    this.compositing = params.compositing || 'source-over';
+    this.cornerRadius = params.cornerRadius || 0;
+    this.end = params.end || 360;
+    this.fillStyle = params.fillStyle || "000";
+    this.fromCenter = params.fromCenter || false;
+    this.height = params.height || 0;
+    this.inDegrees = params.inDegrees || true;
+    this.mask = params.mask || false;
+    this.opacity = params.opacity || 1;
+    this.projection = params.projection || 0;
+    this.r1 = params.r1 || null;
+    this.r2 = params.r2 || null;
+    this.radius = params.radius || 0;
+    this.rounded = params.rounded || false;
+    this.scaleX = params.scaleX || 1;
+    this.scaleY = params.scaleY || 1;
+    this.shadowBlur = params.shadowBlur || 3;
+    this.shadowColor = params.shadowColor || 'transparent';
+    this.shadowX = params.shadowX || 0;
+    this.shadowY = params.shadowY || 0;
+    this.sides = params.sides || 3;
+    this.start = params.start || 0;
+    this.strokeCap = params.strokeCap || 'butt';
+    this.strokeJoin = params.strokeJoin || 'miter';
+    this.strokeStyle = params.strokeStyle || 'transparent';
+    this.strokeWidth = params.strokeWidth || 1;
+    this.width = params.width || 0;
+    this.x = params.x || 0;
+    this.y = params.y || 0;
 
 
     // The Draw Method is required. You <u>have</u> to tell the renderer how your entity draws itself.
@@ -325,16 +476,18 @@ export class Renderer extends Component {
     this.draw.bind(this);
     delete params.draw;
 
-    if(utilities.exists(params.clearInfo)){
+    if(Component.utilities.exists(params.clearInfo)){
       privateProperties[this.id].clearInfo = params.clearInfo;
       privateProperties[this.id].clearInfo.bind(this);
     }
 
-    if ((utilities.isFunction(params.clear))) {
+    if ((Component.utilities.isFunction(params.clear))) {
       privateProperties[this.id].clear = params.clear;
       privateProperties[this.id].clear.bind(this);
     }
 
+    this.initialized();
+    this.markDirty();
   }
 
   /**
@@ -343,7 +496,7 @@ export class Renderer extends Component {
    * @returns {{x: (number), y: (number), height: (number), width: (number), fromCenter: boolean}}
    */
   clearInfo(ctx){
-    return (utilities.exists(privateProperties[this.id].clearInfo)) ? privateProperties[this.id].clearInfo(ctx) :{
+    return (Component.utilities.exists(privateProperties[this.id].clearInfo)) ? privateProperties[this.id].clearInfo(ctx) :{
       x: this.x,
       y: this.y,
       height: this.height,
@@ -357,10 +510,10 @@ export class Renderer extends Component {
    * @param {Canvas.enhancedContext} ctx
    */
   clear(ctx) {
-    if(utilities.exists(privateProperties[this.id].clear)){
+    if(Component.utilities.exists(privateProperties[this.id].clear)){
       privateProperties[this.id].clear(ctx);
     } else {
-      if (!utilities.exists(privateProperties[this.id].clearShadow)) {
+      if (!Component.utilities.exists(privateProperties[this.id].clearShadow)) {
         privateProperties[this.id].clearShadow = this.clearInfo(ctx);
       }
       ctx.clear(privateProperties[this.id].clearShadow);
@@ -396,7 +549,7 @@ export class Renderer extends Component {
   }
 
   postRender(){
-    if(utilities.isFunction(privateProperties[this.id].postRender)){
+    if(Component.utilities.isFunction(privateProperties[this.id].postRender)){
       privateProperties[this.id].postRender();
     }
   }
@@ -430,7 +583,7 @@ export class Renderer extends Component {
   }
 
   asObject() {
-    return properties.proxy(this);
+    return properties.proxy(privateProperties[this.id]);
   }
 
   /**
@@ -438,11 +591,11 @@ export class Renderer extends Component {
    * @param {GeneralTypes~coords} position
    */
   setPosition(position) {
-    if (utilities.exists(position.x)) {
+    if (this.utilities.exists(position.x)) {
       this.x = position.x;
     }
 
-    if (utilities.exists(position.y)) {
+    if (this.utilities.exists(position.y)) {
       this.y = position.y;
     }
 
@@ -453,10 +606,10 @@ export class Renderer extends Component {
    * @param {{ height: number, width: number}} size
    */
   resize(size) {
-    if (utilities.exists(size.height)) {
+    if (this.utilities.exists(size.height)) {
       this.height = size.height;
     }
-    if (utilities.exists(size.width)) {
+    if (this.utilities.exists(size.width)) {
       this.width = size.width;
     }
   }

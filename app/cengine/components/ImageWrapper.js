@@ -3,8 +3,6 @@
  */
 
 import {Component} from "./Component.js";
-import * as utilities from "../engineParts/utilities.js";
-import {properties} from "../engineParts/propertyDefinitions.js";
 
 /**
  * @typedef {object} GeneralTypes~Sprite
@@ -31,6 +29,112 @@ const privateProperties = new WeakMap();
  * @property {boolean} cropFromCenter
  */
 export class ImageWrapper extends Component{
+
+  set section(section){
+
+    this.initialize();
+
+    if(Component.utilities.exists(section.sx)) {
+      this.sx = section.sx;
+    } else if(Component.utilities.exists(section.x)){
+      this.sx = section.x;
+    }
+
+    if(Component.utilities.exists(section.sy)){
+      this.sy = section.sy;
+    } else if (Component.utilities.exists(section.y)){
+      this.sy = section.y;
+    }
+
+    if(Component.utilities.exists(section.sWidth)){
+      this.sw = section.sWidth;
+    } else if(Component.utilities.exists(section.width)){
+      this.sw = section.width;
+    }
+
+    if(Component.utilities.exists(section.sHeight)){
+      this.sh = section.sHeight;
+    } else if(Component.utilities.exists(section.height)){
+      this.sh = section.height;
+    }
+
+    if(Component.utilities.exists(section.cropFromCenter)){
+      this.cropFromCenter = section.cropFromCenter;
+    }
+
+    this.initialized();
+    this.onChange(section);
+  }
+
+  get source(){
+    return privateProperties[this.name].source;
+  }
+
+  set source(source){
+    privateProperties[this.name].source = source instanceof Image ?
+        source.src :
+        source;
+
+    this.onChange(source);
+  }
+
+  get sx(){
+    return privateProperties[this.name].sx;
+  }
+
+  set sx(sx){
+    if(sx < 0){
+      throw "Got a negative sx for this Image Component.";
+    }
+    privateProperties[this.name].sx = sx;
+    this.onChange(sx);
+  }
+
+  get sy(){
+    return privateProperties[this.name].sy;
+  }
+
+  set sy(sy){
+    if(sy < 0){
+      throw "Got an negative sy for an image component: " + sy;
+    }
+    privateProperties[this.name].sy = sy;
+    this.onChange(sy);
+  }
+
+  get sWidth(){
+    return privateProperties[this.name].sw;
+  }
+
+  set sWidth(sWidth){
+    if(sWidth < 0){
+      throw "Got a negative width for this Image Component.";
+    }
+    privateProperties[this.name].sw = sWidth;
+    this.onChange(sWidth);
+  }
+
+  get sHeight(){
+    return privateProperties[this.name].sh;
+  }
+
+  set sHeight(sHeight){
+    if(sHeight < 0){
+      throw "Got a negative height for this Image Component.";
+    }
+    privateProperties[this.name].sh = sHeight;
+    this.onChange(sHeight);
+  }
+
+  get cropFromCenter(){
+    return privateProperties[this.name].cropFromCenter;
+  }
+
+  set cropFromCenter(crop){
+    privateProperties[this.name].cropFromCenter = crop;
+    this.onChange(crop);
+  }
+
   /**
    * @param {Object} params
    * @param {Image} params.source
@@ -46,86 +150,36 @@ export class ImageWrapper extends Component{
   constructor(params, entity){
     super(entity, params.callback);
 
-    privateProperties[this.name] = {};
-    privateProperties[this.name].sx = 0;
-    privateProperties[this.name].sy = 0;
-    privateProperties[this.name].sw = 0;
-    privateProperties[this.name].sh = 0;
-    privateProperties[this.name].cropFromCenter = false;
-    privateProperties[this.name].source = "";
-
-    let setProps = (sprite)=>{
-      if(utilities.exists(sprite.sx)){
-        privateProperties[this.name].sx = sprite.sx;
-      } else if (utilities.exists(sprite.x)){
-        privateProperties[this.name].sx = sprite.x;
-      }
-
-      if(utilities.exists(sprite.sy)){
-        privateProperties[this.name].sy = sprite.sy;
-      } else if (utilities.exists(sprite.y)){
-        privateProperties[this.name].sy = sprite.y;
-      }
-
-      if(utilities.exists(sprite.sWidth)){
-        if(sprite.sWidth < 0){
-          throw "Got a negative height for this Image Component.";
-        }
-        privateProperties[this.name].sw = sprite.sWidth;
-      } else if(utilities.exists(sprite.width)){
-        if(sprite.width < 0){
-          throw "Got a negative height for this Image Component.";
-        }
-        privateProperties[this.name].sw = sprite.width;
-      }
-
-
-      if(utilities.exists(sprite.sHeight)){
-        if(sprite.sHeight < 0){
-          throw "Got a negative height for this Image Component.";
-        }
-        privateProperties[this.name].sh = sprite.sHeight;
-      } else if(utilities.exists(sprite.height)){
-        if(sprite.height < 0){
-          throw "Got a negative height for this Image Component.";
-        }
-        privateProperties[this.name].sh = sprite.height;
-      }
-
-      if(utilities.exists(sprite.cropFromCenter)){
-        privateProperties[this.name].cropFromCenter = sprite.cropFromCenter;
-      }
+    privateProperties[this.name] = {
+      sx: 0,
+      sy: 0,
+      sw: 0,
+      sh: 0,
+      cropFromCenter: false,
+      source: "",
     };
 
-    if(utilities.exists(params.source)){
-      privateProperties[this.name].source = params.source;
-
-      setProps(params);
+    if(Component.utilities.exists(params.source)){
+      this.source = params.source;
+      this.section = params;
     } else {
-      if(utilities.exists(params.image)){
-        privateProperties[this.name].source = params.image.src;
+      if(Component.utilities.exists(params.image)){
+        this.source = params.image;
       } else {
         let keys = Object.keys(params);
-        if(keys.length === 1 && utilities.exists(params[keys].source)){
-          privateProperties[this.name].source = params[keys].source;
-          setProps(params[keys]);
+        if(keys.length === 1 && Component.utilities.exists(params[keys].source)){
+          this.source = params[keys].source;
+          this.section = params[keys];
         }
       }
     }
 
-    if(privateProperties[this.name].source === "") {
+    if(this.source === "") {
       console.log(privateProperties[this.name]);
       throw "Source missing from Image Component";
     }
 
-    Object.defineProperties(this, {
-      source: properties.defaultProperty(privateProperties[this.name].source, this.propertyCallback),
-      sx: properties.defaultProperty(privateProperties[this.name].sx, this.propertyCallback),
-      sy: properties.defaultProperty(privateProperties[this.name].sy, this.propertyCallback),
-      sWidth: properties.defaultProperty(privateProperties[this.name].sw, this.propertyCallback),
-      sHeight: properties.defaultProperty(privateProperties[this.name].sh, this.propertyCallback),
-      cropFromCenter: properties.defaultProperty(privateProperties[this.name].cropFromCenter, this.propertyCallback)
-    });
+    this.initialized();
   }
 
   /**
@@ -136,12 +190,18 @@ export class ImageWrapper extends Component{
    */
   asObject(){
     if(this.sWidth > 0 && this.sHeight > 0){
-      return {source: this.source, sx: this.sx, sy: this.sy, sWidth: this.sWidth, sHeight: this.sHeight};
-    } else {
       return {
-        source: this.source
+        source: this.source,
+        sx: this.sx,
+        sy: this.sy,
+        sWidth: this.sWidth,
+        sHeight: this.sHeight
       };
     }
+
+    return {
+      source: this.source
+    };
 
   }
 
@@ -151,12 +211,6 @@ export class ImageWrapper extends Component{
    * @param {GeneralTypes~Sprite} sprite
    */
   setSprite(sprite){
-    if(sprite.height < 0 || sprite.width < 0){
-      throw "Got a negative number when setting an image's sprite width or sprite height.";
-    }
-    this.sx = sprite.x;
-    this.sy = sprite.y;
-    this.sWidth = sprite.width;
-    this.sHeight = sprite.height;
+    this.section = sprite;
   }
 }

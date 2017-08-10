@@ -2,10 +2,9 @@
   "name": "canvas-engine",
   "version": "1.0.0",
   "description": "An engine for running interactive animations on a canvas",
-  "main": "grunt.js",
+  "main": "index.html",
   "license": "UNLICENSED",
   "scripts": {
-    "grunt": "grunt",
     "build": "node_modules/.bin/webpack --config webpack.config.js"
   },
   "repository": {
@@ -14,7 +13,6 @@
   },
   "devDependencies": {
     "babel-loader": "^7.1.1",
-    "babel-preset-es2015-webpack": "^6.4.3",
     "ink-docstrap": "^1.2.1",
     "webpack": "^3.3.0"
   },

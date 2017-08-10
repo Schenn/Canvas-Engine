@@ -11,6 +11,13 @@
 
 import {Entity} from "./Entity.js";
 
+const defaultParams = {
+  fromCenter:false,
+  height: 100,
+  width: 100,
+  fillStyle: "#000000"
+};
+
 /**
  * Manage the information needed to render a Rectangular object on the screen.
  *
@@ -22,18 +29,18 @@ export class Rect extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
 
-    let myParams = {
-      fromCenter: false,
-      height:100,
-      width: 100,
-      fillStyle: "#000000",
-      // Use the drawRect method on the enhanced context to draw the renderer parameters as a Rect
-      draw: function(ctx){
-        ctx.drawRect(this);
-      }
-    };
-    Object.assign(myParams, params);
+    let myParams = {};
+
+    Object.assign(myParams, {draw: this.draw}, defaultParams);
     EntityManager.attachComponent(this, "Renderer", myParams);
 
+  }
+
+  /**
+   * Called while bound to the renderer component
+   * @param ctx
+   */
+  draw(ctx){
+    ctx.drawRect(this);
   }
 }

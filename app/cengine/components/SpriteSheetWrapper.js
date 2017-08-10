@@ -3,7 +3,6 @@
  */
 
 import {Component} from "./Component.js";
-import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 
@@ -19,11 +18,11 @@ export class SpriteSheetWrapper extends Component{
   constructor(params, entity){
     super(entity);
     privateProperties[this.id] = {};
-    if(utilities.exists(params.Sprites) && utilities.exists(params.Source)){
+    if(Component.utilities.exists(params.Sprites) && Component.utilities.exists(params.Source)){
       privateProperties[this.id].sheet = params;
     } else {
-      if(utilities.exists(params.spritesheet)){
-        if(utilities.exists(params.spritesheet.Sprites) && utilities.exists(params.spritesheet.Source)){
+      if(Component.utilities.exists(params.spritesheet)){
+        if(Component.utilities.exists(params.spritesheet.Sprites) &&Component. utilities.exists(params.spritesheet.Source)){
           privateProperties[this.id].sheet = params.spritesheet;
         } else {
           let name = Object.keys(params.spritesheet)[0];
@@ -34,9 +33,9 @@ export class SpriteSheetWrapper extends Component{
         if(keys.length === 1){
           let name = keys[0];
           let content = params[name];
-          if(utilities.exists(content.Sprites) && utilities.exists(content.Source)){
+          if(Component.utilities.exists(content.Sprites) && Component.utilities.exists(content.Source)){
             privateProperties[this.id].sheet = content;
-          } else if(utilities.exists(content.spritesheet)){
+          } else if(Component.utilities.exists(content.spritesheet)){
             privateProperties[this.id].sheet = content.spritesheet;
           }
         }

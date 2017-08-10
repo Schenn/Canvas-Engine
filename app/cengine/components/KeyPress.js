@@ -17,7 +17,6 @@
  */
 
 import {Component} from "./Component.js";
-import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 /**
@@ -46,7 +45,7 @@ export class KeyPress extends Component{
        * @listens keyboard#keypress
        */
       (event)=>{
-        if(utilities.exists(event.key)){
+        if(Component.utilities.exists(event.key)){
           self.onKeyDown(event.key);
         } else {
           let keyCode = event.keyCode || event.which;
@@ -57,7 +56,7 @@ export class KeyPress extends Component{
   }
 
   onKeyDown(key){
-    if(utilities.isFunction(privateProperties[this.id].keyCallbacks[key])){
+    if(Component.utilities.isFunction(privateProperties[this.id].keyCallbacks[key])){
       privateProperties[this.id].keyCallbacks[key].call(this.Entity);
     }
   }

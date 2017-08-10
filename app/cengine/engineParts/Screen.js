@@ -1,8 +1,4 @@
 /**
- * @author Steven Chennault <schenn@gmail.com>
- *
- */
-/**
  * @typedef {{
  *  offsetX: number,
  *  offsetY: number,
@@ -33,6 +29,10 @@ export class Screen {
     return privateProperties[this.id].baseCanvas.width;
   }
 
+  get container(){
+    return privateProperties[this.id].baseCanvas.parentNode;
+  }
+
   /**
    * Create a new screen with a given Mouse Event Handler
    *
@@ -61,22 +61,22 @@ export class Screen {
     privateProperties[this.id].canvases[0] = canvas;
     privateProperties[this.id].baseCanvas = canvas;
     let self = this;
-    privateProperties[this.id].baseCanvas.parentNode.addEventListener("click", (e)=>{
+    this.container.addEventListener("click", (e)=>{
       if(e.target.tagName === "CANVAS"){
         self.onClick(e)
       }
     }, true);
-    privateProperties[this.id].baseCanvas.parentNode.addEventListener("mousedown", (e)=>{
+    this.container.addEventListener("mousedown", (e)=>{
       if(e.target.tagName === "CANVAS") {
         self.onMouseDown(e)
       }
     }, true);
-    privateProperties[this.id].baseCanvas.parentNode.addEventListener("mouseup", (e)=>{
+    this.container.addEventListener("mouseup", (e)=>{
       if(e.target.tagName === "CANVAS") {
         self.onMouseUp(e)
       }
     }, true);
-    privateProperties[this.id].baseCanvas.parentNode.addEventListener("mousemove", (e)=>{
+    this.container.addEventListener("mousemove", (e)=>{
       if(e.target.tagName === "CANVAS") {
         self.onMouseMove(e)
       }
@@ -88,7 +88,7 @@ export class Screen {
    * @param {number} modifier A percentage 1 - 100
    */
   maximize(modifier = 100){
-    privateProperties[this.id].canvases.forEach(function(canvas){
+    privateProperties[this.id].canvases.forEach((canvas)=>{
       getEnhancedContext(canvas).maximize(modifier);
     });
   }
@@ -124,9 +124,11 @@ export class Screen {
 
       // Set reference to the canvas element, not its jQuery wrapped version.
       // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
-      privateProperties[this.id].canvases[z] = getEnhancedContext(privateProperties[this.id].baseCanvas).addZLayer(
-        privateProperties[this.id].baseCanvas.height,
-        privateProperties[this.id].baseCanvas.width,
+      privateProperties[this.id].canvases[z] = getEnhancedContext(
+          privateProperties[this.id].baseCanvas
+      ).addZLayer(
+        this.height,
+        this.width,
         z
       );
     }
@@ -143,7 +145,9 @@ export class Screen {
       if(z > 0) {
         privateProperties[this.id].canvases[z].remove();
         delete privateProperties[this.id].canvases[z];
-        privateProperties[this.id].canvases = utilities.cleanArray(privateProperties[this.id].canvases);
+        privateProperties[this.id].canvases = Component.utilities.cleanArray(
+            privateProperties[this.id].canvases
+        );
       }
     }
 
@@ -167,7 +171,9 @@ export class Screen {
     let zs = privateProperties[this.id].canvases.keys();
 
     for(let zIndex of zs){
-      pixelHits[zIndex] = getEnhancedContext(privateProperties[this.id].canvases[zIndex]).atPixel(x, y, h, w, transparent);
+      pixelHits[zIndex] = getEnhancedContext(
+          privateProperties[this.id].canvases[zIndex]
+      ).atPixel(x, y, h, w, transparent);
     }
     return pixelHits;
   }
@@ -245,8 +251,8 @@ export class Screen {
   capture(){
     // Create a hidden canvas of the appropriate size
     let output = document.createElement("canvas");
-    output.setAttribute("height", privateProperties[this.id].baseCanvas.height);
-    output.setAttribute("width", privateProperties[this.id].baseCanvas.width);
+    output.setAttribute("height", this.height);
+    output.setAttribute("width", this.width);
     output.style.display = "none";
 
     let outputCtx = output.getContext("2d");

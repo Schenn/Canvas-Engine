@@ -13,10 +13,10 @@ var game = function(){
   var self = this;
   Object.defineProperties(this, {
     "player1Wins": CanvasEngine.EntityManager.properties.defaultProperty(player1, function(){
-      CanvasEngine.EntityTracker.getEntities(["score1"])[0].messageToComponent("Text", "setText", self.player1Wins);
+      CanvasEngine.EntityTracker.getEntities(["score1"])[0].componentProperty("Text", "text", self.player1Wins);
     }),
     "player2Wins": CanvasEngine.EntityManager.properties.defaultProperty(player2, function(){
-      CanvasEngine.EntityTracker.getEntities(["score2"])[0].messageToComponent("Text", "setText", self.player2Wins);
+      CanvasEngine.EntityTracker.getEntities(["score2"])[0].componentProperty("Text", "text", self.player2Wins);
     }),
     "gameOver": CanvasEngine.EntityManager.properties.defaultProperty(gameOver, function(){
       self.onGameOver();
@@ -25,7 +25,7 @@ var game = function(){
 
   this.loadResources = function(){
     CanvasEngine.ResourceManager.onResourcesLoaded(function(){
-      CanvasEngine.EntityTracker.getEntities(["Loading"])[0].messageToComponent("Text", "setText", "All resources loaded.");
+      CanvasEngine.EntityTracker.getEntities(["Loading"])[0].componentProperty("Text", "text", "All resources loaded.");
     });
     CanvasEngine.ResourceManager.addSpriteSheet("ticTacSprites", "tictacsprites.png",
       {
@@ -183,7 +183,7 @@ var game = function(){
 
   this.addToken = function(position){
     var slot = position.name.substr(4,1);
-    if(!CanvasEngine.utilities.exists(this.positionsClaimed[slot]) && !this.gameOver){
+    if(!Component.utilities.exists(this.positionsClaimed[slot]) && !this.gameOver){
       this.positionsClaimed[slot] = this.currentPlayer;
       var spriteName;
       switch(this.currentPlayer){

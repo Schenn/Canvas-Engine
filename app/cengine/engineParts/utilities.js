@@ -63,3 +63,7 @@ export function parseJsonArray(screenMap){
 
   return (screenMap);
 }
+
+export function isNumeric(val){
+  return Number(parseFloat(val))==val;
+}

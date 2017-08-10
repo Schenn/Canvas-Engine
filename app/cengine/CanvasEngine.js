@@ -217,7 +217,7 @@ export class CanvasEngine{
    * @param {boolean} forceIt
    */
   pause(forceIt){
-    privateProperties[this].paused = (CanvasEngine.utilities.exists(forceIt)) ? forceIt : !this.paused;
+    privateProperties[this].paused = (Component.utilities.exists(forceIt)) ? forceIt : !this.paused;
 
     if(!this.paused){
       this.Loop();

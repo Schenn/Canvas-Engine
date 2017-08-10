@@ -9,6 +9,8 @@
  */
 
 import {Entity} from "../entities/Entity.js";
+
+const privateProperties = new WeakMap();
 /**
  * Manages rendering and maintaining text information as an Entity.
  *  Re-renders if the text is changed.
@@ -18,73 +20,72 @@ import {Entity} from "../entities/Entity.js";
  * @borrows CanvasEngine.Components.Renderer as CanvasEngine.Entities.Label#components~Renderer
  * @borrows CanvasEngine.Components.Text as CanvasEngine.Entities.Label#components~Text
  */
+
 export class Label extends Entity {
+
+  get color() {
+    return privateProperties[this.name].color;
+  }
+
+  set color(color){
+    if(color){
+      privateProperties[this.name].color = color;
+      this.componentProperty("Renderer", "fillStyle", color);
+    }
+  }
+
+  get text(){
+    return this.componentProperty("Text", "text");
+  }
+
+  set text(message){
+    this.componentProperty("Text", "text", message);
+  }
+
+
   constructor(params, EntityManager){
     super(params, EntityManager);
-    this.cache = null;
+    privateProperties[this.name] = {};
+    privateProperties[this.name].color = (params.fillStyle) ? params.fillStyle : "#fff";
+
     let self = this;
 
-    /**
-     * transform a block of text so that the text wraps.
-     *    (Renders a section of text within the space provided,
-     *    moving the cursor, than continuing to render.)
-     *
-     * @param ctx
-     * @param drawProperties
-     * @param text
-     * @param width
-     */
-    function wrapText(ctx, drawProperties, text, width){
-      let words = text.split(' ');
-      let line = '';
+    let myParams = Object.assign({}, {
+      fillStyle: self.color,
+      clearInfo: (ctx)=>{ return self.textArea(ctx); },
+      draw: (ctx)=>{ return self.draw(ctx); }
+    }, params);
 
-      for(let n = 0; n < words.length; n++) {
-        let testLine = line + words[n] + ' ';
-
-
-      }
-    }
-
-    let myParams = {
-      fillStyle: "#fff",
-      clearInfo: function(ctx) {
-        return self.textArea(ctx);
-      },
-      draw: function(ctx){
-        ctx.setDefaults(this);
-
-        let drawProperties = Object.assign({}, this, this.Entity.getFromComponent("Text", "asObject"));
-        ctx.drawText(drawProperties);
-
-        let text = drawProperties.text;
-        let textArea = this.Entity.textArea(ctx);
-
-        // break the phrase by it's newlines
-        let lines = text.split(/\r?\n/);
-
-        // If the phrase has newlines
-        if(lines.length > 1){
-          lines.forEach((line, _)=>{
-            drawProperties.text = line;
-            ctx.drawText(drawProperties);
-            drawProperties.y += textArea.height;
-          });
-        } else if(lines.length === 1){
-          ctx.drawText(drawProperties);
-        }
-
-
-
-        // for each line, if 'wider' than the width, break at 1st space from the end of the line
-        //@todo Finish adding line wrapping for large text blocks.
-
-
-      }
-    };
-
-    Object.assign(myParams, params);
     this.EntityManager.attachComponent(this, "Renderer", myParams);
     this.EntityManager.attachComponent(this, "Text", myParams);
+  }
+
+  // Called attached to this entity's Renderer context
+  draw(ctx){
+
+    let renderProps = this.getFromComponent("Renderer", "asObject");
+
+    ctx.setDefaults(renderProps);
+
+    let drawProperties = Object.assign({}, renderProps, this.getFromComponent("Text", "asObject"));
+    ctx.drawText(drawProperties);
+
+    let textArea = this.textArea(ctx);
+
+    // break the phrase by it's newlines
+    let lines =  drawProperties.text.split(/\r?\n/);
+
+    // If the phrase has newlines
+    if(lines.length > 1){
+      lines.forEach((line, _)=>{
+        drawProperties.text = line;
+        ctx.drawText(drawProperties);
+        drawProperties.y += textArea.height;
+      });
+    } else if(lines.length === 1){
+      ctx.drawText(drawProperties);
+    }
+
   }
 
   /**
@@ -103,15 +104,11 @@ export class Label extends Entity {
 
     let phrase = text.text;
 
-
-
     // 2 pixels on the left and right are added to account for letters that extend out a pixel or so.
     width = (ctx.measureText({font: text.font, text: text.text}).width) + 4;
     // noinspection JSSuspiciousNameCombination
     // The measureText method only returns a width of a text element. To get a height, we use the average of the largest characters.
     height = (ctx.measureText({font: text.font, text: "MWO"}).width / 3) + 4;
-
-
 
     // Adjust x for alignment
     switch (text.align) {
@@ -121,7 +118,7 @@ export class Label extends Entity {
       case "center":
         _x -= width / 2;
         break;
-      default:
+      default: // Do nothing for left aligned text
         break;
     }
 
@@ -133,7 +130,7 @@ export class Label extends Entity {
       case "bottom":
         _y += height / 2;
         break;
-      default:
+      default: // Do nothing for top aligned text
         break;
     }
 

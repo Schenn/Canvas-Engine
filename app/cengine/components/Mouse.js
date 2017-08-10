@@ -9,7 +9,6 @@
  */
 
 import {Component} from "./Component.js";
-import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 
@@ -24,7 +23,7 @@ export class Mouse extends Component {
     privateProperties[this.id].onMouseMove = [];
     privateProperties[this.id].onMouseOut = [];
     let assign = (name)=>{
-      if(utilities.isFunction(params[name])){
+      if(Component.utilities.isFunction(params[name])){
         privateProperties[this.id][name] = [];
         privateProperties[this.id][name].push(params[name]);
       } else if (Array.isArray(params[name])){
@@ -120,8 +119,8 @@ export class Mouse extends Component {
    */
   addMouseMethods(methodContainer){
     let mouseMethods = Object.keys(methodContainer);
-    mouseMethods.forEach((method, index)=>{
-      if(utilities.isArray(privateProperties[this.id][method])) {
+    mouseMethods.forEach((method)=>{
+      if(Component.utilities.isArray(privateProperties[this.id][method])) {
         privateProperties[this.id][method].push(methodContainer[method]);
       }
     });

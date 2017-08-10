@@ -10,7 +10,6 @@
  */
 
 import {Entity} from "./Entity.js";
-import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 
@@ -34,33 +33,33 @@ export class Sprite extends Entity {
     privateProperties[this.name].currentSpriteName = "";
     privateProperties[this.name].currentSheet = "default";
 
-    let self = this;
-
     let myParams = {
       draw: function(ctx){
         ctx.drawImage(
           Object.assign({},
-            // this is renderer
             this,
-            self.getFromComponent(privateProperties[self.name].currentSheet+"Image", "asObject"))
-        );
+            this.Entity.SheetImage
+        ));
       }
     };
     Object.assign(myParams, params);
 
     this.EntityManager.attachComponent(this, "Renderer", myParams);
+    this.attachSpriteSheets(Object.keys(params.spritesheets), params.width, params.height);
+    this.Sprite = params.defaultSprite ? params.defaultSprite : 0;
+  }
 
-    let refNames = Object.keys(params.spritesheets);
+  attachSpriteSheets(refNames, width, height){
 
-    refNames.forEach((refName, index)=>{
+    refNames.forEach((refName)=>{
       let ssheet = params.spritesheets[refName];
       let image = {};
       image[refName+"Image"] = {
         source: ssheet.Source,
-        height: params.height,
-        width: params.width,
-        callback: function(){
-          self.messageToComponent("Renderer", "markDirty");
+        height: height,
+        width: width,
+        callback: ()=>{
+          this.messageToComponent("Renderer", "markDirty");
         }
       };
       let sheet = {};
@@ -71,7 +70,6 @@ export class Sprite extends Entity {
       });
     });
 
-    this.Sprite = utilities.exists(params.defaultSprite)? params.defaultSprite : 0;
   }
 
   set Sprite(name){
@@ -92,6 +90,10 @@ export class Sprite extends Entity {
   }
 
   get Sheet(){
-    return privateProperties[this.name].sheet;
+    return privateProperties[this.name].currentSheet;
+  }
+
+  get SheetImage(){
+    return this.getFromComponent(privateProperties[this.name].currentSheet + "Image", "asObject");
   }
 }

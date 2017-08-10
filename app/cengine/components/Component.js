@@ -11,16 +11,6 @@ const privateProperties = new WeakMap();
  * @memberof CanvasEngine.Components
  */
 export class Component {
-  constructor(entity, propertyCallback){
-    let id = 'comp' + utilities.randName();
-    Object.defineProperties(this, {
-      id: properties.lockedProperty(id)
-    });
-
-    privateProperties[this.id] = {};
-    privateProperties[this.id].Entity = entity;
-    privateProperties[this.id].propertyCallback = propertyCallback;
-  }
 
   get propertyCallback(){
     return privateProperties[this.id].propertyCallback;
@@ -30,16 +20,58 @@ export class Component {
     return privateProperties[this.id].Entity;
   }
 
+  get isInitializing(){
+    return privateProperties[this.id].initializing;
+  }
+
+  static get utilities(){
+    return utilities;
+  }
+
+  constructor(entity, propertyCallback=()=>{}){
+    let id = 'comp' + utilities.randName();
+    Object.defineProperties(this, {
+      id: properties.lockedProperty(id)
+    });
+
+    privateProperties[this.id] = {
+      Entity: entity,
+      propertyCallback: propertyCallback,
+      initializing: true
+    };
+
+  }
+
+  onChange(value){
+    if(!this.isInitializing){
+      this.propertyCallback(value);
+    }
+  }
+
+  initialize(){
+    privateProperties[this.id].initializing = true;
+  }
+
+  initialized(){
+    privateProperties[this.id].initializing = false;
+  }
+
   /**
    * Return a basic object representation of this component's data.
    *
    * @abstract
+   * @throws If not overridden
    */
   asObject(){
-    throw "Not Implemented Yet!";
+    throw "Class missing override!";
   }
 
   setProperty(name, value, locked = false){
-    properties.observe({name:name, value:value, locked:locked, callback: privateProperties[this.id].propertyCallback}, this);
+    properties.observe({
+      name:name,
+      value:value,
+      locked:locked,
+      callback: privateProperties[this.id].propertyCallback
+    }, this);
   }
 }

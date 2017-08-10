@@ -49,7 +49,7 @@ var game = function(){
       }
     ], function(){
       let l = CanvasEngine.EntityTracker.getEntities(["Loading"])[0];
-      l.messageToComponent("Text", "setText", "All resources loaded.");
+      l.componentProperty("Text", "text", "All Resources Loaded.");
       document.getElementById("chakara").click();
     });
 

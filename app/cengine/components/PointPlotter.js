@@ -9,7 +9,6 @@
 
 import {Component} from "./Component.js";
 import {properties} from "../engineParts/propertyDefinitions.js";
-import * as utilities from "../engineParts/utilities.js";
 
 const privateProperties = new WeakMap();
 
@@ -31,7 +30,7 @@ export class PointPlotter extends Component {
     privateProperties[this.id].coordinateArray = [];
     let coordinateObj = {};
     this.setProperty("coords", coordinateObj);
-    if(utilities.exists(params.coords)){
+    if(Component.utilities.exists(params.coords)){
       this.plot(params.coords);
     }
   }
@@ -42,7 +41,7 @@ export class PointPlotter extends Component {
    */
   plot(coords){
     privateProperties[this.id].coordinateArray = coords;
-    for (var i = 1; i <= coords.length; i++) {
+    for (let i = 1; i <= coords.length; i++) {
 
       // If we don't have the x coordinate property, create it.
       if(!this.coords.hasOwnProperty("x"+i)) {
