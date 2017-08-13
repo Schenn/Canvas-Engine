@@ -1,4 +1,4 @@
-import {properties} from "./propertyDefinitions";
+const privateProperties = new WeakMap();
 
 /**
  * Construct an Enhanced Context from a canvas
@@ -8,13 +8,17 @@ import {properties} from "./propertyDefinitions";
  * @property {CanvasRenderingContext2D} ctx
  */
 class EnhancedContext {
+
+  get ctx(){
+    return privateProperties[this.id].ctx;
+  }
+
   /**
    * @param {HTMLCanvasElement} canvas
    */
   constructor(canvas){
-    Object.defineProperties(this, {
-      ctx: properties.lockedProperty(canvas.getContext('2d'))
-    });
+    this.id = `ect_${canvas.parentNode.childNodes.length}`;
+    privateProperties[this.id].ctx = canvas.getContext("2d");
   }
 
   /**
