@@ -1,6 +1,4 @@
-/**
- * Created by schenn on 6/23/16.
- */
+
 import {properties} from "../engineParts/propertyDefinitions.js";
 import * as utilities from "../engineParts/utilities.js";
 const privateProperties = new WeakMap();
@@ -29,7 +27,13 @@ export class Component {
   }
 
   constructor(entity, propertyCallback=()=>{}){
-    let id = 'comp' + utilities.randName();
+
+    // Set an 'id' property but don't let others change it.
+    // In addition, since the value is used to determine context,
+    //  We can't just use a generic getter here.  It would need something
+    // to get and a way to identify it as the instance's value over a class
+    // weakmap reference.
+    let id = `comp${utilities.randName()}`;
     Object.defineProperties(this, {
       id: properties.lockedProperty(id)
     });
@@ -66,6 +70,14 @@ export class Component {
     throw "Class missing override!";
   }
 
+  /**
+   * Set an additional property on this object which will trigger the
+   *  property change callback triggers.
+   *
+   * @param name
+   * @param value
+   * @param locked
+   */
   setProperty(name, value, locked = false){
     properties.observe({
       name:name,
