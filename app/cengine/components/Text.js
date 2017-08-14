@@ -151,7 +151,6 @@ export class Text extends Component {
     this.text = text;
     this.maxWidth = width;
     this.initialized();
-    this.propertyCallback(this);
   }
 
   /**

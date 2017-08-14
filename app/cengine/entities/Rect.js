@@ -11,13 +11,6 @@
 
 import {Entity} from "./Entity.js";
 
-const defaultParams = {
-  fromCenter:false,
-  height: 100,
-  width: 100,
-  fillStyle: "#000000"
-};
-
 /**
  * Manage the information needed to render a Rectangular object on the screen.
  *
@@ -29,10 +22,13 @@ export class Rect extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
 
-    let myParams = {};
-
-    Object.assign(myParams, {draw: this.draw}, defaultParams);
-    EntityManager.attachComponent(this, "Renderer", myParams);
+    EntityManager.attachComponent(this, "Renderer", {
+      draw: this.draw,
+      fromCenter: params.fromCenter || false,
+      height: params.height || 100,
+      width: params.height || 100,
+      fillStyle: params.fillStyle || "#000000"
+    });
 
   }
 
@@ -41,6 +37,7 @@ export class Rect extends Entity {
    * @param ctx
    */
   draw(ctx){
-    ctx.drawRect(this);
+    console.log(this.asObject());
+    ctx.drawRect(this.asObject());
   }
 }

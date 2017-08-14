@@ -126,11 +126,7 @@ export class Screen {
       // We only need reference to the base canvas in the screen as a fixed jQuery wrapped object.
       privateProperties[this.id].canvases[z] = getEnhancedContext(
           privateProperties[this.id].baseCanvas
-      ).addZLayer(
-        this.height,
-        this.width,
-        z
-      );
+      ).addZLayer(z);
     }
   }
 

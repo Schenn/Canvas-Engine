@@ -46,7 +46,8 @@ export class MobileSprite extends AnimatedSprite {
      */
     EntityManager.attachComponent(this, {
         "Timer": {
-          "movementTimer": (utilities.exists(params.movementTimer)) ? Object.assign({}, {
+          "movementTimer": (utilities.exists(params.movementTimer)) ?
+              Object.assign({}, {
             onUpdate: delta=> {
               this.messageToComponent("Movement", "move", delta);
             }

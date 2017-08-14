@@ -93,11 +93,12 @@ export class Button extends Entity {
     super(params, EntityManager);
     privateProperties[this.name] = {};
 
-    this.Background = params.background;
-
     if(utilities.exists(params.hover)){
       this.Hover = params.hover;
     }
+
+    this.Background = params.background;
+
     let name = this.name;
     privateProperties[name].padding = params.padding;
     privateProperties[name].isHovering = false;
@@ -126,7 +127,10 @@ export class Button extends Entity {
       params)
     );
 
-    EntityManager.attachComponent(this, "Renderer", Object.assign({}, { fromCenter: true,
+    EntityManager.attachComponent(this,
+        "Renderer",
+        Object.assign({}, {
+      fromCenter: true,
       /**
        * Use the background object's clearInfo.
        * @param {Canvas.enhancedContext} ctx
@@ -171,11 +175,7 @@ export class Button extends Entity {
         }
 
         target.messageToComponent(
-          "Renderer", "setPosition", {x: this.x}
-        );
-
-        target.messageToComponent(
-          "Renderer", "setPosition", {y: this.y}
+          "Renderer", "setPosition", {x: this.x, y: this.y}
         );
 
         target.messageToComponent(
@@ -187,12 +187,14 @@ export class Button extends Entity {
         // Draw the background
         target.messageToComponent("Renderer", "render", ctx);
 
-        target.messageToComponent("Renderer", "resize", size);
-
 
         // Draw the text
-        ctx.setDefaults(this);
-        ctx.drawText(Object.assign({}, this, this.Entity.getFromComponent("Text", "asObject")));
+        ctx.setDefaults(this.asObject());
+        ctx.drawText(
+            Object.assign({},
+                this.asObject(),
+                text)
+        );
       }
     },{x: params.x, y: params.y, fillStyle: params.fillStyle}));
   }

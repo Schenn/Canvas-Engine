@@ -18,6 +18,7 @@ class EnhancedContext {
    */
   constructor(canvas){
     this.id = `ect_${canvas.parentNode.childNodes.length}`;
+    privateProperties[this.id] = {};
     privateProperties[this.id].ctx = canvas.getContext("2d");
   }
 
@@ -970,6 +971,7 @@ class EnhancedContext {
    * @returns {HTMLElement}
    */
   addZLayer(z){
+    console.log(this.id);
     let tag = 'zLayer' + z;
     let canvas = document.createElement('canvas');
     canvas.setAttribute("id", tag);

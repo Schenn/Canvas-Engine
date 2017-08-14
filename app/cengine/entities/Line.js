@@ -11,7 +11,6 @@
  */
 
 import {Entity} from "./Entity.js";
-import * as utilities from "../engineParts/utilities.js";
 
 /**
  * A line manages the information needed for rendering lines between coordinates.
@@ -33,10 +32,10 @@ export class Line extends Entity {
       rounded: false,
       // Draw a line by squishing together the renderer properties and the coordinates from the pointPlotter
       draw: function(ctx){
-        ctx.drawLine($.extend({}, this, Line.getFromComponent("PointPlotter", "getCoordinatesAsObject")));
+        ctx.drawLine(Object.assign({}, this.asObject(), Line.getFromComponent("PointPlotter", "getCoordinatesAsObject")));
       },
       clearInfo: function(){
-        return $.extend({},Line.getFromComponent("PointPlotter", "getArea"),{"fromCenter":false});
+        return Object.assign({},Line.getFromComponent("PointPlotter", "getArea"),{"fromCenter":false});
       }
     };
 

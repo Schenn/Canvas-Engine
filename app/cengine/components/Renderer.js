@@ -591,11 +591,10 @@ export class Renderer extends Component {
    * @param {GeneralTypes~coords} position
    */
   setPosition(position) {
-    if (this.utilities.exists(position.x)) {
+    if (Component.utilities.exists(position.x)) {
       this.x = position.x;
     }
-
-    if (this.utilities.exists(position.y)) {
+    if (Component.utilities.exists(position.y)) {
       this.y = position.y;
     }
 
@@ -606,10 +605,10 @@ export class Renderer extends Component {
    * @param {{ height: number, width: number}} size
    */
   resize(size) {
-    if (this.utilities.exists(size.height)) {
+    if (Component.utilities.exists(size.height)) {
       this.height = size.height;
     }
-    if (this.utilities.exists(size.width)) {
+    if (Component.utilities.exists(size.width)) {
       this.width = size.width;
     }
   }

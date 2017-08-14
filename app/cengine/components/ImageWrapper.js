@@ -33,7 +33,6 @@ export class ImageWrapper extends Component{
   set section(section){
 
     this.initialize();
-
     if(Component.utilities.exists(section.sx)) {
       this.sx = section.sx;
     } else if(Component.utilities.exists(section.x)){
@@ -47,15 +46,15 @@ export class ImageWrapper extends Component{
     }
 
     if(Component.utilities.exists(section.sWidth)){
-      this.sw = section.sWidth;
+      this.sWidth = section.sWidth;
     } else if(Component.utilities.exists(section.width)){
-      this.sw = section.width;
+      this.sWidth = section.width;
     }
 
     if(Component.utilities.exists(section.sHeight)){
-      this.sh = section.sHeight;
+      this.sHeight = section.sHeight;
     } else if(Component.utilities.exists(section.height)){
-      this.sh = section.height;
+      this.sHeight = section.height;
     }
 
     if(Component.utilities.exists(section.cropFromCenter)){
@@ -63,15 +62,14 @@ export class ImageWrapper extends Component{
     }
 
     this.initialized();
-    this.onChange(section);
   }
 
   get source(){
-    return privateProperties[this.name].source;
+    return privateProperties[this.id].source;
   }
 
   set source(source){
-    privateProperties[this.name].source = source instanceof Image ?
+    privateProperties[this.id].source = source instanceof Image ?
         source.src :
         source;
 
@@ -79,59 +77,59 @@ export class ImageWrapper extends Component{
   }
 
   get sx(){
-    return privateProperties[this.name].sx;
+    return privateProperties[this.id].sx;
   }
 
   set sx(sx){
     if(sx < 0){
       throw "Got a negative sx for this Image Component.";
     }
-    privateProperties[this.name].sx = sx;
+    privateProperties[this.id].sx = sx;
     this.onChange(sx);
   }
 
   get sy(){
-    return privateProperties[this.name].sy;
+    return privateProperties[this.id].sy;
   }
 
   set sy(sy){
     if(sy < 0){
       throw "Got an negative sy for an image component: " + sy;
     }
-    privateProperties[this.name].sy = sy;
+    privateProperties[this.id].sy = sy;
     this.onChange(sy);
   }
 
   get sWidth(){
-    return privateProperties[this.name].sw;
+    return privateProperties[this.id].sw;
   }
 
   set sWidth(sWidth){
     if(sWidth < 0){
       throw "Got a negative width for this Image Component.";
     }
-    privateProperties[this.name].sw = sWidth;
+    privateProperties[this.id].sw = sWidth;
     this.onChange(sWidth);
   }
 
   get sHeight(){
-    return privateProperties[this.name].sh;
+    return privateProperties[this.id].sh;
   }
 
   set sHeight(sHeight){
     if(sHeight < 0){
       throw "Got a negative height for this Image Component.";
     }
-    privateProperties[this.name].sh = sHeight;
+    privateProperties[this.id].sh = sHeight;
     this.onChange(sHeight);
   }
 
   get cropFromCenter(){
-    return privateProperties[this.name].cropFromCenter;
+    return privateProperties[this.id].cropFromCenter;
   }
 
   set cropFromCenter(crop){
-    privateProperties[this.name].cropFromCenter = crop;
+    privateProperties[this.id].cropFromCenter = crop;
     this.onChange(crop);
   }
 
@@ -150,7 +148,7 @@ export class ImageWrapper extends Component{
   constructor(params, entity){
     super(entity, params.callback);
 
-    privateProperties[this.name] = {
+    privateProperties[this.id] = {
       sx: 0,
       sy: 0,
       sw: 0,
@@ -161,7 +159,9 @@ export class ImageWrapper extends Component{
 
     if(Component.utilities.exists(params.source)){
       this.source = params.source;
-      this.section = params;
+      if(params.sprite){
+        this.section = params.sprite;
+      }
     } else {
       if(Component.utilities.exists(params.image)){
         this.source = params.image;
@@ -169,13 +169,15 @@ export class ImageWrapper extends Component{
         let keys = Object.keys(params);
         if(keys.length === 1 && Component.utilities.exists(params[keys].source)){
           this.source = params[keys].source;
-          this.section = params[keys];
+          if(params[keys].sprite){
+            this.section = params[keys].sprite;
+          }
         }
       }
     }
 
     if(this.source === "") {
-      console.log(privateProperties[this.name]);
+      console.log(privateProperties[this.id]);
       throw "Source missing from Image Component";
     }
 

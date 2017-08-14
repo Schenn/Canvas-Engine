@@ -37,7 +37,7 @@ export class Sprite extends Entity {
       draw: function(ctx){
         ctx.drawImage(
           Object.assign({},
-            this,
+            this.asObject(),
             this.Entity.SheetImage
         ));
       }
@@ -45,12 +45,12 @@ export class Sprite extends Entity {
     Object.assign(myParams, params);
 
     this.EntityManager.attachComponent(this, "Renderer", myParams);
-    this.attachSpriteSheets(Object.keys(params.spritesheets), params.width, params.height);
+    this.attachSpriteSheets(params, params.width, params.height);
     this.Sprite = params.defaultSprite ? params.defaultSprite : 0;
   }
 
-  attachSpriteSheets(refNames, width, height){
-
+  attachSpriteSheets(params, width, height){
+    let refNames = Object.keys(params.spritesheets);
     refNames.forEach((refName)=>{
       let ssheet = params.spritesheets[refName];
       let image = {};
