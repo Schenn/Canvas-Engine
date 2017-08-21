@@ -120,6 +120,7 @@ export class Text extends Component {
   }
 
   set font(newFont){
+    this.initialize();
     // Find a font weight in the new font if one was provided, if not keep the original value
     let weightMatches = newFont.match(/(\d00|bold\D*|lighter|normal)/);
     this.fontWeight = (weightMatches !== null) ? weightMatches[0] : this.fontWeight;
@@ -128,6 +129,7 @@ export class Text extends Component {
     this.fontSize = (sizeMatches !== null) ? sizeMatches[0] : this.fontSize;
 
     this.fontFamily = newFont.replace(this.fontWeight, "").replace(this.fontSize, "").trim();
+    this.initialized();
   }
 
   constructor(params, entity) {
@@ -142,7 +144,6 @@ export class Text extends Component {
       text = "",
       width = 0} = params;
 
-    this.initialize();
     this.align = align;
     this.baseline = baseline;
     this.fontWeight = fontWeight;

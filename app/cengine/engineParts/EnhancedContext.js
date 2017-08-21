@@ -13,6 +13,14 @@ class EnhancedContext {
     return privateProperties[this.id].ctx;
   }
 
+  get container(){
+    return privateProperties[this.id].ctx.canvas.parentNode;
+  }
+
+  get canvas(){
+    return privateProperties[this.id].ctx.canvas;
+  }
+
   /**
    * @param {HTMLCanvasElement} canvas
    */
@@ -27,10 +35,9 @@ class EnhancedContext {
    * @param {GeneralTypes~ClearInfo} clearInfo
    */
   clear(clearInfo){
-    let canvas = this.ctx.canvas;
     // Clear entire canvas
     if (!clearInfo.width && !clearInfo.height) {
-      this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     } else {
       if(clearInfo.fromCenter) {
         this.ctx.clearRect(
@@ -40,7 +47,8 @@ class EnhancedContext {
             clearInfo.height
         );
       } else {
-        this.ctx.clearRect(clearInfo.x, clearInfo.y, clearInfo.width, clearInfo.height);
+        this.ctx.clearRect(clearInfo.x, clearInfo.y,
+            clearInfo.width, clearInfo.height);
       }
     }
   }
@@ -67,7 +75,6 @@ class EnhancedContext {
    *
    */
   setDefaults(defaultParams){
-
     this.ctx.fillStyle = defaultParams.fillStyle;
     this.ctx.strokeStyle = defaultParams.strokeStyle;
     this.ctx.lineWidth = defaultParams.strokeWidth;
@@ -666,7 +673,7 @@ class EnhancedContext {
     let height = this.ctx.measureText("MWO").width + 2;
     let maxWidth = (typeof textParams.width !== "undefined" && textParams.width > 0) ?
         textParams.width :
-        this.ctx.canvas.width;
+        this.canvas.width;
 
     for(let n = 0; n < words.length; n++) {
       let testLine = line + words[n] + ' ';
@@ -775,7 +782,12 @@ class EnhancedContext {
       params.y = params.height / 2;
     }
     this.positionShape(params, params.width, params.height);
-    imgData = ctx.getImageData(params.x - params.width / 2, params.y - params.height / 2, params.width, params.height);
+    imgData = this.ctx.getImageData(
+        params.x - params.width / 2,
+        params.y - params.height / 2,
+        params.width,
+        params.height);
+
     data = imgData.data;
     len = data.length;
 
@@ -795,7 +807,10 @@ class EnhancedContext {
       }
     }
     // Put pixels on canvas
-    this.ctx.putImageData(imgData, params.x - params.width / 2, params.y - params.height / 2);
+    this.ctx.putImageData(imgData,
+        params.x - params.width / 2,
+        params.y - params.height / 2
+    );
     this.ctx.restore();
   }
 
@@ -975,8 +990,8 @@ class EnhancedContext {
     let tag = 'zLayer' + z;
     let canvas = document.createElement('canvas');
     canvas.setAttribute("id", tag);
-    canvas.setAttribute("height", this.ctx.canvas.getAttribute("height"));
-    canvas.setAttribute("width", this.ctx.canvas.getAttribute("width"));
+    canvas.setAttribute("height", this.canvas.getAttribute("height"));
+    canvas.setAttribute("width", this.canvas.getAttribute("width"));
     canvas.style['z-index'] = z;
     this.ctx.canvas.parentNode.appendChild(canvas);
     return canvas;
@@ -996,9 +1011,8 @@ class EnhancedContext {
   maximize(modifier = 100){
     // Divide the modifier by 100, if there is no modifier set it to the default
     let mod = modifier / 100;
-    let parent = this.ctx.canvas.parentNode;
-    this.ctx.canvas.setAttribute("height", Math.ceil(parent.clientHeight * mod));
-    this.ctx.canvas.setAttribute("width", Math.ceil(parent.clientHeight * mod));
+    this.canvas.setAttribute("height", Math.ceil(this.container.clientHeight * mod));
+    this.canvas.setAttribute("width", Math.ceil(this.container.clientHeight * mod));
   }
 
 }

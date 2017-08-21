@@ -89,6 +89,82 @@ export class Button extends Entity {
     privateProperties[this.name].isHovering = hover;
   }
 
+  get padding(){
+    return privateProperties[this.name].padding;
+  }
+
+  // Hover
+  onMouseOver() {
+    this.isHovering = true;
+    this.messageToComponent("Renderer", "markDirty");
+  }
+
+  // Stop Hovering
+  onMouseOut(){
+    this.isHovering = false;
+    this.messageToComponent("Renderer", "markDirty");
+  }
+
+  onTextChange(){
+    this.messageToComponent("Renderer", "markDirty");
+  }
+
+  /**
+   * Use the background object's clearInfo.
+   * @param {Canvas.enhancedContext} ctx
+   * @memberof CanvasEngine.Entities.Button
+   * @returns {Button~Background#components~Renderer.clearInfo}
+   */
+  clearInfo(ctx){
+    let text = this.getFromComponent("Text","asObject");
+    // Return the background's clearInfo
+    return Object.assign({},
+        this.Background.getFromComponent("Renderer", "clearInfo", ctx),  {
+          width : ((ctx.measureText({font: text.font, text:text.text}).width)+4) + (this.padding * 2),
+          height : ((ctx.measureText({font: text.font, text:"MWO"}).width/3)+4) + (this.padding * 2)
+        });
+  }
+
+  /**
+   * Draw the button. Starting with the background or hover state background, then the text.
+   * @memberof CanvasEngine.Entities.Button
+   * @param {Canvas.enhancedContext} ctx
+   * @this {CanvasEngine.Components.Renderer}
+   */
+  draw(ctx){
+    // Resize the background based on the height and width of the text, adjusted by the padding params.
+    let text = this.Entity.getFromComponent("Text","asObject");
+    let size = {
+      width : (ctx.measureText({font: text.font, text:text.text}).width)+4,
+      //noinspection JSSuspiciousNameCombination
+      // The measureText method only returns a width of a text element. To get a height, we use the average of the largest characters.
+      height : (ctx.measureText({font: text.font, text:"MWO"}).width/3)+4
+    };
+
+    size.width += (this.Entity.padding * 2);
+    size.height += (this.Entity.padding * 2);
+
+    let target = (this.Entity.isHovering && utilities.exists(this.Entity.Hover)) ?
+      this.Entity.Hover :
+      this.Entity.Background;
+
+    target.messageToComponent("Renderer", "setPosition",
+        {x: this.x, y: this.y}
+    );
+
+    target.messageToComponent("Renderer", "resize", size);
+    target.messageToComponent("Renderer", "render", ctx);
+
+
+    // Draw the text
+    ctx.setDefaults(this.asObject());
+    ctx.drawText(
+        Object.assign({},
+            this.asObject(),
+            text)
+    );
+  }
+
   constructor(params, EntityManager){
     super(params, EntityManager);
     privateProperties[this.name] = {};
@@ -106,102 +182,33 @@ export class Button extends Entity {
     EntityManager.attachComponent(this,  {
       "Mouse":{
         "HoverMouse": {
-          onMouseOver: ()=> {
-            this.isHovering = true;
-            this.messageToComponent("Renderer", "markDirty");
-          }, onMouseOut: ()=> {
-            this.isHovering = false;
-            this.messageToComponent("Renderer", "markDirty");
-          },
+          onMouseOver: this.onMouseOver.bind(this),
+          onMouseOut: this.onMouseOut.bind(this),
           onClick: (params.onClick.bind(this) || ((e)=>{}))
         }
       }
     });
 
-    EntityManager.attachComponent(this, "Text", Object.assign({},
+    EntityManager.attachComponent(this, "Text",
+      Object.assign({},
       {
-        callback: ()=>{
-          this.messageToComponent("Renderer", "markDirty");
-        }
+        callback: this.onTextChange.bind(this)
       },
       params)
     );
+    /**
+     * @this Button#components~Renderer
+     * @param ctx
+     */
 
     EntityManager.attachComponent(this,
         "Renderer",
         Object.assign({}, {
       fromCenter: true,
-      /**
-       * Use the background object's clearInfo.
-       * @param {Canvas.enhancedContext} ctx
-       * @memberof CanvasEngine.Entities.Button
-       * @returns {Button~Background#components~Renderer.clearInfo}
-       */
-      clearInfo: (ctx)=>{
-        let text = this.getFromComponent("Text","asObject");
-        // Return the background's clearInfo
-        return Object.assign({},
-          this.Background.getFromComponent("Renderer", "clearInfo", ctx),  {
-          width : ((ctx.measureText({font: text.font, text:text.text}).width)+4) + (params.padding * 2),
-          height : ((ctx.measureText({font: text.font, text:"MWO"}).width/3)+4) + (params.padding * 2)
-        });
-      },
-      /**
-       * Draw the button. Starting with the background or hover state background, then the text.
-       * @memberof CanvasEngine.Entities.Button
-       * @param {Canvas.enhancedContext} ctx
-       * @this {CanvasEngine.Components.Renderer}
-       */
-      draw: function(ctx){
-      // Resize the background based on the height and width of the text, adjusted by the padding params.
-        let text = this.Entity.getFromComponent("Text","asObject");
-        let size = {
-          width : (ctx.measureText({font: text.font, text:text.text}).width)+4,
-          //noinspection JSSuspiciousNameCombination
-          // The measureText method only returns a width of a text element. To get a height, we use the average of the largest characters.
-          height : (ctx.measureText({font: text.font, text:"MWO"}).width/3)+4
-        };
-
-        size.width += (params.padding * 2);
-        size.height += (params.padding * 2);
-
-        let target;
-
-        if(this.Entity.isHovering && utilities.exists(this.Entity.Hover)){
-          target = this.Entity.Hover;
-
-        } else {
-          target = this.Entity.Background;
-        }
-
-        target.messageToComponent(
-          "Renderer", "setPosition", {x: this.x, y: this.y}
-        );
-
-        target.messageToComponent(
-          "Renderer",
-          "resize",
-          size
-        );
-
-        // Draw the background
-        target.messageToComponent("Renderer", "render", ctx);
-
-
-        // Draw the text
-        ctx.setDefaults(this.asObject());
-        ctx.drawText(
-            Object.assign({},
-                this.asObject(),
-                text)
-        );
-      }
+      clearInfo: this.clearInfo.bind(this),
+      draw: this.draw
     },{x: params.x, y: params.y, fillStyle: params.fillStyle}));
   }
 
-  /**
-   * @this Button#components~Renderer
-   * @param ctx
-   */
 
 }

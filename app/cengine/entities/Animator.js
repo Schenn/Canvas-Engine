@@ -46,11 +46,7 @@ export class Animator extends Entity {
       {
         duration: privateProperties[this.name].duration,
         onElapsed: function(){
-          privateProperties[this.name].currentFrame++;
-          if(privateProperties[this.name].currentFrame > privateProperties[this.name].frameCount-1){
-            privateProperties[this.name].currentFrame = 0;
-          }
-          onFrameChange(privateProperties[this.name].frames[privateProperties[this.name].currentFrame]);
+          this.incrementFrame();
         }
       }
     );
@@ -67,6 +63,14 @@ export class Animator extends Entity {
    */
   enable(){
     this.messageToComponent("Timer", "enable");
+  }
+
+  incrementFrame(){
+    privateProperties[this.name].currentFrame++;
+    if(privateProperties[this.name].currentFrame > privateProperties[this.name].frameCount-1){
+      privateProperties[this.name].currentFrame = 0;
+    }
+    onFrameChange(privateProperties[this.name].frames[privateProperties[this.name].currentFrame]);
   }
 }
 

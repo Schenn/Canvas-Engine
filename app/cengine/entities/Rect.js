@@ -37,7 +37,6 @@ export class Rect extends Entity {
    * @param ctx
    */
   draw(ctx){
-    console.log(this.asObject());
     ctx.drawRect(this.asObject());
   }
 }

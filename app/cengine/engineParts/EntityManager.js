@@ -39,7 +39,6 @@
 import {getClassList} from "../EntityList.js";
 import {getComponentList} from "../ComponentList.js";
 import * as utilities from "./utilities.js";
-import {properties} from "./propertyDefinitions.js";
 
 const privateProperties = new WeakMap();
 
@@ -49,6 +48,16 @@ const privateProperties = new WeakMap();
  * @class
  */
 export class EntityManager {
+
+  get ResourceManager(){
+    return privateProperties[this].ResourceManager;
+  }
+
+  get EntityTracker(){
+    return privateProperties[this].EntityTracker;
+  }
+
+
   constructor(ResourceManager, EntityTracker) {
     if(!utilities.exists(ResourceManager)) throw "No ResourceManager provided";
     if(!utilities.exists(EntityTracker)) throw "No EntityTracker provided";
@@ -80,21 +89,21 @@ export class EntityManager {
   create(type, params){
 
     // Replace image, sound and SpriteSheet params with their values from the ResourceManager
-    if(utilities.exists(params.image)){
-      params.image = privateProperties[this].ResourceManager.getImage(params.image);
+    if(params.image){
+      params.image = this.ResourceManager.getImage(params.image);
     }
-    if(utilities.exists(params.spritesheet) && typeof(params.spritesheet) === "string"){
+    if(params.spritesheet && typeof(params.spritesheet) === "string"){
       let sheetName = params.spritesheet;
       params.spritesheet= {};
-      params.spritesheet[sheetName] = privateProperties[this].ResourceManager.getSpriteSheet(sheetName);
-    } else if(utilities.exists(params.spritesheets)){
+      params.spritesheet[sheetName] = this.ResourceManager.getSpriteSheet(sheetName);
+    } else if(params.spritesheets){
       let refNames = Object.keys(params.spritesheets);
 
-      refNames.forEach((refName, index)=>{
+      refNames.forEach((refName)=>{
         let sheetName = params.spritesheets[refName];
 
         if(typeof(sheetName) === 'string') {
-          params.spritesheets[refName] = privateProperties[this].ResourceManager.getSpriteSheet(sheetName);
+          params.spritesheets[refName] = this.ResourceManager.getSpriteSheet(sheetName);
         } else {
           console.log(sheetName);
           console.log(refName);
@@ -119,16 +128,16 @@ export class EntityManager {
     let entity= new constr(params, this);
 
     // Attach the click and other event handling components.
-    if(utilities.exists(params.onClick) ||
-      utilities.exists(params.onMouseOver) ||
-      utilities.exists(params.onMouseUp) ||
-      utilities.exists(params.onMouseDown) ||
-      utilities.exists(params.onMouseMove)){
+    if(params.onClick ||
+      params.onMouseOver ||
+      params.onMouseUp ||
+      params.onMouseDown ||
+      params.onMouseMove){
 
       this.attachComponent(entity, "Mouse", params);
     }
 
-    if(utilities.exists(params.keys)){
+    if(params.keys){
       this.attachComponent(entity, "KeyPress", params.keys);
     }
 

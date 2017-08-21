@@ -21,7 +21,7 @@ const privateProperties = new WeakMap();
  * @param onFinished
  * @returns {{}}
  */
-let processSprites = function(spriteCache, source, spriteWidth, spriteHeight, onFinished){
+const processSprites = function(spriteCache, source, spriteWidth, spriteHeight, onFinished){
   let sx = 0, sy= 0, index=0;
   let useCache = utilities.exists(spriteCache);
 
@@ -44,11 +44,9 @@ let processSprites = function(spriteCache, source, spriteWidth, spriteHeight, on
 };
 
 // If sprites are an object, take their data and fill in the rest.
-let processSpriteObject = function(spriteCache, spriteWidth, spriteHeight, onFinished) {
-  var sprites = {};
-  for(var name of Object.keys(spriteCache)){
-    console.log(name);
-    console.log(spriteCache[name]);
+const processSpriteObject = function(spriteCache, spriteWidth, spriteHeight, onFinished) {
+  let sprites = {};
+  for(let name of Object.keys(spriteCache)){
     sprites[name] = Object.assign({}, {width: spriteWidth, height: spriteHeight}, spriteCache[name]);
   }
   onFinished();
@@ -135,6 +133,17 @@ export class SpriteSheet {
     }
   }
 
+  isSpriteObject(){
+    return utilities.exists(privateProperties[this.id].spriteCache) &&
+        Object.keys(privateProperties[this.id].spriteCache).length > 0 &&
+        !utilities.isArray(privateProperties[this.id].spriteCache);
+  }
+
+  spriteExists(name){
+    return utilities.exists(privateProperties[this.id].spriteCache) &&
+    utilities.exists(privateProperties[this.id].spriteCache[name]);
+  }
+
   constructor(details){
     let id;
     if(details.source instanceof Image){
@@ -175,10 +184,7 @@ export class SpriteSheet {
     privateProperties[this.id].source = img;
     let work = ()=>{
       // If we have a spriteCache and it's an object, not an array
-      if(utilities.exists(privateProperties[this.id].spriteCache) &&
-        Object.keys(privateProperties[this.id].spriteCache).length > 0 &&
-        !utilities.isArray(privateProperties[this.id].spriteCache)){
-
+      if(this.isSpriteObject()){
         privateProperties[this.id].sprites = processSpriteObject(privateProperties[this.id].spriteCache,  privateProperties[this.id].spriteHeight,privateProperties[this.id].spriteWidth, ()=>{
           privateProperties[this.id].isProcessing = false;
         });
@@ -208,9 +214,7 @@ export class SpriteSheet {
   getSprite(name){
     let self = this;
     if(privateProperties[this.id].isProcessing === true){
-      if(utilities.exists(privateProperties[this.id].spriteCache) &&
-        !utilities.exists(privateProperties[this.id].spriteCache[name])
-      ){
+      if(!this.spriteExists(name)){
         throw "Sprite: " +name + " Not Found in SpriteSheet Data: "+ self.Source;
       }
 
