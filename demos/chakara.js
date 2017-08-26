@@ -1,11 +1,11 @@
-var game = function(){
+const game = function(){
   let CanvasEngine = null;
-  var randomTileMap = [];
+  let randomTileMap = [];
 
   this.randomizeMap = function(){
-    for(var y=0; (y * 32) < CanvasEngine.Screen.height;y++){
+    for(let y=0; (y * 32) < CanvasEngine.Screen.height;y++){
       randomTileMap[y]=[];
-      for(var x=0; (x * 32) < CanvasEngine.Screen.width; x++){
+      for(let x=0; (x * 32) < CanvasEngine.Screen.width; x++){
         randomTileMap[y][x] = Math.floor(Math.random() * (4));
       }
     }
