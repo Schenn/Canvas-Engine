@@ -7,14 +7,6 @@ and other events you'll need for your web game.
 
 To get started,
 
-run bower install to install the dependencies.
-    (Currently - only jQuery)
-    
-run grunt compile to compile out the dependencies and primary files.
-
-To add a bower library, run grunt installLibrary libraryName. This will 
-recompile the dependencies file after installing the new library.
-
 To connect the cengine script to the project, 
 
 script src='path/to/js/lib.min.js';
