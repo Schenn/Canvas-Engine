@@ -178,6 +178,19 @@ export class Button extends Entity {
     let name = this.name;
     privateProperties[name].padding = params.padding;
     privateProperties[name].isHovering = false;
+    /**
+     * @this Button#components~Renderer
+     * @param ctx
+     */
+
+    EntityManager.attachComponent(this,
+        "Renderer",
+        Object.assign({}, {
+          fromCenter: true,
+          clearInfo: this.clearInfo.bind(this),
+          draw: this.draw
+        },{x: params.x, y: params.y, fillStyle: params.fillStyle})
+    );
 
     EntityManager.attachComponent(this,  {
       "Mouse":{
@@ -196,18 +209,7 @@ export class Button extends Entity {
       },
       params)
     );
-    /**
-     * @this Button#components~Renderer
-     * @param ctx
-     */
 
-    EntityManager.attachComponent(this,
-        "Renderer",
-        Object.assign({}, {
-      fromCenter: true,
-      clearInfo: this.clearInfo.bind(this),
-      draw: this.draw
-    },{x: params.x, y: params.y, fillStyle: params.fillStyle}));
   }
 
 

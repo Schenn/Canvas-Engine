@@ -54,7 +54,7 @@
 import {properties} from "../engineParts/propertyDefinitions.js";
 import {Component} from "./Component.js";
 
-let privateProperties = new WeakMap();
+const privateProperties = new WeakMap();
 
 
 /**

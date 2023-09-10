@@ -12,10 +12,13 @@
     "url": "https://github.com/Schenn/Canvas-Engine.git"
   },
   "devDependencies": {
-    "babel-loader": "^7.1.1",
+    "babel-loader": "^7.1.5",
     "ink-docstrap": "^1.2.1",
-    "webpack": "^3.3.0"
+    "webpack": "^3.12.0"
   },
   "author": "steven.chennault@pcc.edu",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "babel-core": "^6.26.3"
+  }
 }

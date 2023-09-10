@@ -29,7 +29,7 @@ import {Button} from "./entities/Button.js";
  * @returns {Map}
  */
 export function getClassList(customEntities = new Map()) {
-  var classList = new Map();
+  let classList = new Map();
   classList.set("BaseEntity", Entity);
 
   classList.set("Image",ImageEntity);
@@ -48,7 +48,7 @@ export function getClassList(customEntities = new Map()) {
 
 
   // { 'namespace|name': class reference }
-  customEntities.forEach(function(name, classRef){
+  customEntities.forEach((name, classRef)=>{
     classList.set(name, classRef);
   });
 
