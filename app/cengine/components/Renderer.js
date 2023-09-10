@@ -3,12 +3,12 @@
  */
 /**
  * @callback Callbacks~Draw
- * @param {jQuery.enhancedContext} ctx
+ * @param {EnhancedContext} ctx
  */
 
 /**
  * @callback Callbacks~Clear
- * @param {jQuery.enhancedContext} ctx
+ * @param {EnhancedContext} ctx
  */
 /**
  * @typedef {object} ComponentParams~Renderer
@@ -219,11 +219,13 @@ export class Renderer extends Component {
   }
 
   set compositing(compositing){
-    if(['source-over', 'source-in', 'source-atop', 'destination-over', 'destination-in',
-        'destination-out', 'destination-atop', 'lighter', 'copy', 'xor', 'multiply',
-        'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light',
-        'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color',
-        'luminosity'].includes(compositing)){
+    const compositingEnum = {
+      'source-over':1, 'source-in':1, 'source-atop':1, 'destination-over':1, 'destination-in':1,
+      'destination-out':1, 'destination-atop':1, 'lighter':1, 'copy':1, 'xor':1, 'multiply':1,
+      'screen':1, 'overlay':1, 'darken':1, 'lighten':1, 'color-dodge':1, 'color-burn':1, 'hard-light':1,
+      'soft-light':1, 'difference':1, 'exclusion':1, 'hue':1, 'saturation':1, 'color':1,'luminosity':1
+    };
+    if(compositingEnum[compositing]){
       privateProperties[this.id].compositing = compositing;
       this.propertyCallback(compositing);
     }
@@ -430,7 +432,7 @@ export class Renderer extends Component {
    * @param {ComponentParams~Renderer} params The container of property values.
    * @param {CanvasEngine.Entities.Entity} entity The entity to attach the Renderer Component to
    */
-  constructor(params, entity) {
+  constructor(params = {}, entity) {
     super(entity, ()=>{this.markDirty();});
     privateProperties[this.id] = {};
     privateProperties[this.id].isDirty = true;
@@ -540,7 +542,7 @@ export class Renderer extends Component {
    * @param {Canvas.enhancedContext} ctx EnhancedContext
    */
   render (ctx) {
-    ctx.setDefaults(Object.assign({}, this));
+    ctx.setDefaults(...this);
     if(!privateProperties[this.id].hidden) {
       this.draw(ctx);
       privateProperties[this.id].isDirty = false;
