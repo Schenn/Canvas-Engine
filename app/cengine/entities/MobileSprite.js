@@ -49,11 +49,11 @@ export class MobileSprite extends AnimatedSprite {
           "movementTimer": (utilities.exists(params.movementTimer)) ?
               Object.assign({}, {
             onUpdate: delta=> {
-              this.messageToComponent("Movement", "move", delta);
+              this.askComponent("Movement", "move", delta);
             }
           }, params.movementTimer) : {
             onUpdate: delta=> {
-              this.messageToComponent("Movement", "move", delta);
+              this.askComponent("Movement", "move", delta);
             }
           }
         }
@@ -64,7 +64,7 @@ export class MobileSprite extends AnimatedSprite {
   updateRenderPosition(axis, val){
     let data = {};
     data[axis] = val;
-    this.messageToComponent("Renderer", "setPosition", data);
+    this.askComponent("Renderer", "setPosition", data);
     if(utilities.isFunction(this.onMovement)){
       this.onMovement.call(this, data);
     }

@@ -142,35 +142,15 @@ export class Entity{
   }
 
   /**
-   * Tell a specific component to do something, maybe with arguments.
+   * Ask a component to do something, or get a value from its properties.
+   * Replaces messageToComponent and getFromComponent.
    *
-   * @param {string} componentName
-   * @param {string} funcName
-   * @param {*} [args]
-   */
-  messageToComponent(componentName, funcName, args){
-    let comp = privateProperties[this.name].components.get(componentName);
-    if(utilities.exists(comp) &&
-      utilities.isFunction(comp[funcName])){
-
-      if(utilities.exists(args)) {
-        comp[funcName].call(comp, args);
-      }else {
-        comp[funcName].call(comp);
-      }
-    }
-  }
-
-  /**
-   * Get data from a component
-   *
-   * @param {string} componentName
-   * @param {string} funcName
-   * @param {*} [args]
-   * @throws Will throw an error if the Entity does not have the given component or the component doesn't have the given function
+   * @param componentName
+   * @param funcName
+   * @param args
    * @returns {*}
    */
-  getFromComponent(componentName, funcName, args) {
+  askComponent(componentName, funcName, args) {
     const comp = privateProperties[this.name].components.get(componentName);
     if (comp) {
       if (typeof comp[funcName] === "function") {

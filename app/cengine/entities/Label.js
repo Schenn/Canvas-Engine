@@ -63,11 +63,11 @@ export class Label extends Entity {
   // Called attached to this entity's Renderer context
   draw(ctx){
 
-    let renderProps = this.getFromComponent("Renderer", "asObject");
+    let renderProps = this.askComponent("Renderer", "asObject");
 
     ctx.setDefaults(renderProps);
 
-    let drawProperties = Object.assign({}, renderProps, this.getFromComponent("Text", "asObject"));
+    let drawProperties = Object.assign({}, renderProps, this.askComponent("Text", "asObject"));
     ctx.drawText(drawProperties);
 
     let textArea = this.textArea(ctx);
@@ -100,7 +100,7 @@ export class Label extends Entity {
       _x = this.componentProperty("Renderer", "x") - 1,
       _y = this.componentProperty("Renderer", "y") - 1;
 
-    let text = this.getFromComponent("Text", "asObject");
+    let text = this.askComponent("Text", "asObject");
 
     let phrase = text.text;
 

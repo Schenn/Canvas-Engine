@@ -165,9 +165,9 @@ export class EntityTracker {
       delete privateProperties[this].entityProxies[name];
     };
     if(entity.hasComponent("Renderer")){
-      entity.messageToComponent("Renderer", "hide", clearEntity);
+      entity.askComponent("Renderer", "hide", clearEntity);
     } else if(entity.hasComponent("onDelete")){
-      entity.messageToComponent("onDelete", "onDelete", {doLast: clearEntity});
+      entity.askComponent("onDelete", "onDelete", {doLast: clearEntity});
     } else {
       clearEntity();
     }
@@ -211,14 +211,14 @@ export class EntityTracker {
       if (!(privateProperties[this].zExcludedFromInteractions[z])) {
         for(let entity of this.getEntities(this.getEntitiesByZ(z))) {
           let containsPixel = false;
-          containsPixel = entity.getFromComponent("Renderer", "containsPixel", p);
+          containsPixel = entity.askComponent("Renderer", "containsPixel", p);
           // If we didn't find it, but we're searching an area larger than one, expand the search radius.
           if (!containsPixel) {
             if (w > 1) {
               let tempCoord = Object.assign({}, p);
               for (let width = 1; width <= w; width++) {
                 tempCoord.x++;
-                containsPixel = entity.getFromComponent("Renderer", "containsPixel", tempCoord);
+                containsPixel = entity.askComponent("Renderer", "containsPixel", tempCoord);
                 if (containsPixel) {
                   break;
                 }
@@ -231,7 +231,7 @@ export class EntityTracker {
               let tempCoord = Object.assign({}, p);
               for (let height = 1; height <= h; height++) {
                 tempCoord.y++;
-                containsPixel = entity.getFromComponent("Renderer", "containsPixel", tempCoord);
+                containsPixel = entity.askComponent("Renderer", "containsPixel", tempCoord);
                 if (containsPixel) {
                   break;
                 }

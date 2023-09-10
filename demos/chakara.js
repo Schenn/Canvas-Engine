@@ -107,14 +107,14 @@ const game = function(){
 
   this.addMovable = function(){
     function h(sprite, pos){
-      sprite.messageToComponent("Movement", "travel", {
+      sprite.askComponent("Movement", "travel", {
         x: (pos) ? 32: -32,
         speed: 50
       });
     }
 
     function v(sprite, pos){
-      sprite.messageToComponent("Movement", "travel", {
+      sprite.askComponent("Movement", "travel", {
         y: (pos) ? 32: -32,
         speed: 50
       });

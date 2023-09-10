@@ -197,7 +197,7 @@ var game = function(){
           console.log("Invalid Player number");
           break;
       }
-      var positionData = position.getFromComponent("Renderer", "asObject");
+      var positionData = position.askComponent("Renderer", "asObject");
       var token = {
         x:positionData.x,
         y:positionData.y,
@@ -304,7 +304,7 @@ var game = function(){
     // Draw a line between their xy coordinates + 1/2 their height and width as they are not being drawn fromCenter
     var coords = [];
     for(var i = 0; i < positions.length; i++){
-      var data = positions[i].getFromComponent("Renderer", "asObject");
+      var data = positions[i].askComponent("Renderer", "asObject");
       coords.push ({
         x: data.x + data.width/2, y:data.y + data.height/2
       });
@@ -416,7 +416,7 @@ var game = function(){
       y:0,
       onMovement: function(data){
         if(data.dir == "y" && data.val >= CanvasEngine.Screen.height()){
-          this.messageToComponent("Movement", "setOrigin",
+          this.askComponent("Movement", "setOrigin",
             {x : Math.ceil(Math.random() * CanvasEngine.Screen.width()),
               y: 0
             });

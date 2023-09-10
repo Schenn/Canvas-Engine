@@ -22,11 +22,11 @@ export class TileMap extends Entity {
       Click: {
         "TileClick": {
           onClick: coord=>{
-            this.messageToComponent("TileMap", "TileClick", coord);
+            this.askComponent("TileMap", "TileClick", coord);
           }
         },
         onScroll: ()=>{
-          this.messageToComponent("Renderer", "markDirty");
+          this.askComponent("Renderer", "markDirty");
         }
       },
       tileSize: {
@@ -43,16 +43,16 @@ export class TileMap extends Entity {
     EntityManager.attachComponent(this, "Renderer", Object.assign({}, {
       draw: function(ctx){
         // Draw each tile in the tilemap
-        let tiles = this.Entity.getFromComponent("TileMap", "getVisibleTiles", {width: CanvasEngine.Screen.width, height: CanvasEngine.Screen.height});
-        let tileSize = this.Entity.getFromComponent("TileMap", "TileSize");
-        let imgSource = this.Entity.getFromComponent("SpriteSheet", "source");
+        let tiles = this.Entity.askComponent("TileMap", "getVisibleTiles", {width: CanvasEngine.Screen.width, height: CanvasEngine.Screen.height});
+        let tileSize = this.Entity.askComponent("TileMap", "TileSize");
+        let imgSource = this.Entity.askComponent("SpriteSheet", "source");
 
         // for each row
         for(let y =0; y < tiles.length; y++){
           // for each col in row
           for(let x=0; x < tiles[y].length; x++){
             let spriteName = tiles[y][x];
-            let tile = this.Entity.getFromComponent("SpriteSheet", "getSprite", spriteName);
+            let tile = this.Entity.askComponent("SpriteSheet", "getSprite", spriteName);
 
 
             let output =Object.assign({},{
@@ -92,7 +92,7 @@ export class TileMap extends Entity {
    * @param direction
    */
   scroll(direction){
-    this.messageToComponent("TileMap", "scroll", direction);
+    this.askComponent("TileMap", "scroll", direction);
   }
 
   /**
@@ -101,7 +101,7 @@ export class TileMap extends Entity {
    * @param value
    */
   setTileAt(coord, value){
-    this.messageToComponent("TileMap", "setTile", {coord: coord, val: value});
-    this.messageToComponent("Renderer", "markDirty");
+    this.askComponent("TileMap", "setTile", {coord: coord, val: value});
+    this.askComponent("Renderer", "markDirty");
   }
 }

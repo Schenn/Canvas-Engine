@@ -59,7 +59,7 @@ export class Sprite extends Entity {
         height: height,
         width: width,
         callback: ()=>{
-          this.messageToComponent("Renderer", "markDirty");
+          this.askComponent("Renderer", "markDirty");
         }
       };
       let sheet = {};
@@ -75,9 +75,9 @@ export class Sprite extends Entity {
   set Sprite(name){
     privateProperties[this.name].currentSpriteName = name;
     // Set the current sprite image to nextFrame
-    this.messageToComponent(privateProperties[this.name].currentSheet+"Image",
+    this.askComponent(privateProperties[this.name].currentSheet+"Image",
       "setSprite",
-      this.getFromComponent(privateProperties[this.name].currentSheet+"Sheet", "getSprite", name)
+      this.askComponent(privateProperties[this.name].currentSheet+"Sheet", "getSprite", name)
     );
   }
 
@@ -94,6 +94,6 @@ export class Sprite extends Entity {
   }
 
   get SheetImage(){
-    return this.getFromComponent(privateProperties[this.name].currentSheet + "Image", "asObject");
+    return this.askComponent(privateProperties[this.name].currentSheet + "Image", "asObject");
   }
 }

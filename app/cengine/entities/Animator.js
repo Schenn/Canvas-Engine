@@ -56,13 +56,13 @@ export class Animator extends Entity {
    * Disable the Animator
    */
   disable(){
-    this.messageToComponent("Timer", "disable");
+    this.askComponent("Timer", "disable");
   }
   /**
    * Enable the Animator
    */
   enable(){
-    this.messageToComponent("Timer", "enable");
+    this.askComponent("Timer", "enable");
   }
 
   incrementFrame(){

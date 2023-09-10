@@ -12,6 +12,7 @@ import {Entity} from '../entities/Entity.js';
  *
  * @class ImageEntity
  * @memberOf CanvasEngine.Entities
+ * @extends Entity
  * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Image
  * @borrows CanvasEngine.Components.Image as CanvasEngine.Entities.Image#components~Renderer
  */
@@ -32,17 +33,17 @@ export class ImageEntity extends Entity {
   }
 
   redraw() {
-    this.messageToComponent('Renderer', 'markDirty');
+    this.askComponent('Renderer', 'markDirty');
   }
 
   draw(ctx) {
-    let output = Object.assign({}, this, this.Entity.getFromComponent('Image','asObject'));
+    let output = Object.assign({}, this, this.Entity.askComponent('Image','asObject'));
     console.log(output);
     ctx.drawImage(
         Object.assign(
             {},
             this.asObject(),
-            this.Entity.getFromComponent('Image', 'asObject')),
+            this.Entity.askComponent('Image', 'asObject')),
     );
   }
 }

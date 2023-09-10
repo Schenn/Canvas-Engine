@@ -46,7 +46,7 @@ export class Line extends Entity {
     // Now add a PointPlotter component
     EntityManager.attachComponent(this, "PointPlotter", {
       callback: ()=>{
-        this.messageToComponent("Renderer", "markDirty");
+        this.askComponent("Renderer", "markDirty");
       }
     });
   }
@@ -57,7 +57,7 @@ export class Line extends Entity {
    * @instance
    */
   plot(coords){
-    this.messageToComponent("PointPlotter", "plot", coords);
+    this.askComponent("PointPlotter", "plot", coords);
   }
 
 }

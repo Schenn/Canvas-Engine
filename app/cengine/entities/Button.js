@@ -96,17 +96,17 @@ export class Button extends Entity {
   // Hover
   onMouseOver() {
     this.isHovering = true;
-    this.messageToComponent("Renderer", "markDirty");
+    this.askComponent("Renderer", "markDirty");
   }
 
   // Stop Hovering
   onMouseOut(){
     this.isHovering = false;
-    this.messageToComponent("Renderer", "markDirty");
+    this.askComponent("Renderer", "markDirty");
   }
 
   onTextChange(){
-    this.messageToComponent("Renderer", "markDirty");
+    this.askComponent("Renderer", "markDirty");
   }
 
   /**
@@ -116,10 +116,10 @@ export class Button extends Entity {
    * @returns {Button~Background#components~Renderer.clearInfo}
    */
   clearInfo(ctx){
-    let text = this.getFromComponent("Text","asObject");
+    let text = this.askComponent("Text","asObject");
     // Return the background's clearInfo
     return Object.assign({},
-        this.Background.getFromComponent("Renderer", "clearInfo", ctx),  {
+        this.Background.askComponent("Renderer", "clearInfo", ctx),  {
           width : ((ctx.measureText({font: text.font, text:text.text}).width)+4) + (this.padding * 2),
           height : ((ctx.measureText({font: text.font, text:"MWO"}).width/3)+4) + (this.padding * 2)
         });
@@ -133,7 +133,7 @@ export class Button extends Entity {
    */
   draw(ctx){
     // Resize the background based on the height and width of the text, adjusted by the padding params.
-    let text = this.Entity.getFromComponent("Text","asObject");
+    let text = this.Entity.askComponent("Text","asObject");
     let size = {
       width : (ctx.measureText({font: text.font, text:text.text}).width)+4,
       //noinspection JSSuspiciousNameCombination
@@ -148,12 +148,12 @@ export class Button extends Entity {
       this.Entity.Hover :
       this.Entity.Background;
 
-    target.messageToComponent("Renderer", "setPosition",
+    target.askComponent("Renderer", "setPosition",
         {x: this.x, y: this.y}
     );
 
-    target.messageToComponent("Renderer", "resize", size);
-    target.messageToComponent("Renderer", "render", ctx);
+    target.askComponent("Renderer", "resize", size);
+    target.askComponent("Renderer", "render", ctx);
 
 
     // Draw the text

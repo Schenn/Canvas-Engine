@@ -156,9 +156,9 @@ export class CanvasEngine{
       for(let entity of ents){
         entity.broadcastToComponents("update");
 
-        if(entity.getFromComponent("Renderer", "isDirty")){
-          entity.messageToComponent("Renderer", "clear", ctx);
-          entity.messageToComponent("Renderer", "render", ctx);
+        if(entity.askComponent("Renderer", "isDirty")){
+          entity.askComponent("Renderer", "clear", ctx);
+          entity.askComponent("Renderer", "render", ctx);
         }
         entity.broadcastToComponents("postRender");
       }
