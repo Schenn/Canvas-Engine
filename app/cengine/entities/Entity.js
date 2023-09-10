@@ -170,22 +170,16 @@ export class Entity{
    * @throws Will throw an error if the Entity does not have the given component or the component doesn't have the given function
    * @returns {*}
    */
-  getFromComponent(componentName, funcName, args){
-    let comp = privateProperties[this.name].components.get(componentName);
-    if(utilities.exists(comp)){
-      if(utilities.isFunction(comp[funcName])) {
-
-        if (utilities.exists(args)) {
-          return comp[funcName].call(comp, args);
-        } else {
-          return comp[funcName].call(comp);
-        }
-
-      } else if(typeof comp[funcName] !== "undefined"){
-          return comp[funcName];
+  getFromComponent(componentName, funcName, args) {
+    const comp = privateProperties[this.name].components.get(componentName);
+    if (comp) {
+      if (typeof comp[funcName] === "function") {
+        return comp[funcName].call(comp, args);
+      } else if (typeof comp[funcName] !== "undefined") {
+        return comp[funcName];
       }
     }
-    throw this.name + " Does not have component: "+ componentName;
+    throw new Error(`${this.name} does not have component: ${componentName}`);
   }
 
   /**

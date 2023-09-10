@@ -29,7 +29,7 @@ import {Mouse} from "./components/Mouse.js";
  * @returns {Map}
  */
 export function getComponentList(customComponents = new Map()) {
-  var componentList = new Map();
+  let componentList = new Map();
 
   componentList.set("BaseComponent", Component);
 
@@ -45,9 +45,8 @@ export function getComponentList(customComponents = new Map()) {
   componentList.set("KeyPress", KeyPress);
   componentList.set("Mouse", Mouse);
 
-  customComponents.forEach(function(name, classRef){
+  customComponents.forEach((name, classRef)=>{
     componentList.set(name, classRef);
-
   });
 
   return componentList;

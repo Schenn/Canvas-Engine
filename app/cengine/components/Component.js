@@ -1,6 +1,8 @@
 
 import {properties} from "../engineParts/propertyDefinitions.js";
 import * as utilities from "../engineParts/utilities.js";
+
+
 const privateProperties = new WeakMap();
 
 
@@ -10,14 +12,27 @@ const privateProperties = new WeakMap();
  */
 export class Component {
 
+  /**
+   * Get the method that fires when a property is changed.
+   * @returns {*|propertyCallback}
+   */
   get propertyCallback(){
     return privateProperties[this.id].propertyCallback;
   }
 
+  /**
+   * Get the Entity that the component is attached to.
+   * @returns {CanvasEngine.Entities.Entity|boolean|*}
+   * @constructor
+   */
   get Entity(){
     return privateProperties[this.id].Entity;
   }
 
+  /**
+   * Whether or not the initial values have been set.
+   * @returns {boolean|*}
+   */
   get isInitializing(){
     return privateProperties[this.id].initializing;
   }
@@ -47,13 +62,15 @@ export class Component {
     // to get and a way to identify it as the instance's value over a class
     // weakmap reference.
     if(new.target === Component){
-      throw "Cannot instantiate a Component. You have to override it.";
+      throw new Error("Cannot instantiate a Component. You must override it in a child class.");
     }
     let id = `comp${utilities.randName()}`;
     Object.defineProperties(this, {
       id: properties.lockedProperty(id)
     });
 
+    // Create the private properties container for this component and add
+    //  the reference to the entity and property change callback.
     privateProperties[this.id] = {
       Entity: entity,
       propertyCallback: propertyCallback,
@@ -62,16 +79,27 @@ export class Component {
 
   }
 
+  /**
+   * When a property is changed, trigger the callback against the new value.
+   * @param value
+   */
   onChange(value){
+    // Don't trigger on the initial setup of the component.
     if(!this.isInitializing){
       this.propertyCallback(value);
     }
   }
 
+  /**
+   * Don't trigger on change while values are being set
+   */
   initialize(){
     privateProperties[this.id].initializing = true;
   }
 
+  /**
+   * Trigger on change now that the initial values are prepared.
+   */
   initialized(){
     privateProperties[this.id].initializing = false;
     this.onChange(this);
@@ -84,7 +112,7 @@ export class Component {
    * @throws If not overridden
    */
   asObject(){
-    throw "Class missing override!";
+    throw new Error("Class missing override!");
   }
 
   /**
