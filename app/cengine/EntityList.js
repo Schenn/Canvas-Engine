@@ -10,6 +10,7 @@ import {Sprite} from "./entities/Sprite.js";
 import {Label} from "./entities/Label.js";
 import {Line} from "./entities/Line.js";
 import {Rect} from "./entities/Rect.js";
+import {Arc} from "./entities/Arc.js";
 import {TileMap} from "./entities/TileMap.js";
 
 // Functional Entities
@@ -37,6 +38,7 @@ export function getClassList(customEntities = new Map()) {
   classList.set("Label",Label);
   classList.set("Line",Line);
   classList.set("Rect",Rect);
+  classList.set("Arc", Arc);
   classList.set("TileMap",TileMap);
 
   classList.set("Animator", Animator);
