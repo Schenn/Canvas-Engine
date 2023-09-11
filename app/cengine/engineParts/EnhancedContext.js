@@ -505,10 +505,13 @@ class EnhancedContext {
 
     // Draw each point
     this.ctx.beginPath();
+    // Start at initial point
     this.ctx.moveTo(lineParams.x1, lineParams.y1);
     while (true) {
+      // Get next point
       lx = lineParams['x' + l];
       ly = lineParams['y' + l];
+      // If point exists, draw a line to the point, otherwise stop drawing points
       if (lx !== undefined && ly !== undefined) {
         this.ctx.lineTo(lx, ly);
         l += 1;
@@ -1012,7 +1015,7 @@ class EnhancedContext {
     // Divide the modifier by 100, if there is no modifier set it to the default
     let mod = modifier / 100;
     this.canvas.setAttribute("height", Math.ceil(this.container.clientHeight * mod));
-    this.canvas.setAttribute("width", Math.ceil(this.container.clientHeight * mod));
+    this.canvas.setAttribute("width", Math.ceil(this.container.clientWidth * mod));
   }
 
 }
