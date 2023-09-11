@@ -22,13 +22,12 @@ export class Rect extends Entity {
   constructor(params, EntityManager){
     super(params, EntityManager);
 
-    EntityManager.attachComponent(this, "Renderer", {
+    let componentParams = {
       draw: this.draw,
-      fromCenter: params.fromCenter || false,
-      height: params.height || 100,
-      width: params.height || 100,
-      fillStyle: params.fillStyle || "#000000"
-    });
+    };
+    // Override with incoming params.
+    Object.assign(componentParams, params);
+    EntityManager.attachComponent(this, "Renderer", componentParams);
 
   }
 
