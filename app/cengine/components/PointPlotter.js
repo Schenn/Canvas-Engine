@@ -53,7 +53,7 @@ export class PointPlotter extends Component {
 
       // If we don't have the y coordinate property, create it.
       if(!this.coords.hasOwnProperty("y"+i)) {
-        properties.observe({name:"y"+i,value: coords[i-1].x, callback: this.propertyCallback}, this.coords);
+        properties.observe({name:"y"+i,value: coords[i-1].y, callback: this.propertyCallback}, this.coords);
       } else {
         this.coords["y" + i] = coords[i - 1].y;
       }
@@ -66,15 +66,15 @@ export class PointPlotter extends Component {
    * @returns {{x: number, y: number, width: number, height: number}}
    */
   getArea(){
-    let smallX = 0;
-    let smallY = 0;
+    let smallX = 999999;
+    let smallY = 999999;
     let bigX = 0;
     let bigY = 0;
     for (let i = 0; i < privateProperties[this.id].coordinateArray.length; i++) {
       if (privateProperties[this.id].coordinateArray[i].x <= smallX) {
         smallX = privateProperties[this.id].coordinateArray[i].x;
       }
-      if (privateProperties[this.id].coordinateArray[i].y <= smallX) {
+      if (privateProperties[this.id].coordinateArray[i].y <= smallY) {
         smallY = privateProperties[this.id].coordinateArray[i].y;
       }
       if (privateProperties[this.id].coordinateArray[i].x >= bigX) {
