@@ -468,6 +468,7 @@ export class Renderer extends Component {
     this.strokeJoin = params.strokeJoin || 'miter';
     this.strokeStyle = params.strokeStyle || 'transparent';
     this.strokeWidth = params.strokeWidth || 1;
+    //this.toRad = 2* Math.PI;
     this.width = params.width || 0;
     this.x = params.x || 0;
     this.y = params.y || 0;
@@ -509,7 +510,7 @@ export class Renderer extends Component {
 
   /**
    * Clear the previous render's 'shadow' from a context.
-   * @param {Canvas.enhancedContext} ctx
+   * @param {EnhancedContext} ctx
    */
   clear(ctx) {
     if(Component.utilities.exists(privateProperties[this.id].clear)){
@@ -539,10 +540,10 @@ export class Renderer extends Component {
    * Set the defaults and call the draw method against a context.
    *    When a renderer is drawn, it stores a 'shadow' of the render for clearing later.
    *
-   * @param {Canvas.enhancedContext} ctx EnhancedContext
+   * @param {EnhancedContext} ctx EnhancedContext
    */
   render (ctx) {
-    ctx.setDefaults(...this);
+    ctx.setDefaults(Object.assign({}, this));
     if(!privateProperties[this.id].hidden) {
       this.draw(ctx);
       privateProperties[this.id].isDirty = false;
