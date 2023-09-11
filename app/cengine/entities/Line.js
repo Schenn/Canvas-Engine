@@ -31,12 +31,8 @@ export class Line extends Entity {
       strokeWidth: 10,
       rounded: false,
       // Draw a line by squishing together the renderer properties and the coordinates from the pointPlotter
-      draw: function(ctx){
-        ctx.drawLine(Object.assign({}, this.asObject(), Line.getFromComponent("PointPlotter", "getCoordinatesAsObject")));
-      },
-      clearInfo: function(){
-        return Object.assign({},Line.getFromComponent("PointPlotter", "getArea"),{"fromCenter":false});
-      }
+      draw: this.draw,
+      clearInfo: this.clearInfo.bind(this)
     };
 
     Object.assign(myParams, params);
@@ -49,6 +45,9 @@ export class Line extends Entity {
         this.askComponent("Renderer", "markDirty");
       }
     });
+    if(myParams.coords){
+      this.plot(myParams.coords);
+    }
   }
   /**
    * Plot a set of coordinates
@@ -60,4 +59,16 @@ export class Line extends Entity {
     this.askComponent("PointPlotter", "plot", coords);
   }
 
+  draw(ctx){
+    let coords = this.Entity.askComponent("PointPlotter", "Coordinates");
+    if(this.fillStyle){
+      ctx.setDefaults({fillStyle: this.fillStyle});
+    }
+    ctx.drawLine(Object.assign({}, this.asObject(), coords));
+  }
+
+  clearInfo(ctx){
+    let clearInfo = this.askComponent("PointPlotter", "getArea");
+    return Object.assign({}, clearInfo,{"fromCenter":false});
+  }
 }
