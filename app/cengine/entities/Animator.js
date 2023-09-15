@@ -30,9 +30,13 @@ export class Animator extends Entity {
     } else {
       privateProperties[this.name].frameCount = utilities.exists(params.frameCount) ? params.frameCount : 1;
       privateProperties[this.name].frames = [];
-      for(let i =0; i < privateProperties[this].frameCount; i++){
+      for(let i =0; i < privateProperties[this.name].frameCount; i++){
         privateProperties[this.name].frames.push(i);
       }
+    }
+    privateProperties[this.name].onFrameChange = ()=>{};
+    if(utilities.exists(params.onFrameChange)){
+      privateProperties[this.name].onFrameChange = params.onFrameChange;
     }
 
     privateProperties[this.name].baseDuration = params.duration;
@@ -45,7 +49,7 @@ export class Animator extends Entity {
     EntityManager.attachComponent(this,"Timer",
       {
         duration: privateProperties[this.name].duration,
-        onElapsed: function(){
+        onElapsed: ()=>{
           this.incrementFrame();
         }
       }
@@ -70,7 +74,7 @@ export class Animator extends Entity {
     if(privateProperties[this.name].currentFrame > privateProperties[this.name].frameCount-1){
       privateProperties[this.name].currentFrame = 0;
     }
-    onFrameChange(privateProperties[this.name].frames[privateProperties[this.name].currentFrame]);
+    privateProperties[this.name].onFrameChange(privateProperties[this.name].frames[privateProperties[this.name].currentFrame]);
   }
 }
 
