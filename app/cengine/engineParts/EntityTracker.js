@@ -21,7 +21,7 @@ export class EntityTracker {
    * @returns {Number}
    */
   get maxZ(){
-    let zs = Object.keys(privateProperties[this].entitiesByZ);
+    let zs = Object.keys(privateProperties[this.id].entitiesByZ);
     return zs[zs.length-1];
   }
 
@@ -34,7 +34,8 @@ export class EntityTracker {
     let count = 0;
 
     for(let z of this.zIndexes){
-      count += (utilities.exists(privateProperties[this].entitiesByZ[z])) ? privateProperties[this].entitiesByZ[z].size : 0;
+      count += (utilities.exists(privateProperties[this.id].entitiesByZ[z])) ?
+          privateProperties[this.id].entitiesByZ[z].size : 0;
     }
     return count;
   }
@@ -45,17 +46,18 @@ export class EntityTracker {
    * @returns {Iterator.<number>}
    */
   get zIndexes(){
-    return privateProperties[this].entitiesByZ.keys();
+    return privateProperties[this.id].entitiesByZ.keys();
   }
 
   constructor(){
-    privateProperties[this] = {};
-    privateProperties[this].entities = new WeakMap();
-    privateProperties[this].entitiesByZ = [];
-    privateProperties[this].zExcludedFromInteractions = [];
-    privateProperties[this].maxZ = 0;
+    this.id = `engprt${utilities.randName()}`;
+    privateProperties[this.id] = {};
+    privateProperties[this.id].entities = new WeakMap();
+    privateProperties[this.id].entitiesByZ = [];
+    privateProperties[this.id].zExcludedFromInteractions = [];
+    privateProperties[this.id].maxZ = 0;
 
-    privateProperties[this].entityProxies = {};
+    privateProperties[this.id].entityProxies = {};
   }
 
   /**
@@ -67,15 +69,15 @@ export class EntityTracker {
     let retMethod = (entity)=>{return new Proxy(entity, {});};
     for(let entity of entities){
       if(entity instanceof Entity) {
-        privateProperties[this].entities.set(entity, entity.name);
+        privateProperties[this.id].entities.set(entity, entity.name);
         // If we don't already have a collection of entity references at this z index, start one.
-        if(!utilities.exists(privateProperties[this].entitiesByZ[entity.z_index])){
-          privateProperties[this].entitiesByZ[entity.z_index] = new Set();
+        if(!utilities.exists(privateProperties[this.id].entitiesByZ[entity.z_index])){
+          privateProperties[this.id].entitiesByZ[entity.z_index] = new Set();
         }
-        privateProperties[this].entitiesByZ[entity.z_index].add(entity);
-        privateProperties[this].entityProxies[entity.name] = retMethod(entity);
+        privateProperties[this.id].entitiesByZ[entity.z_index].add(entity);
+        privateProperties[this.id].entityProxies[entity.name] = retMethod(entity);
       } else {
-        throw "Entity expected but " + entity +" encountered.";
+        throw new Error("Entity expected but " + entity +" encountered.");
       }
     }
   }
@@ -90,9 +92,9 @@ export class EntityTracker {
   excludeZ(indices, invert){
     for(let index of indices){
       if(!invert){
-        privateProperties[this].zExcludedFromInteractions[index] = true;
+        privateProperties[this.id].zExcludedFromInteractions[index] = true;
       } else {
-        delete privateProperties[this].zExcludedFromInteractions[index];
+        delete privateProperties[this.id].zExcludedFromInteractions[index];
       }
     }
 
@@ -106,7 +108,7 @@ export class EntityTracker {
    */
   getEntities(names){
     let ents = [];
-    let ep = privateProperties[this].entityProxies;
+    let ep = privateProperties[this.id].entityProxies;
     names.forEach((name, index)=>{
       if(ep.hasOwnProperty(name)){
         ents[index] = ep[name];
@@ -120,8 +122,8 @@ export class EntityTracker {
    * Clear all the Entities from the world
    */
   clearEntities(){
-    for(let i =privateProperties[this].entitiesByZ.length-1; i> -1; i--){
-      for(let entity of privateProperties[this].entitiesByZ[i]){
+    for(let i =privateProperties[this.id].entitiesByZ.length-1; i> -1; i--){
+      for(let entity of privateProperties[this.id].entitiesByZ[i]){
         this.removeEntity(entity.name);
       }
     }
@@ -148,7 +150,7 @@ export class EntityTracker {
   removeEntity(name){
 
     let entity = null;
-    for(let z of privateProperties[this].entitiesByZ){
+    for(let z of privateProperties[this.id].entitiesByZ){
       for(let ent of z){
         if(ent.name === name) {
           entity = ent;
@@ -156,13 +158,13 @@ export class EntityTracker {
       }
     }
     let clearEntity = ()=>{
-      privateProperties[this].entitiesByZ[entity.z_index].delete(entity);
-      if(privateProperties[this].entitiesByZ[entity.z_index].size === 0){
-        privateProperties[this].entitiesByZ.splice(entity.z_index,1);
-        privateProperties[this].entitiesByZ = utilities.cleanArray(privateProperties[this].entitiesByZ);
+      privateProperties[this.id].entitiesByZ[entity.z_index].delete(entity);
+      if(privateProperties[this.id].entitiesByZ[entity.z_index].size === 0){
+        privateProperties[this.id].entitiesByZ.splice(entity.z_index,1);
+        privateProperties[this.id].entitiesByZ = utilities.cleanArray(privateProperties[this].entitiesByZ);
       }
-      privateProperties[this].entities.delete(entity);
-      delete privateProperties[this].entityProxies[name];
+      privateProperties[this.id].entities.delete(entity);
+      delete privateProperties[this.id].entityProxies[name];
     };
     if(entity.hasComponent("Renderer")){
       entity.askComponent("Renderer", "hide", clearEntity);
@@ -184,9 +186,9 @@ export class EntityTracker {
    */
   getEntitiesByZ(z){
     let ents = [];
-    if(utilities.exists(privateProperties[this].entitiesByZ[z])){
-      for(let name of privateProperties[this].entitiesByZ[z]){
-        ents.push(privateProperties[this].entities.get(name));
+    if(utilities.exists(privateProperties[this.id].entitiesByZ[z])){
+      for(let name of privateProperties[this.id].entitiesByZ[z]){
+        ents.push(privateProperties[this.id].entities.get(name));
       }
     }
 
@@ -208,7 +210,7 @@ export class EntityTracker {
     let positions = [];
     for(let i =0; i< zIndexes.length; i++){
       let z = zIndexes[i];
-      if (!(privateProperties[this].zExcludedFromInteractions[z])) {
+      if (!(privateProperties[this.id].zExcludedFromInteractions[z])) {
         for(let entity of this.getEntities(this.getEntitiesByZ(z))) {
           let containsPixel = false;
           containsPixel = entity.askComponent("Renderer", "containsPixel", p);
