@@ -3,7 +3,7 @@
  */
 /**
  * @typedef {object} LocalParams~AnimatedSpriteParams
- * @property {object.<string, LocalParams~AnimatorParams>} animations
+ * @property {object} animations
  */
 
 import {Sprite} from "./Sprite.js";
@@ -53,7 +53,7 @@ export class AnimatedSprite extends Sprite {
 
     let names = Object.keys(params.animations);
 
-    names.forEach((name, i)=>{
+    names.forEach((name)=>{
       this.addAnimation(name, params.animations[name]);
     });
   }
@@ -70,7 +70,7 @@ export class AnimatedSprite extends Sprite {
         // When the sprite's frame has changed, tell the entity to set the sprite to the next frame.
         onFrameChange: nextFrame=>{
           if(privateProperties[this.name].currentAnimation === name){
-            this.setSprite(nextFrame);
+            this.sprite = nextFrame;
           }
         }
       },
