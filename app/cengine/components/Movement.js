@@ -44,13 +44,20 @@ export class Movement extends Component {
   }
 
   set x(x){
+    let lastX = this.currentX;
     this.currentX = x;
-    privateProperties[this.id].onMoveX(x);
+    if(privateProperties[this.id].onMoveX) {
+      privateProperties[this.id].onMoveX(x, lastX);
+    }
   }
 
   set y(y){
+    let lastY = this.currentY;
     this.currentY = y;
-    privateProperties[this.id].onMoveY(y);
+    if(privateProperties[this.id].onMoveY){
+      privateProperties[this.id].onMoveY(y, lastY);
+    }
+
   }
 
   set currentX(x){
@@ -143,10 +150,15 @@ export class Movement extends Component {
       this.onDirectionChange = params.onDirectionChange.bind(this.Entity);
     }
 
-    privateProperties[this.id].onMoveX = params.onMoveX;
-    privateProperties[this.id].onMoveY = params.onMoveY;
-    privateProperties[this.id].onMoveX.bind(this);
-    privateProperties[this.id].onMoveY.bind(this);
+    if(params.onMoveX){
+      privateProperties[this.id].onMoveX = params.onMoveX;
+      privateProperties[this.id].onMoveX.bind(this);
+    }
+
+    if(params.onMoveY){
+      privateProperties[this.id].onMoveY = params.onMoveY;
+      privateProperties[this.id].onMoveY.bind(this);
+    }
   }
 
   /**
@@ -158,7 +170,6 @@ export class Movement extends Component {
     if(!Component.utilities.exists(delta)){
       delta = 1;
     }
-
     this.x += (this.xSpeed !== 0) ? this.xSpeed * delta : 0;
     this.y += (this.ySpeed !== 0) ? this.ySpeed * delta : 0;
 
