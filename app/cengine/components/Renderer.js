@@ -47,7 +47,7 @@
  * @property {number} [x=0]
  * @property {number} [y=0]
  * @property {?Image} [source=null]
- * @property {GeneralTypes~ClearInfo | Callbacks~ClearInfo} [clearInfo = Callbacks~ClearInfo]
+ * @property {object} [clearInfo=null]
  * @property {?Callbacks~Clear} [clear=null]
  */
 
@@ -499,13 +499,19 @@ export class Renderer extends Component {
    * @returns {{x: (number), y: (number), height: (number), width: (number), fromCenter: boolean}}
    */
   clearInfo(ctx){
-    return (Component.utilities.exists(privateProperties[this.id].clearInfo)) ? privateProperties[this.id].clearInfo(ctx) :{
+    let standard = {
       x: this.x,
       y: this.y,
       height: this.height,
-      width: this.width,
-      fromCenter: this.fromCenter
-    };
+      width: this.width
+    }
+    if(this.height === 0 && this.radius > 0){
+      standard.height = this.radius * 2;
+      standard.width = this.radius * 2;
+      standard.fromCenter = true;
+    }
+    return (Component.utilities.exists(privateProperties[this.id].clearInfo)) ?
+        privateProperties[this.id].clearInfo(ctx) : standard;
   }
 
   /**
@@ -543,7 +549,7 @@ export class Renderer extends Component {
    * @param {EnhancedContext} ctx EnhancedContext
    */
   render (ctx) {
-    ctx.setDefaults(Object.assign({}, this));
+    ctx.setDefaults(Object.assign({}, this.asObject()));
     if(!privateProperties[this.id].hidden) {
       this.draw(ctx);
       privateProperties[this.id].isDirty = false;
@@ -600,7 +606,6 @@ export class Renderer extends Component {
     if (Component.utilities.exists(position.y)) {
       this.y = position.y;
     }
-
   }
 
   /**
