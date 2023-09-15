@@ -122,7 +122,7 @@ export class ResourceManager {
       triggerOnLoad();
     });
 
-    image.src = privateProperties[this.id].imagePath + "/" + path;
+    image.src = this.ImagePath + "/" + path;
 
     if(image.complete){
       privateProperties[this.id].resourcesLoaded.set(name, true);
