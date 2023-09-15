@@ -92,4 +92,18 @@ export class Timer extends Component{
     privateProperties[this.id].isActive = true;
     this.update();
   }
+
+  /**
+   * Get the current state of the timer as an object
+   * @returns {{date: *, beep: *, delta: *, isActive: (boolean|*), timeUntilBeep: (number|*)}}
+   */
+  asObject() {
+    return {
+      isActive: privateProperties[this.id].isActive,
+      date: privateProperties[this.id].date,
+      delta: privateProperties[this.id].delta,
+      timeUntilBeep: privateProperties[this.id].timeUntilBeep,
+      beep: privateProperties[this.id].beep
+    };
+  }
 }
